@@ -1,6 +1,7 @@
 "use client";
 
 import Image from "next/image";
+import Link from "next/link";
 import { useState, useEffect } from "react";
 
 export default function Home() {
@@ -40,12 +41,18 @@ export default function Home() {
         </div>
 
         <div className="flex items-center space-x-4">
-          <button className="text-gray-600 hover:text-green-600 font-medium">
+          <Link 
+            href="/signup"
+            className="text-gray-600 hover:text-green-600 font-medium transition-colors"
+          >
             Sign-Up
-          </button>
-          <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition-colors">
+          </Link>
+          <Link 
+            href="/login"
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition-colors"
+          >
             Login
-          </button>
+          </Link>
         </div>
       </nav>
 
@@ -65,9 +72,12 @@ export default function Home() {
 
         {/* CTA Buttons */}
         <div className="flex gap-4 mt-8">
-          <button className="bg-green-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors">
+          <Link 
+            href="/signup"
+            className="bg-green-600 text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors"
+          >
             Get Started
-          </button>
+          </Link>
           <button 
             onClick={handleLearnMore}
             className="border-2 border-green-600 text-green-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-50 transition-colors"
@@ -187,10 +197,18 @@ export default function Home() {
           <h2 className="text-4xl font-bold text-white mb-4">Ready to Help Campus Animals?</h2>
           <p className="text-xl text-green-100 mb-8">Join the CAMP-PAWS community today and make a difference</p>
           <div className="flex gap-4 justify-center">
-            <button className="bg-white text-green-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors">
+            <Link 
+              href="/signup"
+              className="bg-white text-green-600 px-8 py-3 rounded-lg text-lg font-semibold hover:bg-gray-50 transition-colors"
+            >
               Sign Up Now
-            </button>
-            
+            </Link>
+            <Link 
+              href="/login"
+              className="border-2 border-white text-white px-8 py-3 rounded-lg text-lg font-semibold hover:bg-green-700 transition-colors"
+            >
+              Login
+            </Link>
           </div>
         </div>
       </div>
