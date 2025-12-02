@@ -92,9 +92,9 @@ export default function AdminDashboardPage() {
         
         <div className="mb-4">
           <p className="text-sm text-gray-600 mb-2">Overview</p>
-          <div className="w-full h-64" style={{ minHeight: '256px', minWidth: '300px' }}>
-            <ResponsiveContainer>
-              <BarChart data={chartData} width={800} height={256}>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={chartData}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                 <XAxis 
                   dataKey="month" 
