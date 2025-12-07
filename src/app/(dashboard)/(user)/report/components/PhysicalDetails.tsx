@@ -180,56 +180,180 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
           
           {/* Body Condition Score */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-3">Body Condition Score</label>
-            <div className="flex bg-gray-100 rounded-lg p-1 space-x-1">
-              {[1, 3, 5, 7, 9].map((score) => (
-                <button
-                  key={score}
-                  type="button"
-                  onClick={() => setFormState(prev => ({ ...prev, bodyConditionScore: score }))}
-                  className={`flex-1 relative overflow-hidden rounded-md transition-all duration-300 ${
-                    formState.bodyConditionScore === score
-                      ? 'bg-white shadow-md scale-105 ring-2 ring-green-400'
-                      : 'bg-transparent hover:bg-white/50'
-                  }`}
-                >
-                  {/* Panel Layout: Picture (1/3) + Details (2/3) */}
-                  <div className="flex flex-col h-32">
-                    {/* Picture Section (1/3) */}
-                    <div className={`h-12 flex items-center justify-center text-lg font-bold transition-colors ${
-                      formState.bodyConditionScore === score
-                        ? 'bg-green-500 text-white'
-                        : 'bg-gray-200 text-gray-600'
-                    }`}>
-                      {/* Placeholder for image */}
-                      📊
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Body Condition Score {formState.animalType && `(${formState.animalType === 'cat' ? 'Cat' : 'Dog'})`}
+            </label>
+            
+            {/* Show message if no animal type selected */}
+            {!formState.animalType && (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                <p className="text-gray-500 text-sm">Please select an animal type first to see body condition scores</p>
+              </div>
+            )}
+            
+            {/* Cat Body Condition Score */}
+            {formState.animalType === 'cat' && (
+              <div className="space-y-3">
+                {[
+                  { 
+                    score: 1, 
+                    label: 'Very Thin',
+                    description: 'Ribs, spine and hip bones are visible (coat may interfere with visibility). Fat can not be seen or felt under the skin. Obvious loss of muscle mass.'
+                  },
+                  { 
+                    score: 3, 
+                    label: 'Thin',
+                    description: 'Ribs, spine and hip bones are easily felt (coat may interfere with visibility). Fat can not be seen or felt under the skin. Obvious loss of muscle mass.'
+                  },
+                  { 
+                    score: 5, 
+                    label: 'Ideal',
+                    description: 'Ribs, spine and hip bones are easily felt and may be visible (coat may interfere with visibility). A waist and abdominal tuck are seen when viewed from above and side.'
+                  },
+                  { 
+                    score: 7, 
+                    label: 'Overweight',
+                    description: 'Ribs, spine and hip bones are not visible and difficult to feel. Excess fat is felt around ribs, spine and hip bones. Waist and abdominal tuck are minimal or absent.'
+                  },
+                  { 
+                    score: 9, 
+                    label: 'Obesity',
+                    description: 'Ribs, spine and hip bones are difficult to feel under a thick layer of fat. Waist and abdomen distended when viewed from above and side. Prominent fat deposits over lower spine, neck and chest.'
+                  }
+                ].map((item) => (
+                  <button
+                    key={item.score}
+                    type="button"
+                    onClick={() => setFormState(prev => ({ ...prev, bodyConditionScore: item.score }))}
+                    className={`w-full flex items-center p-4 rounded-lg border-2 transition-all duration-200 transform text-left ${
+                      formState.bodyConditionScore === item.score
+                        ? 'border-green-500 bg-green-50 shadow-md ring-2 ring-green-300'
+                        : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25'
+                    }`}
+                  >
+                    {/* Image Section (Left) */}
+                    <div className="flex-shrink-0 mr-4">
+                      <Image
+                        src={`/cat-bcs/${item.score}.jpg`}
+                        alt={`Cat Body Condition Score ${item.score}`}
+                        width={120}
+                        height={80}
+                        className="rounded object-cover"
+                      />
                     </div>
                     
-                    {/* Details Section (2/3) */}
-                    <div className="flex-1 p-3 flex flex-col justify-center">
-                      <div className={`text-xl font-bold transition-colors ${
-                        formState.bodyConditionScore === score
-                          ? 'text-green-700'
-                          : 'text-gray-700'
-                      }`}>
-                        {score}
+                    {/* Text Section (Right) */}
+                    <div className="flex-1">
+                      <div className="flex items-center mb-2">
+                        <div className={`text-2xl font-bold mr-3 transition-colors ${
+                          formState.bodyConditionScore === item.score
+                            ? 'text-green-700'
+                            : 'text-gray-700'
+                        }`}>
+                          {item.score}
+                        </div>
+                        <div className={`text-lg font-semibold transition-colors ${
+                          formState.bodyConditionScore === item.score
+                            ? 'text-green-700'
+                            : 'text-gray-900'
+                        }`}>
+                          {item.label}
+                        </div>
                       </div>
-                      <div className={`text-sm transition-colors ${
-                        formState.bodyConditionScore === score
+                      <div className={`text-sm leading-relaxed transition-colors ${
+                        formState.bodyConditionScore === item.score
                           ? 'text-green-600'
-                          : 'text-gray-500'
+                          : 'text-gray-600'
                       }`}>
-                        {score === 1 && 'Very Thin'}
-                        {score === 3 && 'Thin'}
-                        {score === 5 && 'Ideal'}
-                        {score === 7 && 'Heavy'}
-                        {score === 9 && 'Very Heavy'}
+                        {item.description}
                       </div>
                     </div>
-                  </div>
-                </button>
-              ))}
-            </div>
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            {/* Dog Body Condition Score */}
+            {formState.animalType === 'dog' && (
+              <div className="space-y-3">
+                {[
+                  { 
+                    score: 1, 
+                    label: 'Very Thin',
+                    description: 'Ribs, spine and hip bones are visible (coat may interfere with observation). Fat can not be seen or felt under the skin. Obvious loss of muscle mass. Extreme waist and abdominal tuck.'
+                  },
+                  { 
+                    score: 3, 
+                    label: 'Thin',
+                    description: 'Ribs, spine and hip bones are easy to feel but visible. Fat can not be seen or felt under the skin, especially around the ribs and lower back. Obvious waist and abdominal tuck. Some muscle loss.'
+                  },
+                  { 
+                    score: 5, 
+                    label: 'Ideal',
+                    description: 'Ribs, spine and hip bones are easily felt and may be visible (coat may interfere with visibility). A waist and abdominal tuck are seen when viewed from above and side. Fat can be felt around ribs, spine and hip bones.'
+                  },
+                  { 
+                    score: 7, 
+                    label: 'Overweight',
+                    description: 'Ribs, spine and hip bones are not visible and difficult to feel. Excess fat is felt around ribs, spine and hip bones. Waist and abdominal tuck are minimal or absent.'
+                  },
+                  { 
+                    score: 9, 
+                    label: 'Obesity',
+                    description: 'Ribs, spine and hip bones are difficult to feel under a thick layer of fat. Waist and abdomen distended when viewed from above and side. Prominent fat deposits over lower spine, neck and chest.'
+                  }
+                ].map((item) => (
+                  <button
+                    key={item.score}
+                    type="button"
+                    onClick={() => setFormState(prev => ({ ...prev, bodyConditionScore: item.score }))}
+                    className={`w-full flex items-center p-4 rounded-lg border-2 transition-all duration-200 transform text-left ${
+                      formState.bodyConditionScore === item.score
+                        ? 'border-green-500 bg-green-50 shadow-md ring-2 ring-green-300'
+                        : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25'
+                    }`}
+                  >
+                    {/* Image Section (Left) */}
+                    <div className="flex-shrink-0 mr-4">
+                      <Image
+                        src={`/dog-bcs/${item.score}.png`}
+                        alt={`Dog Body Condition Score ${item.score}`}
+                        width={120}
+                        height={80}
+                        className="rounded object-cover"
+                      />
+                    </div>
+                    
+                    {/* Text Section (Right) */}
+                    <div className="flex-1">
+                      <div className="flex items-center mb-2">
+                        <div className={`text-2xl font-bold mr-3 transition-colors ${
+                          formState.bodyConditionScore === item.score
+                            ? 'text-green-700'
+                            : 'text-gray-700'
+                        }`}>
+                          {item.score}
+                        </div>
+                        <div className={`text-lg font-semibold transition-colors ${
+                          formState.bodyConditionScore === item.score
+                            ? 'text-green-700'
+                            : 'text-gray-900'
+                        }`}>
+                          {item.label}
+                        </div>
+                      </div>
+                      <div className={`text-sm leading-relaxed transition-colors ${
+                        formState.bodyConditionScore === item.score
+                          ? 'text-green-600'
+                          : 'text-gray-600'
+                      }`}>
+                        {item.description}
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* Color Selection */}
