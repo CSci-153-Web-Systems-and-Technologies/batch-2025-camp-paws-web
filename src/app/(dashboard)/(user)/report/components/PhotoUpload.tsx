@@ -6,8 +6,9 @@ export interface FormData {
   photo: File | null;
   animalType: string;
   sex: string;
+  collar: string;
   color: string;
-  bodyCondition: string;
+  bodyConditionScore: number | null;
   physicalProblems: string[];
   notes: string;
   location: { lat: number; lng: number } | null;

@@ -1,4 +1,6 @@
 import { FormData } from './PhotoUpload';
+import Image from 'next/image';
+import { useState } from 'react';
 
 interface PhysicalDetailsProps {
   data: FormData;
@@ -7,8 +9,33 @@ interface PhysicalDetailsProps {
 }
 
 export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetailsProps) {
+  // Local state for form fields
+  const [formState, setFormState] = useState({
+    animalType: data.animalType,
+    sex: data.sex,
+    collar: data.collar,
+    bodyConditionScore: data.bodyConditionScore,
+    color: data.color,
+    physicalProblems: data.physicalProblems || [],
+  });
+
+  // Handle animal type selection
+  const handleAnimalTypeSelect = (type: string) => {
+    setFormState({ ...formState, animalType: type });
+  };
+
+  // Handle sex selection
+  const handleSexSelect = (sex: string) => {
+    setFormState({ ...formState, sex });
+  };
+
+  // Handle collar selection
+  const handleCollarSelect = (collar: string) => {
+    setFormState({ ...formState, collar });
+  };
+
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-6xl mx-auto">
       <div className="text-center mb-8">
         <h2 className="text-2xl font-bold text-gray-900 mb-2">Physical Status</h2>
         <p className="text-gray-600">
@@ -16,11 +43,564 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
         </p>
       </div>
 
-      {/* Form will be implemented here */}
-      <div className="bg-white rounded-lg border p-8">
-        <p className="text-gray-600 text-center py-16">
-          Physical Details form will be implemented next...
-        </p>
+      {/* Physical Details Form */}
+      <div className="bg-white rounded-lg border p-8 space-y-8">
+        
+        {/* Identification Section */}
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Identification</h3>
+          <div className="space-y-6">
+            
+            {/* Animal Type Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Animal Type</label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => handleAnimalTypeSelect('cat')}
+                  className={`flex flex-col items-center p-4 border-2 rounded-lg transition-all duration-200 transform ${
+                    formState.animalType === 'cat' 
+                      ? 'border-green-600 bg-green-500 shadow-lg shadow-green-200 scale-105 ring-2 ring-green-300' 
+                      : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25 hover:scale-102'
+                  }`}
+                >
+                  <Image
+                    src="/Cat astronaut-cuate.svg"
+                    alt="Cat"
+                    width={60}
+                    height={60}
+                    className="mb-2"
+                  />
+                  <span className={`text-sm font-bold ${
+                    formState.animalType === 'cat' ? 'text-white' : 'text-gray-900'
+                  }`}>Cat</span>
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => handleAnimalTypeSelect('dog')}
+                  className={`flex flex-col items-center p-4 border-2 rounded-lg transition-all duration-200 transform ${
+                    formState.animalType === 'dog' 
+                      ? 'border-green-600 bg-green-500 shadow-lg shadow-green-200 scale-105 ring-2 ring-green-300' 
+                      : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25 hover:scale-102'
+                  }`}
+                >
+                  <Image
+                    src="/Dog paw-cuate.svg"
+                    alt="Dog"
+                    width={60}
+                    height={60}
+                    className="mb-2"
+                  />
+                  <span className={`text-sm font-bold ${
+                    formState.animalType === 'dog' ? 'text-white' : 'text-gray-900'
+                  }`}>Dog</span>
+                </button>
+              </div>
+            </div>
+
+            {/* Sex Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Sex</label>
+              <div className="grid grid-cols-3 gap-3">
+                <button
+                  type="button"
+                  onClick={() => handleSexSelect('male')}
+                  className={`px-4 py-3 text-sm font-bold rounded-lg border-2 transition-all duration-200 transform ${
+                    formState.sex === 'male'
+                      ? 'border-blue-600 bg-blue-500 text-white shadow-lg shadow-blue-200 scale-105 ring-2 ring-blue-300'
+                      : 'border-blue-200 bg-blue-25 text-blue-700 hover:border-blue-400 hover:bg-blue-50 hover:scale-102'
+                  }`}
+                >
+                  Male
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => handleSexSelect('female')}
+                  className={`px-4 py-3 text-sm font-bold rounded-lg border-2 transition-all duration-200 transform ${
+                    formState.sex === 'female'
+                      ? 'border-pink-600 bg-pink-500 text-white shadow-lg shadow-pink-200 scale-105 ring-2 ring-pink-300'
+                      : 'border-pink-200 bg-pink-25 text-pink-700 hover:border-pink-400 hover:bg-pink-50 hover:scale-102'
+                  }`}
+                >
+                  Female
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => handleSexSelect('unidentified')}
+                  className={`px-4 py-3 text-sm font-bold rounded-lg border-2 transition-all duration-200 transform ${
+                    formState.sex === 'unidentified'
+                      ? 'border-gray-600 bg-gray-500 text-white shadow-lg shadow-gray-200 scale-105 ring-2 ring-gray-300'
+                      : 'border-gray-200 bg-gray-50 text-gray-700 hover:border-gray-400 hover:bg-gray-100 hover:scale-102'
+                  }`}
+                >
+                  Unidentified
+                </button>
+              </div>
+            </div>
+
+            {/* Collar Selection */}
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-3">Collar</label>
+              <div className="grid grid-cols-2 gap-4">
+                <button
+                  type="button"
+                  onClick={() => handleCollarSelect('with')}
+                  className={`px-4 py-3 text-sm font-bold rounded-lg border-2 transition-all duration-200 transform ${
+                    formState.collar === 'with'
+                      ? 'border-green-600 bg-green-500 text-white shadow-lg shadow-green-200 scale-105 ring-2 ring-green-300'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-green-400 hover:bg-green-25 hover:scale-102'
+                  }`}
+                >
+                  With Collar
+                </button>
+                
+                <button
+                  type="button"
+                  onClick={() => handleCollarSelect('without')}
+                  className={`px-4 py-3 text-sm font-bold rounded-lg border-2 transition-all duration-200 transform ${
+                    formState.collar === 'without'
+                      ? 'border-green-600 bg-green-500 text-white shadow-lg shadow-green-200 scale-105 ring-2 ring-green-300'
+                      : 'border-gray-300 bg-white text-gray-700 hover:border-green-400 hover:bg-green-25 hover:scale-102'
+                  }`}
+                >
+                  Without Collar
+                </button>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+
+        {/* Physical Attributes Section */}
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Physical Attributes</h3>
+          
+          {/* Body Condition Score */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">Body Condition Score</label>
+            <div className="flex bg-gray-100 rounded-lg p-1 space-x-1">
+              {[1, 3, 5, 7, 9].map((score) => (
+                <button
+                  key={score}
+                  type="button"
+                  onClick={() => setFormState(prev => ({ ...prev, bodyConditionScore: score }))}
+                  className={`flex-1 relative overflow-hidden rounded-md transition-all duration-300 ${
+                    formState.bodyConditionScore === score
+                      ? 'bg-white shadow-md scale-105 ring-2 ring-green-400'
+                      : 'bg-transparent hover:bg-white/50'
+                  }`}
+                >
+                  {/* Panel Layout: Picture (1/3) + Details (2/3) */}
+                  <div className="flex flex-col h-32">
+                    {/* Picture Section (1/3) */}
+                    <div className={`h-12 flex items-center justify-center text-lg font-bold transition-colors ${
+                      formState.bodyConditionScore === score
+                        ? 'bg-green-500 text-white'
+                        : 'bg-gray-200 text-gray-600'
+                    }`}>
+                      {/* Placeholder for image */}
+                      📊
+                    </div>
+                    
+                    {/* Details Section (2/3) */}
+                    <div className="flex-1 p-3 flex flex-col justify-center">
+                      <div className={`text-xl font-bold transition-colors ${
+                        formState.bodyConditionScore === score
+                          ? 'text-green-700'
+                          : 'text-gray-700'
+                      }`}>
+                        {score}
+                      </div>
+                      <div className={`text-sm transition-colors ${
+                        formState.bodyConditionScore === score
+                          ? 'text-green-600'
+                          : 'text-gray-500'
+                      }`}>
+                        {score === 1 && 'Very Thin'}
+                        {score === 3 && 'Thin'}
+                        {score === 5 && 'Ideal'}
+                        {score === 7 && 'Heavy'}
+                        {score === 9 && 'Very Heavy'}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Color Selection */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-3">
+              Color Pattern {formState.animalType && `(${formState.animalType === 'cat' ? 'Cat' : 'Dog'})`}
+            </label>
+            
+            {/* Show message if no animal type selected */}
+            {!formState.animalType && (
+              <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
+                <p className="text-gray-500 text-sm">Please select an animal type first to see available colors</p>
+              </div>
+            )}
+            
+            {/* Cat Colors Grid */}
+            {formState.animalType === 'cat' && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {[
+                  { id: 'white-puspin', label: 'White Puspin', shortLabel: 'White' },
+                  { id: 'black-puspin', label: 'Black Puspin', shortLabel: 'Black' },
+                  { id: 'tabby-puspin', label: 'Tabby Puspin', shortLabel: 'Tabby' },
+                  { id: 'orange-tabby-puspin', label: 'Orange-Tabby Puspin', shortLabel: 'Orange Tabby' },
+                  { id: 'bi-color-puspin', label: 'Bi-color Puspin', shortLabel: 'Bi-color' },
+                  { id: 'calico-puspin', label: 'Calico(Tri-color) Puspin', shortLabel: 'Calico' },
+                  { id: 'tortoiseshell-puspin', label: 'Tortoiseshell Puspin', shortLabel: 'Tortoiseshell' }
+                ].map((color) => (
+                  <button
+                    key={color.id}
+                    type="button"
+                    onClick={() => setFormState(prev => ({ ...prev, color: color.id }))}
+                    className={`relative overflow-hidden rounded-lg border-2 transition-all duration-200 transform ${
+                      formState.color === color.id
+                        ? 'border-green-500 bg-green-50 scale-105 ring-2 ring-green-300 shadow-lg'
+                        : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25 hover:scale-102'
+                    }`}
+                  >
+                    <div className="flex flex-col h-40">
+                      {/* Picture Section (2/3 height) */}
+                      <div className={`flex-1 flex items-center justify-center transition-colors ${
+                        formState.color === color.id
+                          ? 'bg-green-100'
+                          : 'bg-gray-50'
+                      }`}>
+                        {/* Placeholder for cat color image */}
+                        <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <span className="text-3xl">🐱</span>
+                        </div>
+                      </div>
+                      
+                      {/* Label Section (1/3 height) */}
+                      <div className="h-12 p-3 flex items-center justify-center">
+                        <span className={`text-sm font-medium text-center leading-tight transition-colors ${
+                          formState.color === color.id
+                            ? 'text-green-700'
+                            : 'text-gray-700'
+                        }`}>
+                          {color.shortLabel}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+            
+            {/* Dog Colors Grid */}
+            {formState.animalType === 'dog' && (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                {[
+                  { id: 'bi-color', label: 'Bi-color' },
+                  { id: 'blenheim', label: 'Blenheim' },
+                  { id: 'brindle', label: 'Brindle' },
+                  { id: 'harlequin', label: 'Harlequin' },
+                  { id: 'hound-coat', label: 'Hound Coat' },
+                  { id: 'mantle', label: 'Mantle' },
+                  { id: 'merle', label: 'Merle' },
+                  { id: 'patchy', label: 'Patchy' },
+                  { id: 'plain', label: 'Plain' },
+                  { id: 'sable', label: 'Sable' },
+                  { id: 'tri-color', label: 'Tri-color' },
+                  { id: 'tuxedo', label: 'Tuxedo' }
+                ].map((color) => (
+                  <button
+                    key={color.id}
+                    type="button"
+                    onClick={() => setFormState(prev => ({ ...prev, color: color.id }))}
+                    className={`relative overflow-hidden rounded-lg border-2 transition-all duration-200 transform ${
+                      formState.color === color.id
+                        ? 'border-green-500 bg-green-50 scale-105 ring-2 ring-green-300 shadow-lg'
+                        : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25 hover:scale-102'
+                    }`}
+                  >
+                    <div className="flex flex-col h-40">
+                      {/* Picture Section (2/3 height) */}
+                      <div className={`flex-1 flex items-center justify-center transition-colors ${
+                        formState.color === color.id
+                          ? 'bg-green-100'
+                          : 'bg-gray-50'
+                      }`}>
+                        {/* Placeholder for dog color image */}
+                        <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
+                          <span className="text-3xl">🐕</span>
+                        </div>
+                      </div>
+                      
+                      {/* Label Section (1/3 height) */}
+                      <div className="h-12 p-3 flex items-center justify-center">
+                        <span className={`text-sm font-medium text-center leading-tight transition-colors ${
+                          formState.color === color.id
+                            ? 'text-green-700'
+                            : 'text-gray-700'
+                        }`}>
+                          {color.label}
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Physical Assessment Section */}
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-6">Physical Assessment</h3>
+          
+          {/* Skin Problems */}
+          <div className="mb-8">
+            <h4 className="text-base font-medium text-gray-800 mb-4">
+              Skin Problems (Select all that apply)
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {[
+                { id: 'skin-none', label: 'None/Normal', description: 'No visible skin issues, coat looks healthy.' },
+                { id: 'skin-hair-loss', label: 'Missing Hair/Bald Patches', description: 'Noticeable areas where fur is missing.' },
+                { id: 'skin-redness', label: 'Redness/Irritation', description: 'Skin looks inflamed, bright red, or heavily scratched.' },
+                { id: 'skin-wounds', label: 'Wounds/Cuts/Blood', description: 'An open, bloody cut, tear, or severe scrape is visible.' },
+                { id: 'skin-lumps', label: 'Lumps/Bumps/Swelling', description: 'Any significant raised area, lump, or general swelling under the skin.' },
+                { id: 'skin-parasites', label: 'Heavy Parasites', description: 'Visible fleas, ticks, or excessive black "flea dirt" in the coat.' }
+              ].map((problem) => (
+                <button
+                  key={problem.id}
+                  type="button"
+                  onClick={() => {
+                    setFormState(prev => {
+                      const currentProblems = prev.physicalProblems || [];
+                      const isSelected = currentProblems.includes(problem.id);
+                      let newProblems;
+                      
+                      if (problem.id === 'skin-none') {
+                        // If selecting "None", clear all other skin problems
+                        newProblems = isSelected ? [] : [problem.id];
+                      } else {
+                        // If selecting a specific problem, remove "None" and toggle this problem
+                        const filteredProblems = currentProblems.filter(p => p !== 'skin-none');
+                        newProblems = isSelected 
+                          ? filteredProblems.filter(p => p !== problem.id)
+                          : [...filteredProblems, problem.id];
+                      }
+                      
+                      return { ...prev, physicalProblems: newProblems };
+                    });
+                  }}
+                  className={`text-left p-4 rounded-lg border-2 transition-all duration-200 transform ${
+                    (formState.physicalProblems || []).includes(problem.id)
+                      ? 'border-green-500 bg-green-50 shadow-md ring-2 ring-green-300'
+                      : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25'
+                  }`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                      (formState.physicalProblems || []).includes(problem.id)
+                        ? 'border-green-500 bg-green-500'
+                        : 'border-gray-300'
+                    }`}>
+                      {(formState.physicalProblems || []).includes(problem.id) && (
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className={`font-medium text-sm transition-colors ${
+                        (formState.physicalProblems || []).includes(problem.id)
+                          ? 'text-green-700'
+                          : 'text-gray-900'
+                      }`}>
+                        {problem.label}
+                      </div>
+                      <div className={`text-xs mt-1 transition-colors ${
+                        (formState.physicalProblems || []).includes(problem.id)
+                          ? 'text-green-600'
+                          : 'text-gray-600'
+                      }`}>
+                        {problem.description}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Eye Problems */}
+          <div className="mb-8">
+            <h4 className="text-base font-medium text-gray-800 mb-4">
+              Eye Problems (Select all that apply)
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {[
+                { id: 'eye-none', label: 'None/Normal', description: 'Eyes appear clear, open, and free of excessive discharge.' },
+                { id: 'eye-squinting', label: 'Squinting/Shut', description: 'The pet is constantly blinking, squinting, or holding one eye tightly shut (indicates pain).' },
+                { id: 'eye-discharge', label: 'Thick/Colored Discharge', description: 'A noticeable amount of green, yellow, or thick pus coming from one or both eyes.' },
+                { id: 'eye-tearing', label: 'Excessive Tearing/Watery', description: 'The eye is constantly running with clear, watery fluid.' },
+                { id: 'eye-cloudy', label: 'Cloudy/Hazy Eye', description: 'The front part of the eye (cornea/pupil area) looks hazy, gray, or blue/white.' },
+                { id: 'eye-red', label: 'Red/Inflamed Eyelids', description: 'The eyelids or the white part of the eye are noticeably very red or swollen.' }
+              ].map((problem) => (
+                <button
+                  key={problem.id}
+                  type="button"
+                  onClick={() => {
+                    setFormState(prev => {
+                      const currentProblems = prev.physicalProblems || [];
+                      const isSelected = currentProblems.includes(problem.id);
+                      let newProblems;
+                      
+                      if (problem.id === 'eye-none') {
+                        // If selecting "None", clear all other eye problems
+                        const nonEyeProblems = currentProblems.filter(p => !p.startsWith('eye-'));
+                        newProblems = isSelected ? nonEyeProblems : [...nonEyeProblems, problem.id];
+                      } else {
+                        // If selecting a specific problem, remove "None" and toggle this problem
+                        const filteredProblems = currentProblems.filter(p => p !== 'eye-none');
+                        newProblems = isSelected 
+                          ? filteredProblems.filter(p => p !== problem.id)
+                          : [...filteredProblems, problem.id];
+                      }
+                      
+                      return { ...prev, physicalProblems: newProblems };
+                    });
+                  }}
+                  className={`text-left p-4 rounded-lg border-2 transition-all duration-200 transform ${
+                    (formState.physicalProblems || []).includes(problem.id)
+                      ? 'border-green-500 bg-green-50 shadow-md ring-2 ring-green-300'
+                      : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25'
+                  }`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                      (formState.physicalProblems || []).includes(problem.id)
+                        ? 'border-green-500 bg-green-500'
+                        : 'border-gray-300'
+                    }`}>
+                      {(formState.physicalProblems || []).includes(problem.id) && (
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className={`font-medium text-sm transition-colors ${
+                        (formState.physicalProblems || []).includes(problem.id)
+                          ? 'text-green-700'
+                          : 'text-gray-900'
+                      }`}>
+                        {problem.label}
+                      </div>
+                      <div className={`text-xs mt-1 transition-colors ${
+                        (formState.physicalProblems || []).includes(problem.id)
+                          ? 'text-green-600'
+                          : 'text-gray-600'
+                      }`}>
+                        {problem.description}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Gait Problems */}
+          <div className="mb-6">
+            <h4 className="text-base font-medium text-gray-800 mb-4">
+              Gait Problems (Select all that apply)
+            </h4>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+              {[
+                { id: 'gait-none', label: 'None/Normal', description: 'Walks and runs without limping or difficulty.' },
+                { id: 'gait-mild-limp', label: 'Mild Limping/Favoring a Limb', description: 'Has a slight limp or puts noticeably less weight on one or more legs.' },
+                { id: 'gait-severe-limp', label: 'Severe Limping/3-Legged Walk', description: 'Is holding a leg up completely and walking on only three legs.' },
+                { id: 'gait-wobbly', label: 'Stumbling/Wobbly/Uncoordinated', description: 'Walks with a wide stance, stumbles, sways side-to-side, or loses balance easily.' },
+                { id: 'gait-dragging', label: 'Dragging/Knuckling', description: 'Is dragging a foot or walking on the top of the paw/knuckles instead of the pad.' },
+                { id: 'gait-reluctant', label: 'Reluctance to Move/Stiffness', description: 'Struggles to stand up, moves very slowly, or refuses to jump or run.' }
+              ].map((problem) => (
+                <button
+                  key={problem.id}
+                  type="button"
+                  onClick={() => {
+                    setFormState(prev => {
+                      const currentProblems = prev.physicalProblems || [];
+                      const isSelected = currentProblems.includes(problem.id);
+                      let newProblems;
+                      
+                      if (problem.id === 'gait-none') {
+                        // If selecting "None", clear all other gait problems
+                        const nonGaitProblems = currentProblems.filter(p => !p.startsWith('gait-'));
+                        newProblems = isSelected ? nonGaitProblems : [...nonGaitProblems, problem.id];
+                      } else {
+                        // If selecting a specific problem, remove "None" and toggle this problem
+                        const filteredProblems = currentProblems.filter(p => p !== 'gait-none');
+                        newProblems = isSelected 
+                          ? filteredProblems.filter(p => p !== problem.id)
+                          : [...filteredProblems, problem.id];
+                      }
+                      
+                      return { ...prev, physicalProblems: newProblems };
+                    });
+                  }}
+                  className={`text-left p-4 rounded-lg border-2 transition-all duration-200 transform ${
+                    (formState.physicalProblems || []).includes(problem.id)
+                      ? 'border-green-500 bg-green-50 shadow-md ring-2 ring-green-300'
+                      : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25'
+                  }`}
+                >
+                  <div className="flex items-start space-x-3">
+                    <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                      (formState.physicalProblems || []).includes(problem.id)
+                        ? 'border-green-500 bg-green-500'
+                        : 'border-gray-300'
+                    }`}>
+                      {(formState.physicalProblems || []).includes(problem.id) && (
+                        <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                          <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                        </svg>
+                      )}
+                    </div>
+                    <div className="flex-1">
+                      <div className={`font-medium text-sm transition-colors ${
+                        (formState.physicalProblems || []).includes(problem.id)
+                          ? 'text-green-700'
+                          : 'text-gray-900'
+                      }`}>
+                        {problem.label}
+                      </div>
+                      <div className={`text-xs mt-1 transition-colors ${
+                        (formState.physicalProblems || []).includes(problem.id)
+                          ? 'text-green-600'
+                          : 'text-gray-600'
+                      }`}>
+                        {problem.description}
+                      </div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        {/* Additional Notes Section */}
+        <div>
+          <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Notes</h3>
+          <div className="space-y-4">
+            {/* Add your textarea for details here */}
+            <p className="text-sm text-gray-500">Details textarea will go here</p>
+          </div>
+        </div>
+        
       </div>
 
       {/* Navigation */}
@@ -32,7 +612,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
           Back
         </button>
         <button
-          onClick={() => onNext({})}
+          onClick={() => onNext(formState)}
           className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
         >
           Next
