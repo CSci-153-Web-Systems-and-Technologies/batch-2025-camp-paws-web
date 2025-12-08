@@ -4,7 +4,7 @@ import StepIndicator from './components/StepIndicator';
 import PhotoUploadRefactored from './components/PhotoUpload/PhotoUploadRefactored';
 import { FormData } from './components/PhotoUpload/types/PhotoUploadTypes';
 import PhysicalDetailsRefactored from './components/PhysicalDetails/PhysicalDetailsRefactored';
-import LocationTime from './components/LocationTime/LocationTime';
+import LocationTimeRefactored from './components/LocationTime/LocationTimeRefactored';
 
 export default function UserReportPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -70,7 +70,7 @@ export default function UserReportPage() {
         )}
         
         {currentStep === 3 && (
-          <LocationTime 
+          <LocationTimeRefactored 
             data={formData}
             onSubmit={handleSubmit}
             onBack={() => goToStep(2)}

@@ -2,7 +2,7 @@
 'use client';
 
 import { useState } from 'react';
-import { FormData } from '../PhotoUpload/PhotoUpload';
+import { FormData } from '../PhotoUpload/types/PhotoUploadTypes';
 import { 
   PhysicalDetailsFormData, 
   FormValidationResult 
