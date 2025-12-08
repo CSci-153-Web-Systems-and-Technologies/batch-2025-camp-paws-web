@@ -122,26 +122,26 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
   };
 
   return (
-    <div className="max-w-6xl mx-auto">
-      <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Physical Status</h2>
-        <p className="text-gray-600">
+    <div className="max-w-6xl mx-auto px-2 sm:px-4">
+      <div className="text-center mb-6 sm:mb-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Physical Status</h2>
+        <p className="text-sm sm:text-base text-gray-600 px-4">
           Describe the physical characteristics and condition of the animal.
         </p>
       </div>
 
       {/* Physical Details Form */}
-      <div className="bg-white rounded-lg border p-8 space-y-8">
+      <div className="bg-white rounded-lg border p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
         
         {/* Identification Section */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Identification</h3>
-          <div className="space-y-6">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Identification</h3>
+          <div className="space-y-4 sm:space-y-6">
             
             {/* Animal Type Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">Animal Type</label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button
                   type="button"
                   onClick={() => handleAnimalTypeSelect('cat')}
@@ -189,7 +189,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
             {/* Sex Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">Sex</label>
-              <div className="grid grid-cols-3 gap-3">
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <button
                   type="button"
                   onClick={() => handleSexSelect('male')}
@@ -231,7 +231,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
             {/* Collar Selection */}
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-3">Collar</label>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <button
                   type="button"
                   onClick={() => handleCollarSelect('with')}
@@ -263,7 +263,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
 
         {/* Physical Attributes Section */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Physical Attributes</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Physical Attributes</h3>
           
           {/* Body Condition Score */}
           <div className="mb-6">
@@ -319,7 +319,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                     }`}
                   >
                     {/* Image Section (Left) */}
-                    <div className="shrink-0 mr-4">
+                    <div className="flex-shrink-0 mr-4">
                       <Image
                         src={`/cat-bcs/${item.score}.jpg`}
                         alt={`Cat Body Condition Score ${item.score}`}
@@ -401,7 +401,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                     }`}
                   >
                     {/* Image Section (Left) */}
-                    <div className="shrink-0 mr-4">
+                    <div className="flex-shrink-0 mr-4">
                       <Image
                         src={`/dog-bcs/${item.score}.png`}
                         alt={`Dog Body Condition Score ${item.score}`}
@@ -659,7 +659,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
 
         {/* Physical Assessment Section */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-6">Physical Assessment</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-4 sm:mb-6">Physical Assessment</h3>
           
           {/* Skin Problems */}
           <div className="mb-8">
@@ -705,7 +705,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                   }`}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className={`shrink-0 w-5 h-5 min-w-5 min-h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                    <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                       (formState.physicalProblems || []).includes(problem.id)
                         ? 'border-green-500 bg-green-500'
                         : 'border-gray-300'
@@ -783,7 +783,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                   }`}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className={`shrink-0 w-5 h-5 min-w-5 min-h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                    <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                       (formState.physicalProblems || []).includes(problem.id)
                         ? 'border-green-500 bg-green-500'
                         : 'border-gray-300'
@@ -861,7 +861,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                   }`}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className={`shrink-0 w-5 h-5 min-w-5 min-h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                    <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                       (formState.physicalProblems || []).includes(problem.id)
                         ? 'border-green-500 bg-green-500'
                         : 'border-gray-300'
@@ -897,7 +897,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
 
         {/* Additional Notes Section */}
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Notes</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Additional Notes</h3>
           <div className="space-y-3">
             <label className="block text-sm font-medium text-gray-700 mb-2">
               Additional Details or Observations (Optional)
@@ -962,23 +962,24 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
       )}
 
       {/* Navigation */}
-      <div className="flex justify-between mt-8">
+      <div className="flex flex-col sm:flex-row justify-between gap-3 sm:gap-0 mt-6 sm:mt-8">
         <button
           onClick={onBack}
-          className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
+          className="px-4 sm:px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200 text-sm sm:text-base"
         >
           Back
         </button>
         <button
           onClick={() => isFormValid() && handleFormSubmission()}
           disabled={!isFormValid()}
-          className={`px-6 py-2 rounded-lg transition-all duration-200 ${
+          className={`px-4 sm:px-6 py-2 rounded-lg transition-all duration-200 text-sm sm:text-base text-center ${
             isFormValid()
               ? 'bg-green-600 text-white hover:bg-green-700 hover:scale-105 shadow-md'
               : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
           }`}
         >
-          {isFormValid() ? 'Next' : 'Complete Required Fields'}
+          <span className="sm:hidden">{isFormValid() ? 'Next' : 'Complete Fields'}</span>
+          <span className="hidden sm:inline">{isFormValid() ? 'Next' : 'Complete Required Fields'}</span>
         </button>
       </div>
     </div>

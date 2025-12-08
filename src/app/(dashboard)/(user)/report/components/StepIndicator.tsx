@@ -17,26 +17,44 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
   ];
 
   return (
-    <div className="flex flex-col sm:flex-row items-center justify-center mb-8 gap-2 sm:gap-0">
-      {steps.map((step, index) => (
-        <div key={step.number} className="flex items-center w-full sm:w-auto justify-center sm:justify-start">
-          <div className={`flex items-center justify-center w-8 h-8 min-w-8 min-h-8 rounded-full text-sm font-medium shrink-0 ${
-            step.completed 
-              ? 'bg-green-600 text-white' 
-              : step.active 
+    <div className="flex items-center justify-center mb-8 px-2 overflow-x-auto step-indicator-container">
+      <div className="flex items-center min-w-max">
+        {steps.map((step, index) => (
+          <div key={step.number} className="flex items-center">
+            {/* Step Circle - Responsive sizes */}
+            <div className={`step-circle flex items-center justify-center rounded-full font-medium shrink-0 ${
+              step.completed 
                 ? 'bg-green-600 text-white' 
-                : 'bg-gray-200 text-gray-600'
-          }`}>
-            {step.completed ? '✓' : step.number}
+                : step.active 
+                  ? 'bg-green-600 text-white' 
+                  : 'bg-gray-200 text-gray-600'
+            }`}>
+              {step.completed ? '✓' : step.number}
+            </div>
+            
+            {/* Step Label - Multi-breakpoint responsive */}
+            <span className={`step-label whitespace-nowrap ${step.active ? 'text-green-600 font-medium' : 'text-gray-500'}`}>
+              {/* Ultra small screens (<400px): Single letters */}
+              <span className="ultra-small-only">
+                {step.label === 'Photo' ? 'P' : step.label === 'Physical Status' ? 'S' : 'L'}
+              </span>
+              {/* Small screens (400-500px): Short labels */}
+              <span className="small-only">
+                {step.label === 'Photo' ? 'Photo' : step.label === 'Physical Status' ? 'Physical' : 'Location'}
+              </span>
+              {/* Medium+ screens (≥500px): Full labels */}
+              <span className="medium-plus">{step.label}</span>
+            </span>
+            
+            {/* Connector Line - Multi-breakpoint responsive */}
+            {index < steps.length - 1 && (
+              <div className={`step-connector h-0.5 shrink-0 ${
+                step.completed ? 'bg-green-600' : 'bg-gray-200'
+              }`} />
+            )}
           </div>
-          <span className={`ml-2 text-sm whitespace-nowrap ${step.active ? 'text-green-600 font-medium' : 'text-gray-500'}`}>
-            {step.label}
-          </span>
-          {index < steps.length - 1 && (
-            <div className={`hidden sm:block w-12 h-0.5 mx-4 shrink-0 ${step.completed ? 'bg-green-600' : 'bg-gray-200'}`} />
-          )}
-        </div>
-      ))}
+        ))}
+      </div>
     </div>
   );
 }

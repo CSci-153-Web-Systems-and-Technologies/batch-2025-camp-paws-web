@@ -29,6 +29,124 @@ body.sidebar-open {
   }
 }
 
+/* Step Indicator Responsive Styles */
+
+/* Ultra small screens (<400px): Tiny circles, single letters, minimal spacing */
+@media (max-width: 399px) {
+  .step-circle {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    font-size: 10px;
+  }
+  
+  .step-label {
+    margin-left: 2px;
+    font-size: 10px;
+  }
+  
+  .step-connector {
+    width: 4px;
+    margin: 0 2px;
+  }
+  
+  .ultra-small-only { display: inline; }
+  .small-only { display: none; }
+  .medium-plus { display: none; }
+}
+
+/* Small screens (400-499px): Small circles, short labels, compact spacing */
+@media (min-width: 400px) and (max-width: 499px) {
+  .step-circle {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    font-size: 12px;
+  }
+  
+  .step-label {
+    margin-left: 4px;
+    font-size: 12px;
+  }
+  
+  .step-connector {
+    width: 8px;
+    margin: 0 4px;
+  }
+  
+  .ultra-small-only { display: none; }
+  .small-only { display: inline; }
+  .medium-plus { display: none; }
+}
+
+/* Medium screens (500-639px): Medium circles, full labels, normal spacing */
+@media (min-width: 500px) and (max-width: 639px) {
+  .step-circle {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 14px;
+  }
+  
+  .step-label {
+    margin-left: 6px;
+    font-size: 14px;
+  }
+  
+  .step-connector {
+    width: 16px;
+    margin: 0 6px;
+  }
+  
+  .ultra-small-only { display: none; }
+  .small-only { display: none; }
+  .medium-plus { display: inline; }
+}
+
+/* Large screens (≥640px): Full size circles, full labels, spacious layout */
+@media (min-width: 640px) {
+  .step-circle {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 14px;
+  }
+  
+  .step-label {
+    margin-left: 8px;
+    font-size: 14px;
+  }
+  
+  .step-connector {
+    width: 24px;
+    margin: 0 8px;
+  }
+  
+  .ultra-small-only { display: none; }
+  .small-only { display: none; }
+  .medium-plus { display: inline; }
+}
+
+/* Extra large screens (≥768px): Even more spacious */
+@media (min-width: 768px) {
+  .step-connector {
+    width: 32px;
+    margin: 0 12px;
+  }
+}
+
+/* XXL screens (≥1024px): Maximum spacing */
+@media (min-width: 1024px) {
+  .step-connector {
+    width: 48px;
+    margin: 0 16px;
+  }
+}
+
 /* Custom DatePicker Styles to match theme */
 .custom-calendar {
   border: 1px solid #d1d5db;
