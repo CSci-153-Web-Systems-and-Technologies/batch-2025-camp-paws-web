@@ -1,7 +1,8 @@
 'use client';
 import { useState } from 'react';
 import StepIndicator from './components/StepIndicator';
-import PhotoUpload, { FormData } from './components/PhotoUpload/PhotoUpload';
+import PhotoUploadRefactored from './components/PhotoUpload/PhotoUploadRefactored';
+import { FormData } from './components/PhotoUpload/types/PhotoUploadTypes';
 import PhysicalDetailsRefactored from './components/PhysicalDetails/PhysicalDetailsRefactored';
 import LocationTime from './components/LocationTime/LocationTime';
 
@@ -54,7 +55,7 @@ export default function UserReportPage() {
         <StepIndicator currentStep={currentStep} />
         
         {currentStep === 1 && (
-          <PhotoUpload 
+          <PhotoUploadRefactored 
             data={formData}
             onNext={handlePhotoNext}
           />
