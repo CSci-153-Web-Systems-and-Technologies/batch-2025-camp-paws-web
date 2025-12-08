@@ -15,6 +15,8 @@ export interface FormData {
   location: { lat: number; lng: number } | null;
   date: string;
   time: string;
+  locationDescription: string;
+  locationNotes: string;
 }
 
 interface PhotoUploadProps {
