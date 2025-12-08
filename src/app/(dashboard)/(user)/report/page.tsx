@@ -21,8 +21,7 @@ export default function UserReportPage() {
     location: null,
     date: '',
     time: '',
-    locationDescription: '',
-    locationNotes: ''
+    locationDescription: ''
   });
 
   // Handle photo upload (Step 1 → Step 2)

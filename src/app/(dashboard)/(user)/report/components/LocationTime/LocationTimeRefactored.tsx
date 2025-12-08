@@ -7,7 +7,6 @@ import { LocationTimeValidator } from './validation/LocationTimeValidator';
 import { LocationTimeTransformer } from './transformers/LocationTimeTransformer';
 import DateTimeSelection from './sections/DateTimeSelection';
 import LocationDescription from './sections/LocationDescription';
-import LocationNotes from './sections/LocationNotes';
 import MapSelection from './sections/MapSelection';
 import ValidationFeedback from './feedback/ValidationFeedback';
 
@@ -17,7 +16,6 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack }: Locat
   // Single Responsibility: State management only
   const [formState, setFormState] = useState<LocationTimeFormData>({
     locationDescription: data.locationDescription || '',
-    locationNotes: data.locationNotes || '',
     selectedDate: data.date ? new Date(data.date) : new Date(),
     selectedTime: data.time || new Date().toTimeString().slice(0, 5),
     selectedLocation: data.location ? { lat: data.location.lat, lng: data.location.lng } : null,
@@ -77,11 +75,6 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack }: Locat
           <LocationDescription
             description={formState.locationDescription}
             onDescriptionChange={(description) => updateFormField('locationDescription', description)}
-          />
-
-          <LocationNotes
-            notes={formState.locationNotes}
-            onNotesChange={(notes) => updateFormField('locationNotes', notes)}
           />
 
           <MapSelection

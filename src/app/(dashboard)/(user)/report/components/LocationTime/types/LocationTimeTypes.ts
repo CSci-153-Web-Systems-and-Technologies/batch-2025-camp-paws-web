@@ -4,7 +4,6 @@ import { FormData } from '../../PhotoUpload/types/PhotoUploadTypes';
 // Location and time form state
 export interface LocationTimeFormData {
   locationDescription: string;
-  locationNotes: string;
   selectedDate: Date;
   selectedTime: string;
   selectedLocation: { lat: number; lng: number } | null;
@@ -20,7 +19,6 @@ export interface BackendLocationTimeData {
     lng: number;
   };
   location_description: string;
-  location_notes: string | null;
 }
 
 // Validation result
@@ -46,11 +44,6 @@ export interface DateTimeSelectionProps {
 export interface LocationDescriptionProps {
   description: string;
   onDescriptionChange: (description: string) => void;
-}
-
-export interface LocationNotesProps {
-  notes: string;
-  onNotesChange: (notes: string) => void;
 }
 
 export interface MapSelectionProps {

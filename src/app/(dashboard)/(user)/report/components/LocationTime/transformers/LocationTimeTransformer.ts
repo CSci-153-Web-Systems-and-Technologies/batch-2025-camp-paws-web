@@ -24,7 +24,6 @@ export class LocationTimeTransformer implements DataTransformer<LocationTimeForm
       
       // Location Description Data
       locationDescription: formData.locationDescription,
-      locationNotes: formData.locationNotes.trim() || '',
     };
   }
 
@@ -40,7 +39,6 @@ export class LocationTimeTransformer implements DataTransformer<LocationTimeForm
         lng: formData.selectedLocation!.lng,
       },
       location_description: formData.locationDescription,
-      location_notes: formData.locationNotes.trim() || null,
     };
   }
 }

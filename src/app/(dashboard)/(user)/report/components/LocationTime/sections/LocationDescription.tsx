@@ -12,7 +12,7 @@ export default function LocationDescription({
       </label>
       <input
         type="text"
-        placeholder="e.g., 123 Main Street, Central Park entrance, near Starbucks"
+        placeholder="e.g., near VSU USHER by the tree"
         value={description}
         onChange={(e) => onDescriptionChange(e.target.value)}
         className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"

@@ -15,7 +15,6 @@ export interface FormData {
   date: string;
   time: string;
   locationDescription: string;
-  locationNotes: string;
 }
 
 // Photo upload specific state
