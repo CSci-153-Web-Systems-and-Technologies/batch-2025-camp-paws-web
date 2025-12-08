@@ -16,8 +16,24 @@ const PAGE_HEADERS: Record<string, { title: string; description: string }> = {
   '/profile': {
     title: 'Profile',
     description: 'Manage your account settings and preferences.'
+  },
+  // Admin pages
+  '/admin-dashboard': {
+    title: 'Admin Dashboard',
+    description: 'Monitor and manage all stray animal reports across campus.'
+  },
+  '/verify': {
+    title: 'Verify Reports',
+    description: 'Review and verify submitted stray animal reports.'
+  },
+  '/map': {
+    title: 'Campus Map',
+    description: 'View all reported stray animal locations on the map.'
+  },
+  '/records': {
+    title: 'Animal Records',
+    description: 'Browse and manage verified stray animal records.'
   }
-  // You can add more page headers here over time
 };
 
 export default function DashboardLayout({
@@ -27,6 +43,14 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  
+  // Determine if user is on admin pages
+  const isAdminPage = pathname.startsWith('/admin-dashboard') || 
+                      pathname.startsWith('/verify') || 
+                      pathname.startsWith('/map') || 
+                      pathname.startsWith('/records');
+  
+  const userRole = isAdminPage ? 'admin' : 'user';
   
   const headerInfo = PAGE_HEADERS[pathname] || { 
     title: 'CAMP-PAWS Dashboard', 
@@ -58,7 +82,7 @@ export default function DashboardLayout({
   return (
     <div className="flex h-screen bg-gray-50">
       {/* Responsive Sidebar */}
-      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} />
+      <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} userRole={userRole} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
