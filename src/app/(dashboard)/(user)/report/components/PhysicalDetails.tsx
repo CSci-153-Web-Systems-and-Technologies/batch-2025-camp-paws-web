@@ -38,6 +38,10 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
 
   // Validation function to check if all required fields are filled
   const isFormValid = () => {
+    const hasSkinAssessment = formState.physicalProblems.some(problem => problem.startsWith('skin-'));
+    const hasEyeAssessment = formState.physicalProblems.some(problem => problem.startsWith('eye-'));
+    const hasGaitAssessment = formState.physicalProblems.some(problem => problem.startsWith('gait-'));
+
     return (
       formState.animalType && // Animal type must be selected
       formState.sex && // Sex must be selected
@@ -45,20 +49,31 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
       formState.bodyConditionScore !== null && // Body condition score must be selected
       formState.colorPattern && // Color pattern must be selected
       formState.primaryColor && // Primary color must be selected
-      formState.physicalProblems.length > 0 // At least one physical problem must be selected (including "None")
+      hasSkinAssessment && // At least one skin problem option must be selected
+      hasEyeAssessment && // At least one eye problem option must be selected
+      hasGaitAssessment // At least one gait problem option must be selected
     );
   };
 
   // Get list of missing required fields for user feedback
   const getMissingFields = () => {
     const missing = [];
-    if (!formState.animalType) missing.push('Animal Type');
-    if (!formState.sex) missing.push('Sex');
-    if (!formState.collar) missing.push('Collar Status');
-    if (formState.bodyConditionScore === null) missing.push('Body Condition Score');
+    if (!formState.animalType) missing.push('Animal Type (Dog or Cat)');
+    if (!formState.sex) missing.push('Sex (Male or Female)');
+    if (!formState.collar) missing.push('Collar Status (With or Without)');
+    if (formState.bodyConditionScore === null) missing.push('Body Condition Score (1, 3, 5, 7, or 9)');
     if (!formState.colorPattern) missing.push('Color Pattern');
     if (!formState.primaryColor) missing.push('Primary Color');
-    if (formState.physicalProblems.length === 0) missing.push('Physical Assessment');
+    
+    // Check each physical assessment category
+    const hasSkinAssessment = formState.physicalProblems.some(problem => problem.startsWith('skin-'));
+    const hasEyeAssessment = formState.physicalProblems.some(problem => problem.startsWith('eye-'));
+    const hasGaitAssessment = formState.physicalProblems.some(problem => problem.startsWith('gait-'));
+    
+    if (!hasSkinAssessment) missing.push('Skin Problems Assessment');
+    if (!hasEyeAssessment) missing.push('Eye Problems Assessment');
+    if (!hasGaitAssessment) missing.push('Gait Problems Assessment');
+    
     return missing;
   };
 
