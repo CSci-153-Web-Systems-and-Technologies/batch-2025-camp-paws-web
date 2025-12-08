@@ -1,12 +1,39 @@
 // Single Responsibility: Display reports in a table format
+'use client';
+
+import { useState } from 'react';
 import { ReportsTableProps } from '../types/VerifyTypes';
 
 export default function ReportsTable({ reports, onRowClick, selectedColumns }: ReportsTableProps) {
+  const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedRows(new Set(reports.map(r => r.id)));
+    } else {
+      setSelectedRows(new Set());
+    }
+  };
+
+  const handleSelectRow = (reportId: string, checked: boolean) => {
+    const newSelected = new Set(selectedRows);
+    if (checked) {
+      newSelected.add(reportId);
+    } else {
+      newSelected.delete(reportId);
+    }
+    setSelectedRows(newSelected);
+  };
+
+  const isAllSelected = reports.length > 0 && selectedRows.size === reports.length;
+  const isSomeSelected = selectedRows.size > 0 && selectedRows.size < reports.length;
   const columnConfig = {
     animalType: { label: 'Animal Type', width: 'w-32' },
     sex: { label: 'Sex', width: 'w-24' },
+    colorPattern: { label: 'Color Pattern', width: 'w-32' },
     primaryColor: { label: 'Color', width: 'w-32' },
     spottedTime: { label: 'Sighting Time', width: 'w-40' },
+    submittedBy: { label: 'Submitted By', width: 'w-48' },
   };
 
   const getDisplayColumns = () => {
@@ -37,8 +64,21 @@ export default function ReportsTable({ reports, onRowClick, selectedColumns }: R
                   </th>
                 );
               })}
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-16">
-                Actions
+              {/* Checkbox column */}
+              <th className="px-6 py-3 w-12 text-center">
+                <div className="flex items-center justify-center">
+                  <input
+                    type="checkbox"
+                    checked={isAllSelected}
+                    ref={(input) => {
+                      if (input) {
+                        input.indeterminate = isSomeSelected;
+                      }
+                    }}
+                    onChange={(e) => handleSelectAll(e.target.checked)}
+                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                  />
+                </div>
               </th>
             </tr>
           </thead>
@@ -50,41 +90,63 @@ export default function ReportsTable({ reports, onRowClick, selectedColumns }: R
                 </td>
               </tr>
             ) : (
-              reports.map((report) => (
-                <tr
-                  key={report.id}
-                  onClick={() => onRowClick(report)}
-                  className="hover:bg-gray-50 cursor-pointer transition-colors"
-                >
-                  {displayColumns.map((columnId) => (
-                    <td key={columnId} className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {columnId === 'animalType' && (
-                        <span className="capitalize">{report.animalType}</span>
-                      )}
-                      {columnId === 'sex' && (
-                        <span className="capitalize">{report.sex}</span>
-                      )}
-                      {columnId === 'primaryColor' && report.primaryColor}
-                      {columnId === 'spottedTime' && `${report.spottedDate} - ${report.spottedTime}`}
+              reports.map((report) => {
+                const isSelected = selectedRows.has(report.id);
+                return (
+                  <tr
+                    key={report.id}
+                    className={`hover:bg-gray-50 cursor-pointer transition-colors ${
+                      isSelected ? 'bg-green-50' : ''
+                    }`}
+                  >
+                    {displayColumns.map((columnId) => (
+                      <td
+                        key={columnId}
+                        onClick={() => onRowClick(report)}
+                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                      >
+                        {columnId === 'animalType' && (
+                          <span className="capitalize">{report.animalType}</span>
+                        )}
+                        {columnId === 'sex' && (
+                          <span className="capitalize">{report.sex}</span>
+                        )}
+                        {columnId === 'colorPattern' && (
+                          <span className="capitalize">{report.colorPattern}</span>
+                        )}
+                        {columnId === 'primaryColor' && report.primaryColor}
+                        {columnId === 'spottedTime' && `${report.spottedDate} - ${report.spottedTime}`}
+                        {columnId === 'submittedBy' && (
+                          <div className="max-w-xs truncate">{report.reportedBy}</div>
+                        )}
+                      </td>
+                    ))}
+                    {/* Checkbox column */}
+                    <td className="px-6 py-4 whitespace-nowrap text-center">
+                      <div className="flex items-center justify-center">
+                        <input
+                          type="checkbox"
+                          checked={isSelected}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            handleSelectRow(report.id, e.target.checked);
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                        />
+                      </div>
                     </td>
-                  ))}
-                  <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                    <button className="text-gray-400 hover:text-gray-600">
-                      <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
-                      </svg>
-                    </button>
-                  </td>
-                </tr>
-              ))
+                  </tr>
+                );
+              })
             )}
           </tbody>
         </table>
       </div>
 
-      {/* Pagination info */}
+      {/* Selection info */}
       <div className="bg-gray-50 px-6 py-3 border-t border-gray-200 text-sm text-gray-500">
-        0 of {reports.length} row(s) selected.
+        {selectedRows.size} of {reports.length} row(s) selected.
       </div>
     </div>
   );

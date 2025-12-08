@@ -7,7 +7,7 @@ import { getReportService } from '../services/ReportService';
 import ReportsTable from './ReportsTable';
 import ReportDetailsModal from './ReportDetailsModal';
 
-const AVAILABLE_COLUMNS = ['animalType', 'sex', 'primaryColor', 'spottedTime'];
+const AVAILABLE_COLUMNS = ['animalType', 'sex', 'colorPattern', 'primaryColor', 'spottedTime', 'submittedBy'];
 
 export default function VerifyReportsRefactored({ initialReports }: VerifyReportsProps) {
   const [reports, setReports] = useState<Report[]>(initialReports || []);
@@ -16,6 +16,27 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
   const [isLoading, setIsLoading] = useState(!initialReports);
   const [error, setError] = useState<string | null>(null);
   const [selectedColumns] = useState<string[]>(AVAILABLE_COLUMNS);
+  
+  // Filter states
+  const [filters, setFilters] = useState({
+    animalType: 'all',
+    sex: 'all',
+    colorPattern: 'all',
+    primaryColor: 'all'
+  });
+
+  // Apply filters to reports
+  const filteredReports = reports.filter(report => {
+    if (filters.animalType !== 'all' && report.animalType !== filters.animalType) return false;
+    if (filters.sex !== 'all' && report.sex !== filters.sex) return false;
+    if (filters.colorPattern !== 'all' && report.colorPattern !== filters.colorPattern) return false;
+    if (filters.primaryColor !== 'all' && report.primaryColor !== filters.primaryColor) return false;
+    return true;
+  });
+
+  const handleFilterChange = (filterType: string, value: string) => {
+    setFilters(prev => ({ ...prev, [filterType]: value }));
+  };
 
   // Fetch reports
   useEffect(() => {
@@ -124,28 +145,97 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
             </p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold text-green-600">{reports.length}</div>
-            <div className="text-sm text-gray-500">Pending</div>
+            <div className="text-3xl font-bold text-green-600">{filteredReports.length}</div>
+            <div className="text-sm text-gray-500">
+              {filteredReports.length === reports.length ? 'Pending' : `of ${reports.length} total`}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* Column Selector - Placeholder for now */}
+      {/* Filters */}
       <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
-        <button className="flex items-center gap-2 text-sm text-gray-700 hover:text-gray-900">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-          Columns
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-          </svg>
-        </button>
+        <div className="flex items-center gap-4 flex-wrap">
+          <div className="flex items-center gap-2">
+            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
+            </svg>
+            <span className="text-sm font-medium text-gray-700">Filters:</span>
+          </div>
+
+          {/* Animal Type Filter */}
+          <select
+            value={filters.animalType}
+            onChange={(e) => handleFilterChange('animalType', e.target.value)}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          >
+            <option value="all">All Animals</option>
+            <option value="dog">Dog</option>
+            <option value="cat">Cat</option>
+          </select>
+
+          {/* Sex Filter */}
+          <select
+            value={filters.sex}
+            onChange={(e) => handleFilterChange('sex', e.target.value)}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          >
+            <option value="all">All Sexes</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
+
+          {/* Color Pattern Filter */}
+          <select
+            value={filters.colorPattern}
+            onChange={(e) => handleFilterChange('colorPattern', e.target.value)}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          >
+            <option value="all">All Patterns</option>
+            <option value="solid">Solid</option>
+            <option value="spotted">Spotted</option>
+            <option value="striped">Striped</option>
+            <option value="patched">Patched</option>
+            <option value="brindle">Brindle</option>
+          </select>
+
+          {/* Primary Color Filter */}
+          <select
+            value={filters.primaryColor}
+            onChange={(e) => handleFilterChange('primaryColor', e.target.value)}
+            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+          >
+            <option value="all">All Colors</option>
+            <option value="Black">Black</option>
+            <option value="White">White</option>
+            <option value="Brown">Brown</option>
+            <option value="Gray">Gray</option>
+            <option value="Tan">Tan</option>
+            <option value="Orange">Orange</option>
+            <option value="Yellow">Yellow</option>
+            <option value="Cream">Cream</option>
+          </select>
+
+          {/* Clear Filters */}
+          {(filters.animalType !== 'all' || filters.sex !== 'all' || filters.colorPattern !== 'all' || filters.primaryColor !== 'all') && (
+            <button
+              onClick={() => setFilters({ animalType: 'all', sex: 'all', colorPattern: 'all', primaryColor: 'all' })}
+              className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+            >
+              Clear Filters
+            </button>
+          )}
+
+          {/* Results count */}
+          <div className="ml-auto text-sm text-gray-500">
+            {filteredReports.length} of {reports.length} reports
+          </div>
+        </div>
       </div>
 
       {/* Reports Table */}
       <ReportsTable
-        reports={reports}
+        reports={filteredReports}
         onRowClick={handleRowClick}
         selectedColumns={selectedColumns}
       />
