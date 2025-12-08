@@ -5,7 +5,7 @@ export default function ReportsTable({ reports, onRowClick, selectedColumns }: R
   const columnConfig = {
     animalType: { label: 'Animal Type', width: 'w-32' },
     sex: { label: 'Sex', width: 'w-24' },
-    color: { label: 'Color', width: 'w-32' },
+    primaryColor: { label: 'Color', width: 'w-32' },
     spottedTime: { label: 'Sighting Time', width: 'w-40' },
   };
 
@@ -64,7 +64,7 @@ export default function ReportsTable({ reports, onRowClick, selectedColumns }: R
                       {columnId === 'sex' && (
                         <span className="capitalize">{report.sex}</span>
                       )}
-                      {columnId === 'color' && report.color}
+                      {columnId === 'primaryColor' && report.primaryColor}
                       {columnId === 'spottedTime' && `${report.spottedDate} - ${report.spottedTime}`}
                     </td>
                   ))}

@@ -136,32 +136,41 @@ function generateMockReports(): Report[] {
     {
       animalType: 'dog' as const,
       sex: 'male' as const,
-      color: 'Brown',
+      collar: 'no' as const,
+      colorPattern: 'solid',
+      primaryColor: 'Brown',
       location: 'Near main gate',
       reporter: 'Xyryil Jay Taneo',
       email: 'xyryjay@gmail.com',
       submitted: 300,
-      warnings: 3
+      warnings: 3,
+      notes: 'Looks hungry and friendly'
     },
     {
       animalType: 'cat' as const,
       sex: 'female' as const,
-      color: 'Black',
+      collar: 'unknown' as const,
+      colorPattern: 'spotted',
+      primaryColor: 'Black',
       location: 'Behind cafeteria',
       reporter: 'Maria Santos',
       email: 'maria.santos@vsu.edu.ph',
       submitted: 25,
-      warnings: 0
+      warnings: 0,
+      notes: ''
     },
     {
       animalType: 'dog' as const,
       sex: 'unknown' as const,
-      color: 'White',
+      collar: 'yes' as const,
+      colorPattern: 'solid',
+      primaryColor: 'White',
       location: 'Library area',
       reporter: 'Juan Dela Cruz',
       email: 'juan.cruz@vsu.edu.ph',
       submitted: 10,
-      warnings: 1
+      warnings: 1,
+      notes: 'Has a red collar'
     },
   ];
 
@@ -169,15 +178,32 @@ function generateMockReports(): Report[] {
     const date = new Date(now);
     date.setHours(date.getHours() - index * 2);
     
+    // Generate physical problems array with actual problem IDs
+    const problems: string[] = [];
+    
+    // Add some realistic physical problems based on the report
+    if (index === 0) {
+      // Xyryil's report - multiple issues
+      problems.push('skin-wounds', 'skin-parasites', 'eye-discharge', 'gait-mild-limp');
+    } else if (index === 1) {
+      // Maria's report - minor issues
+      problems.push('eye-tearing', 'gait-reluctant');
+    } else if (index === 2) {
+      // Juan's report - skin issues only
+      problems.push('skin-hair-loss', 'skin-redness');
+    }
+    
     reports.push({
       id: `13409284-${index}`,
+      photoUrl: '/dog-placeholder.jpg',
       animalType: data.animalType,
       sex: data.sex,
-      color: data.color,
+      collar: data.collar,
+      colorPattern: data.colorPattern,
+      primaryColor: data.primaryColor,
       bodyConditionScore: Math.floor(Math.random() * 4) + 3, // 3-6
-      eyeProblems: Math.random() > 0.7,
-      skinProblems: Math.random() > 0.6,
-      photoUrl: '/dog-placeholder.jpg',
+      physicalProblems: problems,
+      notes: data.notes,
       latitude: 10.746183 + (Math.random() - 0.5) * 0.01,
       longitude: 124.795011 + (Math.random() - 0.5) * 0.01,
       locationDescription: data.location,
@@ -187,7 +213,6 @@ function generateMockReports(): Report[] {
       reporterEmail: data.email,
       reportsSubmitted: data.submitted,
       warnings: data.warnings,
-      additionalNotes: index === 0 ? 'Looks hungry and friendly' : undefined,
       status: 'pending',
       createdAt: date.toISOString(),
     });

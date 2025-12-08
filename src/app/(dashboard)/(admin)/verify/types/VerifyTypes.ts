@@ -2,23 +2,29 @@
 
 export interface Report {
   id: string;
+  // From PhotoUpload
+  photoUrl: string;
+  // From PhysicalDetails
   animalType: 'dog' | 'cat';
   sex: 'male' | 'female' | 'unknown';
-  color: string;
-  bodyConditionScore: number;
-  eyeProblems: boolean;
-  skinProblems: boolean;
-  photoUrl: string;
+  collar: 'yes' | 'no' | 'unknown';
+  colorPattern: string; // 'solid', 'spotted', 'striped', etc.
+  primaryColor: string;
+  bodyConditionScore: number; // 1-9
+  // Physical problems array
+  physicalProblems: string[]; // Contains 'eye_problems', 'skin_problems', 'gait_problems'
+  notes: string; // Additional notes
+  // From LocationTime
   latitude: number;
   longitude: number;
   locationDescription: string;
-  spottedDate: string;
-  spottedTime: string;
+  spottedDate: string; // YYYY-MM-DD
+  spottedTime: string; // HH:MM
+  // Reporter info (from backend)
   reportedBy: string;
   reporterEmail: string;
   reportsSubmitted: number;
   warnings: number;
-  additionalNotes?: string;
   status: 'pending' | 'verified' | 'rejected';
   createdAt: string;
 }

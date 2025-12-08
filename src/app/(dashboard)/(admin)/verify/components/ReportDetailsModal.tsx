@@ -4,6 +4,7 @@
 import { useState } from 'react';
 import Image from 'next/image';
 import { ReportDetailsModalProps } from '../types/VerifyTypes';
+import { parsePhysicalProblems } from '../utils/PhysicalProblemsParser';
 
 export default function ReportDetailsModal({
   report,
@@ -180,6 +181,10 @@ export default function ReportDetailsModal({
                       <div className="text-xs font-medium text-gray-500">Sex</div>
                       <div className="text-sm text-gray-900 capitalize">{report.sex}</div>
                     </div>
+                    <div>
+                      <div className="text-xs font-medium text-gray-500">Collar</div>
+                      <div className="text-sm text-gray-900 capitalize">{report.collar}</div>
+                    </div>
                   </div>
                 </div>
 
@@ -188,10 +193,14 @@ export default function ReportDetailsModal({
                   <h3 className="font-semibold text-gray-900 border-b pb-2">Physical Attributes</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <div className="text-xs font-medium text-gray-500">Color</div>
-                      <div className="text-sm text-gray-900">{report.color}</div>
+                      <div className="text-xs font-medium text-gray-500">Color Pattern</div>
+                      <div className="text-sm text-gray-900 capitalize">{report.colorPattern}</div>
                     </div>
                     <div>
+                      <div className="text-xs font-medium text-gray-500">Primary Color</div>
+                      <div className="text-sm text-gray-900">{report.primaryColor}</div>
+                    </div>
+                    <div className="col-span-2">
                       <div className="text-xs font-medium text-gray-500">Body Condition Score</div>
                       <div className="text-sm text-gray-900">{report.bodyConditionScore} - {report.bodyConditionScore <= 3 ? 'Thin' : report.bodyConditionScore <= 5 ? 'Ideal' : 'Overweight'}</div>
                     </div>
@@ -201,24 +210,68 @@ export default function ReportDetailsModal({
                 {/* Physical Assessment */}
                 <div className="space-y-3">
                   <h3 className="font-semibold text-gray-900 border-b pb-2">Physical Assessment</h3>
-                  <div className="space-y-2">
-                    <label className="flex items-center gap-2 text-sm text-gray-700">
-                      <input type="checkbox" checked={report.eyeProblems} readOnly className="rounded" />
-                      Eye Problems
-                    </label>
-                    <label className="flex items-center gap-2 text-sm text-gray-700">
-                      <input type="checkbox" checked={report.skinProblems} readOnly className="rounded" />
-                      Skin Problems
-                    </label>
-                  </div>
+                  {(() => {
+                    const categorizedProblems = parsePhysicalProblems(report.physicalProblems);
+                    const hasAnyProblems = categorizedProblems.skin.length > 0 || 
+                                          categorizedProblems.eye.length > 0 || 
+                                          categorizedProblems.gait.length > 0;
+
+                    if (!hasAnyProblems) {
+                      return (
+                        <div className="text-sm text-gray-600 italic">
+                          No physical problems reported
+                        </div>
+                      );
+                    }
+
+                    return (
+                      <div className="space-y-3">
+                        {/* Skin Problems */}
+                        {categorizedProblems.skin.length > 0 && (
+                          <div>
+                            <div className="text-xs font-semibold text-gray-700 mb-1">Skin Problems:</div>
+                            <ul className="list-disc list-inside space-y-0.5 ml-2">
+                              {categorizedProblems.skin.map((problem, idx) => (
+                                <li key={idx} className="text-sm text-gray-800">{problem}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Eye Problems */}
+                        {categorizedProblems.eye.length > 0 && (
+                          <div>
+                            <div className="text-xs font-semibold text-gray-700 mb-1">Eye Problems:</div>
+                            <ul className="list-disc list-inside space-y-0.5 ml-2">
+                              {categorizedProblems.eye.map((problem, idx) => (
+                                <li key={idx} className="text-sm text-gray-800">{problem}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+
+                        {/* Gait Problems */}
+                        {categorizedProblems.gait.length > 0 && (
+                          <div>
+                            <div className="text-xs font-semibold text-gray-700 mb-1">Gait Problems:</div>
+                            <ul className="list-disc list-inside space-y-0.5 ml-2">
+                              {categorizedProblems.gait.map((problem, idx) => (
+                                <li key={idx} className="text-sm text-gray-800">{problem}</li>
+                              ))}
+                            </ul>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })()}
                 </div>
 
                 {/* Additional Notes */}
-                {report.additionalNotes && (
+                {report.notes && (
                   <div className="space-y-2">
                     <h3 className="font-semibold text-gray-900 border-b pb-2">Additional Notes</h3>
                     <div className="bg-gray-50 rounded-lg p-3">
-                      <p className="text-sm text-gray-700">{report.additionalNotes}</p>
+                      <p className="text-sm text-gray-700">{report.notes}</p>
                     </div>
                   </div>
                 )}

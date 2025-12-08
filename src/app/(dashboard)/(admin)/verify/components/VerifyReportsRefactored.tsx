@@ -7,7 +7,7 @@ import { getReportService } from '../services/ReportService';
 import ReportsTable from './ReportsTable';
 import ReportDetailsModal from './ReportDetailsModal';
 
-const AVAILABLE_COLUMNS = ['animalType', 'sex', 'color', 'spottedTime'];
+const AVAILABLE_COLUMNS = ['animalType', 'sex', 'primaryColor', 'spottedTime'];
 
 export default function VerifyReportsRefactored({ initialReports }: VerifyReportsProps) {
   const [reports, setReports] = useState<Report[]>(initialReports || []);
