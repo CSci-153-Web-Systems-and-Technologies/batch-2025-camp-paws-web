@@ -18,6 +18,17 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+/* Prevent body scroll when mobile sidebar is open */
+body.sidebar-open {
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  body.sidebar-open {
+    overflow: visible;
+  }
+}
+
 /* Custom DatePicker Styles to match theme */
 .custom-calendar {
   border: 1px solid #d1d5db;
