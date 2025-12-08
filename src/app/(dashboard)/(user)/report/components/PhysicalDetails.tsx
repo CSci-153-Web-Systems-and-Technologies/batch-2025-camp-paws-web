@@ -77,6 +77,50 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
     return missing;
   };
 
+  // Format data for backend submission (Supabase/API ready)
+  const formatForBackend = () => {
+    const skinProblems = formState.physicalProblems.filter(p => p.startsWith('skin-'));
+    const eyeProblems = formState.physicalProblems.filter(p => p.startsWith('eye-'));
+    const gaitProblems = formState.physicalProblems.filter(p => p.startsWith('gait-'));
+
+    return {
+      // Basic identification
+      animal_type: formState.animalType, // 'cat' | 'dog'
+      sex: formState.sex, // 'male' | 'female'
+      collar_status: formState.collar, // 'with' | 'without'
+      
+      // Physical attributes
+      body_condition_score: formState.bodyConditionScore, // 1 | 3 | 5 | 7 | 9
+      color_pattern: formState.colorPattern, // breed-specific pattern or 'not-sure-cat'/'not-sure-dog'
+      primary_color: formState.primaryColor, // 'black' | 'white' | 'brown' | etc.
+      
+      // Physical assessment (structured for easy querying)
+      health_assessment: {
+        skin_problems: skinProblems, // ['skin-none'] or ['skin-redness', 'skin-wounds']
+        eye_problems: eyeProblems, // ['eye-none'] or ['eye-discharge', 'eye-red']  
+        gait_problems: gaitProblems, // ['gait-none'] or ['gait-mild-limp']
+      },
+      
+      // Additional notes (optional)
+      additional_notes: formState.notes.trim() || null,
+      
+      // Metadata for tracking
+      form_completed_at: new Date().toISOString(),
+      form_version: '1.0', // For future form updates
+    };
+  };
+
+  // Handle form submission with structured data
+  const handleFormSubmission = () => {
+    const backendData = formatForBackend();
+    
+    // Debug: Log the formatted data (remove in production)
+    console.log('🚀 Backend-ready data:', backendData);
+    
+    // Pass to parent component (will eventually go to Supabase)
+    onNext(backendData);
+  };
+
   return (
     <div className="max-w-6xl mx-auto">
       <div className="text-center mb-8">
@@ -926,7 +970,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
           Back
         </button>
         <button
-          onClick={() => isFormValid() && onNext(formState)}
+          onClick={() => isFormValid() && handleFormSubmission()}
           disabled={!isFormValid()}
           className={`px-6 py-2 rounded-lg transition-all duration-200 ${
             isFormValid()
