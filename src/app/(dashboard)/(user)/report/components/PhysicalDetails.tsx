@@ -319,7 +319,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                     }`}
                   >
                     {/* Image Section (Left) */}
-                    <div className="flex-shrink-0 mr-4">
+                    <div className="shrink-0 mr-4">
                       <Image
                         src={`/cat-bcs/${item.score}.jpg`}
                         alt={`Cat Body Condition Score ${item.score}`}
@@ -401,7 +401,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                     }`}
                   >
                     {/* Image Section (Left) */}
-                    <div className="flex-shrink-0 mr-4">
+                    <div className="shrink-0 mr-4">
                       <Image
                         src={`/dog-bcs/${item.score}.png`}
                         alt={`Dog Body Condition Score ${item.score}`}
@@ -639,7 +639,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                   }`}
                 >
                   {/* Color Circle */}
-                  <div className={`w-8 h-8 rounded-full mr-3 border-2 ${color.colorClass} ${
+                  <div className={`w-8 h-8 min-w-8 min-h-8 rounded-full mr-3 border-2 shrink-0 ${color.colorClass} ${
                     color.id === 'white' ? 'border-gray-300' : 'border-white'
                   }`}></div>
                   
@@ -705,7 +705,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                   }`}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                    <div className={`shrink-0 w-5 h-5 min-w-5 min-h-5 rounded border-2 flex items-center justify-center transition-colors ${
                       (formState.physicalProblems || []).includes(problem.id)
                         ? 'border-green-500 bg-green-500'
                         : 'border-gray-300'
@@ -783,7 +783,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                   }`}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                    <div className={`shrink-0 w-5 h-5 min-w-5 min-h-5 rounded border-2 flex items-center justify-center transition-colors ${
                       (formState.physicalProblems || []).includes(problem.id)
                         ? 'border-green-500 bg-green-500'
                         : 'border-gray-300'
@@ -861,7 +861,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                   }`}
                 >
                   <div className="flex items-start space-x-3">
-                    <div className={`flex-shrink-0 w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                    <div className={`shrink-0 w-5 h-5 min-w-5 min-h-5 rounded border-2 flex items-center justify-center transition-colors ${
                       (formState.physicalProblems || []).includes(problem.id)
                         ? 'border-green-500 bg-green-500'
                         : 'border-gray-300'

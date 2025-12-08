@@ -17,10 +17,10 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
   ];
 
   return (
-    <div className="flex items-center justify-center mb-8">
+    <div className="flex flex-col sm:flex-row items-center justify-center mb-8 gap-2 sm:gap-0">
       {steps.map((step, index) => (
-        <div key={step.number} className="flex items-center">
-          <div className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${
+        <div key={step.number} className="flex items-center w-full sm:w-auto justify-center sm:justify-start">
+          <div className={`flex items-center justify-center w-8 h-8 min-w-8 min-h-8 rounded-full text-sm font-medium shrink-0 ${
             step.completed 
               ? 'bg-green-600 text-white' 
               : step.active 
@@ -29,11 +29,11 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
           }`}>
             {step.completed ? '✓' : step.number}
           </div>
-          <span className={`ml-2 text-sm ${step.active ? 'text-green-600 font-medium' : 'text-gray-500'}`}>
+          <span className={`ml-2 text-sm whitespace-nowrap ${step.active ? 'text-green-600 font-medium' : 'text-gray-500'}`}>
             {step.label}
           </span>
           {index < steps.length - 1 && (
-            <div className={`w-12 h-0.5 mx-4 ${step.completed ? 'bg-green-600' : 'bg-gray-200'}`} />
+            <div className={`hidden sm:block w-12 h-0.5 mx-4 shrink-0 ${step.completed ? 'bg-green-600' : 'bg-gray-200'}`} />
           )}
         </div>
       ))}
