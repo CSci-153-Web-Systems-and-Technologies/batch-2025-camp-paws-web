@@ -18,6 +18,7 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
     colorPattern: data.colorPattern,
     primaryColor: data.primaryColor,
     physicalProblems: data.physicalProblems || [],
+    notes: data.notes || '',
   });
 
   // Handle animal type selection
@@ -33,6 +34,32 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
   // Handle collar selection
   const handleCollarSelect = (collar: string) => {
     setFormState({ ...formState, collar });
+  };
+
+  // Validation function to check if all required fields are filled
+  const isFormValid = () => {
+    return (
+      formState.animalType && // Animal type must be selected
+      formState.sex && // Sex must be selected
+      formState.collar && // Collar status must be selected
+      formState.bodyConditionScore !== null && // Body condition score must be selected
+      formState.colorPattern && // Color pattern must be selected
+      formState.primaryColor && // Primary color must be selected
+      formState.physicalProblems.length > 0 // At least one physical problem must be selected (including "None")
+    );
+  };
+
+  // Get list of missing required fields for user feedback
+  const getMissingFields = () => {
+    const missing = [];
+    if (!formState.animalType) missing.push('Animal Type');
+    if (!formState.sex) missing.push('Sex');
+    if (!formState.collar) missing.push('Collar Status');
+    if (formState.bodyConditionScore === null) missing.push('Body Condition Score');
+    if (!formState.colorPattern) missing.push('Color Pattern');
+    if (!formState.primaryColor) missing.push('Primary Color');
+    if (formState.physicalProblems.length === 0) missing.push('Physical Assessment');
+    return missing;
   };
 
   return (
@@ -812,27 +839,87 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
         {/* Additional Notes Section */}
         <div>
           <h3 className="text-lg font-semibold text-gray-900 mb-4">Additional Notes</h3>
-          <div className="space-y-4">
-            {/* Add your textarea for details here */}
-            <p className="text-sm text-gray-500">Details textarea will go here</p>
+          <div className="space-y-3">
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Additional Details or Observations (Optional)
+            </label>
+            <textarea
+              value={formState.notes}
+              onChange={(e) => setFormState(prev => ({ ...prev, notes: e.target.value }))}
+              placeholder="Describe any additional observations about the animal's condition, behavior, location details, or other relevant information that might help with identification or care..."
+              rows={5}
+              className={`w-full px-4 py-3 border-2 rounded-lg transition-all duration-200 resize-none focus:outline-none ${
+                formState.notes.trim()
+                  ? 'border-green-400 bg-green-50 focus:border-green-500 focus:ring-2 focus:ring-green-200'
+                  : 'border-gray-300 bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-200 hover:border-gray-400'
+              }`}
+            />
+            <div className="flex items-center justify-between text-xs text-gray-500">
+              <span>
+                {formState.notes.trim() ? (
+                  <span className="text-green-600 font-medium">
+                    ✓ Notes added ({formState.notes.trim().length} characters)
+                  </span>
+                ) : (
+                  "Optional: Add any extra details that might be helpful"
+                )}
+              </span>
+              <span className="text-gray-400">
+                {formState.notes.length}/500
+              </span>
+            </div>
+            
+            {/* Helper Text */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <h4 className="text-sm font-medium text-blue-900 mb-2">💡 Helpful Details to Include:</h4>
+              <ul className="text-xs text-blue-700 space-y-1 ml-4">
+                <li>• Specific location where the animal was found</li>
+                <li>• Animal behavior (friendly, scared, injured, etc.)</li>
+                <li>• Time of day when spotted</li>
+                <li>• Any visible injuries or concerns not covered above</li>
+                <li>• Interaction with people or other animals</li>
+                <li>• Anything unusual about the situation</li>
+              </ul>
+            </div>
           </div>
         </div>
         
       </div>
 
+      {/* Form Validation Message */}
+      {!isFormValid() && (
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 mt-6">
+          <div className="flex items-center mb-2">
+            <span className="text-red-600 mr-2">⚠️</span>
+            <h4 className="text-sm font-medium text-red-800">Please complete all required fields</h4>
+          </div>
+          <p className="text-xs text-red-700 mb-2">Missing required information:</p>
+          <ul className="text-xs text-red-600 space-y-1">
+            {getMissingFields().map((field, index) => (
+              <li key={index}>• {field}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+
       {/* Navigation */}
       <div className="flex justify-between mt-8">
         <button
           onClick={onBack}
-          className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700"
+          className="px-6 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors duration-200"
         >
           Back
         </button>
         <button
-          onClick={() => onNext(formState)}
-          className="px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+          onClick={() => isFormValid() && onNext(formState)}
+          disabled={!isFormValid()}
+          className={`px-6 py-2 rounded-lg transition-all duration-200 ${
+            isFormValid()
+              ? 'bg-green-600 text-white hover:bg-green-700 hover:scale-105 shadow-md'
+              : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
+          }`}
         >
-          Next
+          {isFormValid() ? 'Next' : 'Complete Required Fields'}
         </button>
       </div>
     </div>
