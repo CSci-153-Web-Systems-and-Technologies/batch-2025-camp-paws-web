@@ -1,10 +1,11 @@
 'use client';
 
 // Open/Closed Principle: Main orchestrator for admin map functionality
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
 import dynamic from 'next/dynamic';
 import { AdminMapProps, TimeFilter, AnimalReport } from '../types/MapTypes';
 import { ReportDateFilter } from '../utils/ReportDateFilter';
+import { getReportService } from '../services/ReportService';
 import TimeFilterSelector from './TimeFilterSelector';
 
 // Dynamically import map to avoid SSR issues with Leaflet
@@ -20,80 +21,29 @@ const AdminMapView = dynamic(() => import('./AdminMapView'), {
   )
 });
 
-// Mock data generator for development
-const generateMockReports = (): AnimalReport[] => {
-  const mockReports: AnimalReport[] = [];
-  const now = new Date();
-  
-  // Helper to generate date offsets
-  const getDaysAgo = (days: number) => {
-    const date = new Date(now);
-    date.setDate(date.getDate() - days);
-    return date.toISOString().split('T')[0];
-  };
-
-  // Sample coordinates within VSU campus
-  const campusLocations: [number, number][] = [
-    [10.746183, 124.795011], // Center
-    [10.745500, 124.793500], // West side
-    [10.747500, 124.796500], // East side
-    [10.744800, 124.794800], // South
-    [10.747800, 124.793800], // North
-    [10.746000, 124.795500], // Near center
-    [10.745200, 124.794200], // Southwest
-    [10.747200, 124.795800], // Northeast
-  ];
-
-  // Generate reports for different time periods
-  const reportData = [
-    // Today - 5 reports
-    { days: 0, count: 5 },
-    // Yesterday - 3 reports
-    { days: 1, count: 3 },
-    // This week - 8 reports
-    { days: 3, count: 4 },
-    { days: 5, count: 4 },
-    // This month - 10 more reports
-    { days: 10, count: 3 },
-    { days: 15, count: 4 },
-    { days: 20, count: 3 },
-  ];
-
-  let idCounter = 1;
-  reportData.forEach(({ days, count }) => {
-    for (let i = 0; i < count; i++) {
-      const location = campusLocations[Math.floor(Math.random() * campusLocations.length)];
-      const animalType = Math.random() > 0.5 ? 'dog' : 'cat';
-      const statuses: ('pending' | 'verified' | 'rejected')[] = ['pending', 'verified', 'rejected'];
-      const status = statuses[Math.floor(Math.random() * statuses.length)];
-      
-      mockReports.push({
-        id: `report-${idCounter++}`,
-        latitude: location[0] + (Math.random() - 0.5) * 0.002, // Small random offset
-        longitude: location[1] + (Math.random() - 0.5) * 0.002,
-        animalType,
-        spottedDate: getDaysAgo(days),
-        spottedTime: `${String(Math.floor(Math.random() * 12) + 8).padStart(2, '0')}:${String(Math.floor(Math.random() * 60)).padStart(2, '0')}`,
-        status,
-        reporterName: `Student ${idCounter}`,
-        locationDescription: [
-          'Near main gate',
-          'Behind cafeteria',
-          'Library area',
-          'Near College of Engineering',
-          'Beside gymnasium',
-          'Near parking lot'
-        ][Math.floor(Math.random() * 6)],
-      });
-    }
-  });
-
-  return mockReports;
-};
-
 export default function AdminMapRefactored({ initialReports }: AdminMapProps) {
-  const [allReports] = useState<AnimalReport[]>(initialReports || generateMockReports());
+  const [allReports, setAllReports] = useState<AnimalReport[]>(initialReports || []);
   const [selectedFilter, setSelectedFilter] = useState<TimeFilter>('today');
+  const [isLoading, setIsLoading] = useState(!initialReports);
+  const [error, setError] = useState<string | null>(null);
+
+  // Fetch reports from service if not provided via props
+  useEffect(() => {
+    if (!initialReports) {
+      const reportService = getReportService();
+      
+      reportService.fetchReports()
+        .then(reports => {
+          setAllReports(reports);
+          setIsLoading(false);
+        })
+        .catch(err => {
+          console.error('Failed to fetch reports:', err);
+          setError('Failed to load reports. Please try again.');
+          setIsLoading(false);
+        });
+    }
+  }, [initialReports]);
 
   // Memoize filtered reports to avoid unnecessary recalculations
   const filteredReports = useMemo(() => {
@@ -113,6 +63,35 @@ export default function AdminMapRefactored({ initialReports }: AdminMapProps) {
     // Could be used for future functionality like showing details in sidebar
     console.log('Selected report:', report.id);
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-96">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-4"></div>
+          <p className="text-gray-600 font-medium">Loading animal reports...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
+        <div className="text-red-600 text-5xl mb-3">⚠️</div>
+        <h3 className="text-xl font-semibold text-red-900 mb-2">Failed to Load Reports</h3>
+        <p className="text-red-700 mb-4">{error}</p>
+        <button
+          onClick={() => window.location.reload()}
+          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+        >
+          Retry
+        </button>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -158,10 +137,6 @@ export default function AdminMapRefactored({ initialReports }: AdminMapProps) {
           <div className="flex items-center gap-2">
             <div className="w-6 h-6 rounded-full bg-yellow-500 border-2 border-white shadow-md"></div>
             <span className="text-sm text-gray-700">Pending</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className="w-6 h-6 rounded-full bg-red-500 border-2 border-white shadow-md"></div>
-            <span className="text-sm text-gray-700">Rejected</span>
           </div>
           <div className="flex items-center gap-2">
             <span className="text-xl">🐕</span>
