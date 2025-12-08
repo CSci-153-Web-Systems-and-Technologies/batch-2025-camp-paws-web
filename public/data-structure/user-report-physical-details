@@ -1,0 +1,45 @@
+{
+  // === BASIC IDENTIFICATION ===
+  animal_type: "cat" | "dog",
+  sex: "male" | "female", 
+  collar_status: "with" | "without",
+  
+  // === PHYSICAL ATTRIBUTES ===
+  body_condition_score: 1 | 3 | 5 | 7 | 9,
+  color_pattern: 
+    // Cat options:
+    "white-puspin" | "black-puspin" | "tabby-puspin" | 
+    "orange-tabby-puspin" | "bi-color-puspin" | 
+    "calico-puspin" | "tortoiseshell-puspin" | "not-sure-cat"
+    // Dog options:  
+    "bi-color" | "blenheim" | "brindle" | "harlequin" |
+    "hound-coat" | "mantle" | "merle" | "patchy" | 
+    "plain" | "sable" | "tri-color" | "tuxedo" | "not-sure-dog",
+    
+  primary_color: 
+    "black" | "white" | "brown" | "tan" | "grey" | 
+    "red" | "cream" | "other",
+  
+  // === HEALTH ASSESSMENT (Structured) ===
+  health_assessment: {
+    skin_problems: [
+      "skin-none" | "skin-hair-loss" | "skin-redness" | 
+      "skin-wounds" | "skin-lumps" | "skin-parasites"
+    ],
+    eye_problems: [
+      "eye-none" | "eye-squinting" | "eye-discharge" | 
+      "eye-tearing" | "eye-cloudy" | "eye-red"  
+    ],
+    gait_problems: [
+      "gait-none" | "gait-mild-limp" | "gait-severe-limp" |
+      "gait-wobbly" | "gait-dragging" | "gait-reluctant"
+    ]
+  },
+  
+  // === OPTIONAL NOTES ===
+  additional_notes: string | null, // Max 500 characters or null if empty
+  
+  // === METADATA ===
+  form_completed_at: string, // ISO timestamp: "2025-12-08T10:30:00.000Z"
+  form_version: "1.0"
+}
