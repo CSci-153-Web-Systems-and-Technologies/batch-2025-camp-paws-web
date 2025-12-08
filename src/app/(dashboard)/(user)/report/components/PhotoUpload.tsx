@@ -7,7 +7,8 @@ export interface FormData {
   animalType: string;
   sex: string;
   collar: string;
-  color: string;
+  colorPattern: string;
+  primaryColor: string;
   bodyConditionScore: number | null;
   physicalProblems: string[];
   notes: string;

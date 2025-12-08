@@ -15,7 +15,8 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
     sex: data.sex,
     collar: data.collar,
     bodyConditionScore: data.bodyConditionScore,
-    color: data.color,
+    colorPattern: data.colorPattern,
+    primaryColor: data.primaryColor,
     physicalProblems: data.physicalProblems || [],
   });
 
@@ -356,8 +357,8 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
             )}
           </div>
 
-          {/* Color Selection */}
-          <div>
+          {/* Color Pattern Selection */}
+          <div className="mb-6">
             <label className="block text-sm font-medium text-gray-700 mb-3">
               Color Pattern {formState.animalType && `(${formState.animalType === 'cat' ? 'Cat' : 'Dog'})`}
             </label>
@@ -379,14 +380,15 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                   { id: 'orange-tabby-puspin', label: 'Orange-Tabby Puspin', shortLabel: 'Orange Tabby' },
                   { id: 'bi-color-puspin', label: 'Bi-color Puspin', shortLabel: 'Bi-color' },
                   { id: 'calico-puspin', label: 'Calico(Tri-color) Puspin', shortLabel: 'Calico' },
-                  { id: 'tortoiseshell-puspin', label: 'Tortoiseshell Puspin', shortLabel: 'Tortoiseshell' }
+                  { id: 'tortoiseshell-puspin', label: 'Tortoiseshell Puspin', shortLabel: 'Tortoiseshell' },
+                  { id: 'not-sure-cat', label: 'Not Sure', shortLabel: 'Not Sure' }
                 ].map((color) => (
                   <button
                     key={color.id}
                     type="button"
-                    onClick={() => setFormState(prev => ({ ...prev, color: color.id }))}
+                    onClick={() => setFormState(prev => ({ ...prev, colorPattern: color.id }))}
                     className={`relative overflow-hidden rounded-lg border-2 transition-all duration-200 transform ${
-                      formState.color === color.id
+                      formState.colorPattern === color.id
                         ? 'border-green-500 bg-green-50 scale-105 ring-2 ring-green-300 shadow-lg'
                         : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25 hover:scale-102'
                     }`}
@@ -394,20 +396,42 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                     <div className="flex flex-col h-40">
                       {/* Picture Section (2/3 height) */}
                       <div className={`flex-1 flex items-center justify-center transition-colors ${
-                        formState.color === color.id
+                        formState.colorPattern === color.id
                           ? 'bg-green-100'
                           : 'bg-gray-50'
                       }`}>
-                        {/* Placeholder for cat color image */}
-                        <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                          <span className="text-3xl">🐱</span>
-                        </div>
+                        {/* Cat color pattern image */}
+                        {color.id === 'not-sure-cat' ? (
+                          // Not Sure placeholder
+                          <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-400">
+                            <span className="text-2xl">❓</span>
+                          </div>
+                        ) : (
+                          <Image
+                            src={`/cat-color/${(() => {
+                              switch(color.id) {
+                                case 'white-puspin': return 'white.png';
+                                case 'black-puspin': return 'black.png';
+                                case 'tabby-puspin': return 'Tabby.jpg';
+                                case 'orange-tabby-puspin': return 'orange-tabby.png';
+                                case 'bi-color-puspin': return 'Bi-color.png';
+                                case 'calico-puspin': return 'Calico.jpg';
+                                case 'tortoiseshell-puspin': return 'Tortoiseshell.jpg';
+                                default: return 'white.png';
+                              }
+                            })()}`}
+                            alt={color.label}
+                            width={80}
+                            height={80}
+                            className="rounded object-cover"
+                          />
+                        )}
                       </div>
                       
                       {/* Label Section (1/3 height) */}
                       <div className="h-12 p-3 flex items-center justify-center">
                         <span className={`text-sm font-medium text-center leading-tight transition-colors ${
-                          formState.color === color.id
+                          formState.colorPattern === color.id
                             ? 'text-green-700'
                             : 'text-gray-700'
                         }`}>
@@ -435,14 +459,15 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                   { id: 'plain', label: 'Plain' },
                   { id: 'sable', label: 'Sable' },
                   { id: 'tri-color', label: 'Tri-color' },
-                  { id: 'tuxedo', label: 'Tuxedo' }
+                  { id: 'tuxedo', label: 'Tuxedo' },
+                  { id: 'not-sure-dog', label: 'Not Sure' }
                 ].map((color) => (
                   <button
                     key={color.id}
                     type="button"
-                    onClick={() => setFormState(prev => ({ ...prev, color: color.id }))}
+                    onClick={() => setFormState(prev => ({ ...prev, colorPattern: color.id }))}
                     className={`relative overflow-hidden rounded-lg border-2 transition-all duration-200 transform ${
-                      formState.color === color.id
+                      formState.colorPattern === color.id
                         ? 'border-green-500 bg-green-50 scale-105 ring-2 ring-green-300 shadow-lg'
                         : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25 hover:scale-102'
                     }`}
@@ -450,20 +475,46 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                     <div className="flex flex-col h-40">
                       {/* Picture Section (2/3 height) */}
                       <div className={`flex-1 flex items-center justify-center transition-colors ${
-                        formState.color === color.id
+                        formState.colorPattern === color.id
                           ? 'bg-green-100'
                           : 'bg-gray-50'
                       }`}>
-                        {/* Placeholder for dog color image */}
-                        <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center">
-                          <span className="text-3xl">🐕</span>
-                        </div>
+                        {color.id === 'not-sure-dog' ? (
+                          // Not Sure placeholder
+                          <div className="w-20 h-20 bg-gray-200 rounded-lg flex items-center justify-center border-2 border-dashed border-gray-400">
+                            <span className="text-2xl">❓</span>
+                          </div>
+                        ) : (
+                          <Image
+                            src={`/dog-color/${(() => {
+                              switch(color.id) {
+                                case 'bi-color': return 'Bi-color.png';
+                                case 'blenheim': return 'Blenheim.png';
+                                case 'brindle': return 'Brindle.png';
+                                case 'harlequin': return 'Harlequin.png';
+                                case 'hound-coat': return 'Hound-coat.png';
+                                case 'mantle': return 'Mantle.png';
+                                case 'merle': return 'Merle.png';
+                                case 'patchy': return 'Patchy.png';
+                                case 'plain': return 'Plain.png';
+                                case 'sable': return 'Sable.png';
+                                case 'tri-color': return 'Tri-color.png';
+                                case 'tuxedo': return 'Tuxedo.png';
+                                default: return 'Plain.png';
+                              }
+                            })()}`}
+                            alt={color.label}
+                            width={80}
+                            height={80}
+                            className="rounded object-cover"
+                          />
+                        )}
                       </div>
                       
                       {/* Label Section (1/3 height) */}
                       <div className="h-12 p-3 flex items-center justify-center">
                         <span className={`text-sm font-medium text-center leading-tight transition-colors ${
-                          formState.color === color.id
+                          formState.colorPattern === color.id
                             ? 'text-green-700'
                             : 'text-gray-700'
                         }`}>
@@ -475,6 +526,48 @@ export default function PhysicalDetails({ data, onNext, onBack }: PhysicalDetail
                 ))}
               </div>
             )}
+          </div>
+
+          {/* Primary Color Selection */}
+          <div className="mb-6">
+            <label className="block text-sm font-medium text-gray-700 mb-3">Primary Color</label>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { id: 'black', label: 'Black', colorClass: 'bg-gray-900' },
+                { id: 'white', label: 'White', colorClass: 'bg-white border-gray-300' },
+                { id: 'brown', label: 'Brown / Chocolate', colorClass: 'bg-amber-800' },
+                { id: 'tan', label: 'Tan / Fawn', colorClass: 'bg-yellow-600' },
+                { id: 'grey', label: 'Grey / Blue', colorClass: 'bg-gray-500' },
+                { id: 'red', label: 'Red / Orange / Ginger', colorClass: 'bg-orange-600' },
+                { id: 'cream', label: 'Cream / Yellow', colorClass: 'bg-yellow-200' },
+                { id: 'other', label: 'Other / Unsure', colorClass: 'bg-gray-300' }
+              ].map((color) => (
+                <button
+                  key={color.id}
+                  type="button"
+                  onClick={() => setFormState(prev => ({ ...prev, primaryColor: color.id }))}
+                  className={`flex items-center p-3 rounded-lg border-2 transition-all duration-200 transform text-left ${
+                    formState.primaryColor === color.id
+                      ? 'border-green-500 bg-green-50 shadow-md ring-2 ring-green-300'
+                      : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25'
+                  }`}
+                >
+                  {/* Color Circle */}
+                  <div className={`w-8 h-8 rounded-full mr-3 border-2 ${color.colorClass} ${
+                    color.id === 'white' ? 'border-gray-300' : 'border-white'
+                  }`}></div>
+                  
+                  {/* Label */}
+                  <span className={`text-sm font-medium transition-colors ${
+                    formState.primaryColor === color.id
+                      ? 'text-green-700'
+                      : 'text-gray-700'
+                  }`}>
+                    {color.label}
+                  </span>
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
