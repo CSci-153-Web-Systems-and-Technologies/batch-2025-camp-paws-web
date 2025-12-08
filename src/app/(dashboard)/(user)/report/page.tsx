@@ -1,9 +1,9 @@
 'use client';
 import { useState } from 'react';
 import StepIndicator from './components/StepIndicator';
-import PhotoUpload, { FormData } from './components/PhotoUpload';
-import PhysicalDetails from './components/PhysicalDetails';
-import LocationTime from './components/LocationTime';
+import PhotoUpload, { FormData } from './components/PhotoUpload/PhotoUpload';
+import PhysicalDetailsRefactored from './components/PhysicalDetails/PhysicalDetailsRefactored';
+import LocationTime from './components/LocationTime/LocationTime';
 
 export default function UserReportPage() {
   const [currentStep, setCurrentStep] = useState(1);
@@ -61,7 +61,7 @@ export default function UserReportPage() {
         )}
         
         {currentStep === 2 && (
-          <PhysicalDetails 
+          <PhysicalDetailsRefactored 
             data={formData}
             onNext={handlePhysicalNext}
             onBack={() => goToStep(1)}

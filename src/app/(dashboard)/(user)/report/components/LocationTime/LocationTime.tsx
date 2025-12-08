@@ -1,6 +1,6 @@
 'use client';
 
-import { FormData } from './PhotoUpload';
+import { FormData } from '../PhotoUpload/PhotoUpload';
 import { useState } from 'react';
 import dynamic from 'next/dynamic';
 import DatePicker from 'react-datepicker';
