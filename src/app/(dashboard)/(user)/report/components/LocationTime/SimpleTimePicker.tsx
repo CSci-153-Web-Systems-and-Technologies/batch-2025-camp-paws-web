@@ -107,7 +107,7 @@ export default function SimpleTimePicker({ value, onChange, label }: SimpleTimeP
 
       {/* Time Selection Dropdown */}
       {isOpen && (
-        <div className="absolute top-full left-0 z-50 mt-1 w-full bg-[rgb(var(--color-surface))] border border-[rgb(var(--color-border))] rounded-md shadow-lg">
+        <div className="absolute top-full left-0 z-9999 mt-1 w-full bg-[rgb(var(--color-surface))] border border-[rgb(var(--color-border))] rounded-md shadow-lg">
           <div className="p-4 space-y-4">
             {/* Hour and Minute Selection */}
             <div className="grid grid-cols-3 gap-3">
