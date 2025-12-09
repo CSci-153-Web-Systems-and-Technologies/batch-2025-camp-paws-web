@@ -28,8 +28,8 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
     ref
   ) => {
     const baseStyles = 'rounded-lg border px-4 py-2 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1';
-    const normalStyles = 'border-gray-300 bg-white text-gray-900 focus:border-green-500 focus:ring-green-500/20 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100';
-    const errorStyles = 'border-red-500 bg-red-50 focus:border-red-500 focus:ring-red-500/20 dark:bg-red-950/20';
+    const normalStyles = 'border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] focus:border-[rgb(var(--color-primary))] focus:ring-[rgb(var(--color-primary))]/20';
+    const errorStyles = 'border-[rgb(var(--color-error))] bg-[rgb(var(--color-error-bg))] text-[rgb(var(--color-text-primary))] focus:border-[rgb(var(--color-error))] focus:ring-[rgb(var(--color-error))]/20';
     const disabledStyles = 'opacity-50 cursor-not-allowed';
     const widthStyles = fullWidth ? 'w-full' : '';
     
@@ -56,7 +56,7 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         {label && (
           <label
             htmlFor={id}
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"
+            className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-1.5"
           >
             {label}
           </label>
@@ -73,13 +73,13 @@ const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
         />
 
         {error && (
-          <p id={`${id}-error`} className="mt-1.5 text-sm text-red-600 dark:text-red-400">
+          <p id={`${id}-error`} className="mt-1.5 text-sm text-[rgb(var(--color-error))]">
             {error}
           </p>
         )}
 
         {!error && helperText && (
-          <p id={`${id}-helper`} className="mt-1.5 text-sm text-gray-500 dark:text-gray-400">
+          <p id={`${id}-helper`} className="mt-1.5 text-sm text-[rgb(var(--color-text-secondary))]">
             {helperText}
           </p>
         )}
