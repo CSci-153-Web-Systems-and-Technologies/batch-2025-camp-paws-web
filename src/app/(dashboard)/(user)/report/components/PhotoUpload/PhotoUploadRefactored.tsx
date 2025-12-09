@@ -121,14 +121,14 @@ export default function PhotoUploadRefactored({ data, onNext }: PhotoUploadProps
   return (
     <div className="max-w-2xl mx-auto">
       <div className="text-center mb-8">
-        <h2 className="text-2xl font-bold text-gray-900 mb-2">Upload Animal Photo</h2>
-        <p className="text-gray-600">
+        <h2 className="text-2xl font-bold text-[rgb(var(--color-text-primary))] mb-2">Upload Animal Photo</h2>
+        <p className="text-[rgb(var(--color-text-secondary))]">
           Report a stray animal by uploading a photo and marking its location.
         </p>
       </div>
 
       {/* Upload Area */}
-      <div className="bg-white rounded-lg border-2 border-dashed border-gray-300 p-8 text-center hover:border-green-400 transition-colors">
+      <div className="bg-[rgb(var(--color-surface))] rounded-lg border-2 border-dashed border-[rgb(var(--color-border))] p-8 text-center hover:border-[rgb(var(--color-primary))] transition-colors">
         {uploadState.preview ? (
           // Liskov Substitution: ImagePreview component follows consistent interface
           <ImagePreview
@@ -163,8 +163,8 @@ export default function PhotoUploadRefactored({ data, onNext }: PhotoUploadProps
           disabled={!uploadState.selectedFile}
           className={`px-6 py-2 rounded-lg font-medium transition-colors ${
             uploadState.selectedFile
-              ? 'bg-green-600 text-white hover:bg-green-700'
-              : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              ? 'bg-[rgb(var(--color-primary))] text-white hover:bg-[rgb(var(--color-primary-hover))]'
+              : 'bg-[rgb(var(--color-border))] text-[rgb(var(--color-text-tertiary))] cursor-not-allowed'
           }`}
         >
           Next

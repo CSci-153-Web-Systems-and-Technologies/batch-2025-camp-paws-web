@@ -66,17 +66,17 @@ export default function PhysicalDetailsRefactored({ data, onNext, onBack }: Phys
   return (
     <div className="max-w-6xl mx-auto px-2 sm:px-4">
       <div className="text-center mb-6 sm:mb-8">
-        <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">Physical Status</h2>
-        <p className="text-sm sm:text-base text-gray-600 px-4">
+        <h2 className="text-xl sm:text-2xl font-bold text-[rgb(var(--color-text-primary))] mb-2">Physical Status</h2>
+        <p className="text-sm sm:text-base text-[rgb(var(--color-text-secondary))] px-4">
           Describe the physical characteristics and condition of the animal.
         </p>
       </div>
 
-      <div className="bg-white rounded-lg border p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
+      <div className="bg-[rgb(var(--color-surface))] rounded-lg border border-[rgb(var(--color-border))] p-4 sm:p-6 md:p-8 space-y-6 sm:space-y-8">
         
         {/* Identification Section */}
         <div>
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Identification</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-3 sm:mb-4">Identification</h3>
           <div className="space-y-4 sm:space-y-6">
             
             {/* Liskov Substitution: All selection components follow the same interface */}
@@ -122,7 +122,7 @@ export default function PhysicalDetailsRefactored({ data, onNext, onBack }: Phys
 
         {/* Health Assessment Section */}
         <div>
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Health Assessment</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-3 sm:mb-4">Health Assessment</h3>
           
           <HealthAssessment 
             selectedProblems={formState.physicalProblems}
@@ -132,7 +132,7 @@ export default function PhysicalDetailsRefactored({ data, onNext, onBack }: Phys
 
         {/* Additional Notes Section */}
         <div>
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Additional Information</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-3 sm:mb-4">Additional Information</h3>
           
           <NotesInput 
             notes={formState.notes}
@@ -147,7 +147,7 @@ export default function PhysicalDetailsRefactored({ data, onNext, onBack }: Phys
         <div className="flex justify-between pt-6">
           <button
             onClick={onBack}
-            className="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors"
+            className="px-6 py-2 border border-[rgb(var(--color-border))] rounded-lg text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-background))] transition-colors"
           >
             Back
           </button>
@@ -157,8 +157,8 @@ export default function PhysicalDetailsRefactored({ data, onNext, onBack }: Phys
             disabled={!validation.isValid}
             className={`px-6 py-2 rounded-lg font-medium transition-colors ${
               validation.isValid
-                ? 'bg-green-600 text-white hover:bg-green-700'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ? 'bg-[rgb(var(--color-primary))] text-white hover:bg-[rgb(var(--color-primary-hover))]'
+                : 'bg-[rgb(var(--color-border))] text-[rgb(var(--color-text-tertiary))] cursor-not-allowed'
             }`}
           >
             Next

@@ -16,7 +16,7 @@ export default function DropZone({
       onDragLeave={onDragLeave}
       onDragOver={onDragOver}
       onDrop={onDrop}
-      className={`space-y-4 ${dragActive ? 'bg-green-50' : ''}`}
+      className={`space-y-4 ${dragActive ? 'bg-[rgb(var(--color-primary-light))]' : ''}`}
     >
       <div className="flex justify-center">
         <Image
@@ -24,15 +24,15 @@ export default function DropZone({
           alt="Upload photo"
           width={120}
           height={120}
-          className="text-gray-400"
+          className="text-[rgb(var(--color-text-tertiary))]"
         />
       </div>
       
       <div>
-        <p className="text-lg text-gray-600 mb-2">
+        <p className="text-lg text-[rgb(var(--color-text-secondary))] mb-2">
           Drag & drop your files here, or click to upload
         </p>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-[rgb(var(--color-text-tertiary))]">
           (JPG, JPEG, PNG only)
         </p>
       </div>
@@ -47,7 +47,7 @@ export default function DropZone({
         />
         <label
           htmlFor="photo-upload"
-          className="inline-block bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 cursor-pointer transition-colors"
+          className="inline-block bg-[rgb(var(--color-primary))] text-white px-6 py-2 rounded-lg hover:bg-[rgb(var(--color-primary-hover))] cursor-pointer transition-colors"
         >
           Choose File
         </label>

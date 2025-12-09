@@ -5,15 +5,15 @@ import Image from 'next/image';
 export default function AnimalTypeSelection({ selectedType, onSelect }: AnimalTypeSelectionProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-3">Animal Type</label>
+      <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">Animal Type</label>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <button
           type="button"
           onClick={() => onSelect('cat')}
           className={`flex flex-col items-center p-4 border-2 rounded-lg transition-all duration-200 transform ${
             selectedType === 'cat' 
-              ? 'border-green-600 bg-green-500 shadow-lg shadow-green-200 scale-105 ring-2 ring-green-300' 
-              : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25 hover:scale-102'
+              ? 'border-[rgb(var(--color-primary))] bg-[rgb(var(--color-primary))] shadow-lg scale-105 ring-2 ring-[rgb(var(--color-primary-light))]' 
+              : 'border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] hover:border-[rgb(var(--color-primary))] hover:scale-102'
           }`}
         >
           <Image
@@ -24,7 +24,7 @@ export default function AnimalTypeSelection({ selectedType, onSelect }: AnimalTy
             className="mb-2"
           />
           <span className={`text-sm font-bold ${
-            selectedType === 'cat' ? 'text-white' : 'text-gray-900'
+            selectedType === 'cat' ? 'text-white' : 'text-[rgb(var(--color-text-primary))]'
           }`}>Cat</span>
         </button>
         
@@ -33,8 +33,8 @@ export default function AnimalTypeSelection({ selectedType, onSelect }: AnimalTy
           onClick={() => onSelect('dog')}
           className={`flex flex-col items-center p-4 border-2 rounded-lg transition-all duration-200 transform ${
             selectedType === 'dog' 
-              ? 'border-green-600 bg-green-500 shadow-lg shadow-green-200 scale-105 ring-2 ring-green-300' 
-              : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25 hover:scale-102'
+              ? 'border-[rgb(var(--color-primary))] bg-[rgb(var(--color-primary))] shadow-lg scale-105 ring-2 ring-[rgb(var(--color-primary-light))]' 
+              : 'border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] hover:border-[rgb(var(--color-primary))] hover:scale-102'
           }`}
         >
           <Image
@@ -45,7 +45,7 @@ export default function AnimalTypeSelection({ selectedType, onSelect }: AnimalTy
             className="mb-2"
           />
           <span className={`text-sm font-bold ${
-            selectedType === 'dog' ? 'text-white' : 'text-gray-900'
+            selectedType === 'dog' ? 'text-white' : 'text-[rgb(var(--color-text-primary))]'
           }`}>Dog</span>
         </button>
       </div>
