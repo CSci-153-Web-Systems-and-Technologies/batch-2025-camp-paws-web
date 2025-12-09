@@ -126,8 +126,8 @@ export default function ColorSelection({ animalType, selectedPattern, selectedCo
               onClick={() => onColorSelect(color.id)}
               className={`flex items-center p-3 rounded-lg border-2 transition-all duration-200 transform text-left ${
                 selectedColor === color.id
-                  ? 'border-[rgb(var(--color-primary))] bg-[rgb(var(--color-primary-light))] shadow-md ring-2 ring-[rgb(var(--color-primary-light))]'
-                  : 'border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] hover:border-[rgb(var(--color-primary))]'
+                  ? 'border-[rgb(var(--color-primary))] bg-[rgb(var(--color-primary-light))] shadow-lg scale-105 ring-2 ring-[rgb(var(--color-primary-light))]'
+                  : 'border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] hover:border-[rgb(var(--color-primary))] hover:scale-102'
               }`}
             >
               {/* Color Circle */}
