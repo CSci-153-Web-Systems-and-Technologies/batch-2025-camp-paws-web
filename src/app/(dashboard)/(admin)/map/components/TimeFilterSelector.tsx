@@ -14,8 +14,8 @@ export default function TimeFilterSelector({
   reportCounts 
 }: TimeFilterSelectorProps) {
   return (
-    <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
-      <h3 className="text-sm font-semibold text-gray-700 mb-3">Time Period</h3>
+    <div className="bg-[rgb(var(--color-surface))] rounded-lg shadow-sm p-4 border border-[rgb(var(--color-border))]">
+      <h3 className="text-sm font-semibold text-[rgb(var(--color-text-primary))] mb-3">Time Period</h3>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
         {FILTER_OPTIONS.map((option) => {
           const isSelected = selectedFilter === option.value;
@@ -28,17 +28,17 @@ export default function TimeFilterSelector({
               className={`
                 p-3 rounded-lg border-2 transition-all
                 ${isSelected
-                  ? 'border-green-600 bg-green-50 text-green-700'
-                  : 'border-gray-200 bg-white text-gray-700 hover:border-green-300 hover:bg-green-50'
+                  ? 'border-[rgb(var(--color-primary))] bg-[rgb(var(--color-primary-light))] text-[rgb(var(--color-primary))]'
+                  : 'border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] hover:border-[rgb(var(--color-primary-light))] hover:bg-[rgb(var(--color-surface-hover))]'
                 }
               `}
             >
               <div className="text-center">
                 <div className="text-xs font-medium mb-1">{option.label}</div>
-                <div className={`text-2xl font-bold ${isSelected ? 'text-green-600' : 'text-gray-900'}`}>
+                <div className={`text-2xl font-bold ${isSelected ? 'text-[rgb(var(--color-primary))]' : 'text-[rgb(var(--color-text-primary))]'}`}>
                   {count}
                 </div>
-                <div className="text-xs text-gray-500 mt-1">
+                <div className="text-xs text-[rgb(var(--color-text-tertiary))] mt-1">
                   {count === 1 ? 'report' : 'reports'}
                 </div>
               </div>
