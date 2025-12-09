@@ -8,7 +8,7 @@ import Input from '@/components/ui/Input';
 import { 
   AddToGroupModalProps, 
   AnimalGroup
-} from '../types/RecordsTypes';
+} from '../../types/RecordsTypes';
 
 /**
  * Modal for selecting an existing group to add an ungrouped report to.

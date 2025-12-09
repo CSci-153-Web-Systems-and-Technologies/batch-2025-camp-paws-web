@@ -2,8 +2,8 @@
 
 import { Plus } from 'lucide-react';
 import Button from '@/components/ui/Button';
-import GroupCard from './GroupCard';
-import { GroupedViewProps } from '../types/RecordsTypes';
+import { GroupCard } from '../shared';
+import { GroupedViewProps } from '../../types/RecordsTypes';
 
 /**
  * View for displaying groups of reports.

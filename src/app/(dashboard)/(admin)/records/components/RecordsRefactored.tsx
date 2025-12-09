@@ -2,16 +2,17 @@
 
 import { useState, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
-import ViewSelector from './ViewSelector';
-import GroupedView from './GroupedView';
-import UngroupedView from './UngroupedView';
-import AllView from './AllView';
-import CreateGroupModal from './CreateGroupModal';
-import EditGroupModal from './EditGroupModal';
-import GroupDetailsModal from './GroupDetailsModal';
-import AddToGroupModal from './AddToGroupModal';
-import DeleteConfirmation from './DeleteConfirmation';
-import DeleteGroupConfirmation from './DeleteGroupConfirmation';
+// Views
+import { ViewSelector, GroupedView, UngroupedView, AllView } from './views';
+// Modals
+import {
+  CreateGroupModal,
+  EditGroupModal,
+  GroupDetailsModal,
+  AddToGroupModal,
+  DeleteConfirmation,
+  DeleteGroupConfirmation,
+} from './modals';
 import ReportDetailsModal from '@/components/ui/ReportDetailsModal';
 import { 
   ViewType, 

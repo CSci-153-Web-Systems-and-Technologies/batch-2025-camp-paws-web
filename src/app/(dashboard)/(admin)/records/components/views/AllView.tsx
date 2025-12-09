@@ -5,7 +5,7 @@ import { useState } from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
 import Table from '@/components/ui/Table';
 import Button from '@/components/ui/Button';
-import { AllViewProps, AcceptedReport } from '../types/RecordsTypes';
+import { AllViewProps, AcceptedReport } from '../../types/RecordsTypes';
 
 /**
  * View for displaying all individual reports in a single table.

@@ -3,7 +3,7 @@
 
 import { Edit2, Trash2, X, MapPin, Eye } from 'lucide-react';
 import Image from 'next/image';
-import { GroupDetailsModalProps, AcceptedReport } from '../types/RecordsTypes';
+import { GroupDetailsModalProps, AcceptedReport } from '../../types/RecordsTypes';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import Table from '@/components/ui/Table';

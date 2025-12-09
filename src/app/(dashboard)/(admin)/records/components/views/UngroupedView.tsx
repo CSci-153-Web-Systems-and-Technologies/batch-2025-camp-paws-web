@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { Users, Pencil, Trash2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Table from '@/components/ui/Table';
-import { UngroupedViewProps, AcceptedReport } from '../types/RecordsTypes';
+import { UngroupedViewProps, AcceptedReport } from '../../types/RecordsTypes';
 
 /**
  * View for displaying ungrouped reports in a table format.

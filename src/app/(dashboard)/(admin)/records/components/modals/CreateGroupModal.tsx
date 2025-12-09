@@ -2,7 +2,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { CreateGroupModalProps, CreateGroupInput, AnimalType, Sex } from '../types/RecordsTypes';
+import { CreateGroupModalProps, CreateGroupInput, AnimalType, Sex } from '../../types/RecordsTypes';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
 import Input from '@/components/ui/Input';

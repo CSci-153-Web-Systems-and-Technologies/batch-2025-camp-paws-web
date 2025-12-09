@@ -1,7 +1,7 @@
 // Single Responsibility: Tab switcher for Grouped/Ungrouped/All views
 'use client';
 
-import { ViewSelectorProps, ViewType } from '../types/RecordsTypes';
+import { ViewSelectorProps, ViewType } from '../../types/RecordsTypes';
 
 const VIEW_OPTIONS: { value: ViewType; label: string; description: string }[] = [
   { 

@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { AlertTriangle, Trash2, Unlink } from 'lucide-react';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
-import { AnimalGroup } from '../types/RecordsTypes';
+import { AnimalGroup } from '../../types/RecordsTypes';
 
 export interface DeleteGroupConfirmationProps {
   isOpen: boolean;

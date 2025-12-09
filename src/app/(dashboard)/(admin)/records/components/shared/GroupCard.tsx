@@ -2,7 +2,7 @@
 'use client';
 
 import Image from 'next/image';
-import { GroupCardProps } from '../types/RecordsTypes';
+import { GroupCardProps } from '../../types/RecordsTypes';
 
 export default function GroupCard({
   group,
