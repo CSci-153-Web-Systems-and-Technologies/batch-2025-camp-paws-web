@@ -3,7 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import "leaflet/dist/leaflet.css";
 import "react-datepicker/dist/react-datepicker.css";
-import { ThemeProvider } from "@/src/contexts/ThemeContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",

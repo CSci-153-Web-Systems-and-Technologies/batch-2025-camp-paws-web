@@ -5,7 +5,7 @@
  * Allows users to toggle between light, dark, and system themes
  */
 
-import { useTheme } from '@/src/contexts/ThemeContext';
+import { useTheme } from '@/contexts/ThemeContext';
 import { Sun, Moon, Monitor } from 'lucide-react';
 
 export default function ThemeSwitcher() {

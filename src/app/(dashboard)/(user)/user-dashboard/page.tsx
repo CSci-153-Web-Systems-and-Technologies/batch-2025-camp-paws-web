@@ -1,7 +1,7 @@
 'use client';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, ResponsiveContainer } from 'recharts';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/src/components/ui';
-import { Badge, Select } from '@/src/components/ui';
+import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui';
+import { Badge, Select } from '@/components/ui';
 import { Info, MessageCircle } from 'lucide-react';
 
 // Mock data for the chart

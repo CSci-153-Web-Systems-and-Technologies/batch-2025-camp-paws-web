@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import HamburgerMenu from './components/HamburgerMenu';
-import { ThemeToggle } from '@/src/components/ThemeSwitcher';
+import { ThemeToggle } from '@/components/ThemeSwitcher';
 
 const PAGE_HEADERS: Record<string, { title: string; description: string }> = {
   '/user-dashboard': {

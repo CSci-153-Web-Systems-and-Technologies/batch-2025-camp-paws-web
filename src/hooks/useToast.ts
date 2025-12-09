@@ -4,7 +4,7 @@
  */
 
 import { useState, useCallback } from 'react';
-import type { ToastProps, ToastVariant } from '@/src/components/ui/Toast';
+import type { ToastProps, ToastVariant } from '@/components/ui/Toast';
 
 export interface ToastMessage {
   id: string;
