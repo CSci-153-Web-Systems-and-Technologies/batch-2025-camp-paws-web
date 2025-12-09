@@ -9,7 +9,7 @@ export default function HamburgerMenu({ isOpen, onClick }: HamburgerMenuProps) {
   return (
     <button
       onClick={onClick}
-      className="lg:hidden relative p-2 rounded-md text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-green-500 transition-colors"
+      className="lg:hidden relative p-2 rounded-md text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-background))] focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] transition-colors"
       aria-label="Toggle navigation menu"
     >
       <div className="w-6 h-6 flex flex-col justify-center items-center">
