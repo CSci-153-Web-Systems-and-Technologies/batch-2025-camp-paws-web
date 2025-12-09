@@ -3,6 +3,7 @@ import { usePathname } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import HamburgerMenu from './components/HamburgerMenu';
+import { ThemeToggle } from '@/src/components/ThemeSwitcher';
 
 const PAGE_HEADERS: Record<string, { title: string; description: string }> = {
   '/user-dashboard': {
@@ -100,9 +101,9 @@ export default function DashboardLayout({
             </div>
           </div>
 
-          {/* Optional: Add user menu or other header actions */}
-          <div className="flex items-center space-x-2">
-            {/* Placeholder for future header actions */}
+          {/* Header Actions */}
+          <div className="flex items-center gap-2">
+            <ThemeToggle />
           </div>
         </header>
         
