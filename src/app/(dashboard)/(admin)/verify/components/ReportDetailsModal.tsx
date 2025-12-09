@@ -6,6 +6,7 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { ReportDetailsModalProps } from '../types/VerifyTypes';
 import { parsePhysicalProblems } from '../utils/PhysicalProblemsParser';
+import Button from '@/components/ui/Button';
 
 const ReportLocationMap = dynamic(() => import('./ReportLocationMap'), {
   ssr: false,
@@ -275,45 +276,50 @@ export default function ReportDetailsModal({
 
                 {/* User Actions */}
                 <div className="flex gap-2 pt-2 border-t border-[rgb(var(--color-border))]">
-                  <button
+                  <Button
                     onClick={() => setShowWarnDialog(true)}
-                    className="flex-1 px-3 py-2 bg-[rgb(var(--color-warning-bg))] text-[rgb(var(--color-warning))] rounded-lg hover:opacity-90 transition-colors text-sm font-medium"
+                    variant="warning"
+                    size="sm"
+                    fullWidth
                   >
                     Warn User
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => setShowSuspendDialog(true)}
-                    className="flex-1 px-3 py-2 bg-[rgb(var(--color-error-bg))] text-[rgb(var(--color-error))] rounded-lg hover:opacity-90 transition-colors text-sm font-medium"
+                    variant="danger"
+                    size="sm"
+                    fullWidth
                   >
                     Suspend User
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
             <div className="flex gap-3 mt-6 pt-6 border-t border-[rgb(var(--color-border))]">
-              <button
+              <Button
                 onClick={() => setShowRejectDialog(true)}
                 disabled={isProcessing}
-                className="px-4 py-2 bg-[rgb(var(--color-error))] text-white rounded-lg hover:opacity-90 transition-colors disabled:opacity-50"
+                variant="danger"
               >
                 Reject
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => alert('Edit functionality coming soon')}
                 disabled={isProcessing}
-                className="px-4 py-2 bg-[rgb(var(--color-info))] text-white rounded-lg hover:opacity-90 transition-colors disabled:opacity-50"
+                variant="secondary"
               >
                 Edit
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleAccept}
                 disabled={isProcessing}
-                className="ml-auto px-6 py-2 bg-[rgb(var(--color-success))] text-white rounded-lg hover:opacity-90 transition-colors disabled:opacity-50"
+                variant="success"
+                className="ml-auto"
               >
                 {isProcessing ? 'Processing...' : 'Accept'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -333,19 +339,21 @@ export default function ReportDetailsModal({
               rows={4}
             />
             <div className="flex gap-2 mt-4">
-              <button
+              <Button
                 onClick={() => { setShowRejectDialog(false); setReason(''); }}
-                className="flex-1 px-4 py-2 border border-[rgb(var(--color-border))] rounded-lg hover:bg-[rgb(var(--color-background))]"
+                variant="secondary"
+                fullWidth
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleReject}
                 disabled={isProcessing}
-                className="flex-1 px-4 py-2 bg-[rgb(var(--color-error))] text-white rounded-lg hover:opacity-90 disabled:opacity-50"
+                variant="danger"
+                fullWidth
               >
                 {isProcessing ? 'Processing...' : 'Confirm Reject'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -365,19 +373,21 @@ export default function ReportDetailsModal({
               rows={4}
             />
             <div className="flex gap-2 mt-4">
-              <button
+              <Button
                 onClick={() => { setShowWarnDialog(false); setReason(''); }}
-                className="flex-1 px-4 py-2 border border-[rgb(var(--color-border))] rounded-lg hover:bg-[rgb(var(--color-background))]"
+                variant="secondary"
+                fullWidth
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleWarn}
                 disabled={isProcessing}
-                className="flex-1 px-4 py-2 bg-[rgb(var(--color-warning))] text-white rounded-lg hover:opacity-90 disabled:opacity-50"
+                variant="warning"
+                fullWidth
               >
                 {isProcessing ? 'Processing...' : 'Send Warning'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -400,19 +410,21 @@ export default function ReportDetailsModal({
               rows={4}
             />
             <div className="flex gap-2 mt-4">
-              <button
+              <Button
                 onClick={() => { setShowSuspendDialog(false); setReason(''); }}
-                className="flex-1 px-4 py-2 border border-[rgb(var(--color-border))] rounded-lg hover:bg-[rgb(var(--color-background))]"
+                variant="secondary"
+                fullWidth
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSuspend}
                 disabled={isProcessing}
-                className="flex-1 px-4 py-2 bg-[rgb(var(--color-error))] text-white rounded-lg hover:opacity-90 disabled:opacity-50"
+                variant="danger"
+                fullWidth
               >
                 {isProcessing ? 'Processing...' : 'Confirm Suspend'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

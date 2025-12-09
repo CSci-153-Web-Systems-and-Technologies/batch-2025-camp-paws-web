@@ -6,6 +6,7 @@ import { VerifyReportsProps, Report } from '../types/VerifyTypes';
 import { getReportService } from '../services/ReportService';
 import ReportsTable from './ReportsTable';
 import ReportDetailsModal from './ReportDetailsModal';
+import Button from '@/components/ui/Button';
 
 const AVAILABLE_COLUMNS = ['animalType', 'sex', 'colorPattern', 'primaryColor', 'spottedTime', 'submittedBy'];
 
@@ -123,12 +124,12 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
         <div className="text-[rgb(var(--color-error))] text-5xl mb-3">⚠️</div>
         <h3 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-2">Failed to Load Reports</h3>
         <p className="text-[rgb(var(--color-error))] mb-4">{error}</p>
-        <button
+        <Button
           onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-[rgb(var(--color-error))] text-white rounded-lg hover:opacity-90 transition-colors"
+          variant="danger"
         >
           Retry
-        </button>
+        </Button>
       </div>
     );
   }
@@ -218,12 +219,13 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
 
           {/* Clear Filters */}
           {(filters.animalType !== 'all' || filters.sex !== 'all' || filters.colorPattern !== 'all' || filters.primaryColor !== 'all') && (
-            <button
+            <Button
               onClick={() => setFilters({ animalType: 'all', sex: 'all', colorPattern: 'all', primaryColor: 'all' })}
-              className="px-3 py-1.5 text-sm text-[rgb(var(--color-text-secondary))] hover:text-[rgb(var(--color-text-primary))] border border-[rgb(var(--color-border))] rounded-lg hover:bg-[rgb(var(--color-background))] transition-colors"
+              variant="secondary"
+              size="sm"
             >
               Clear Filters
-            </button>
+            </Button>
           )}
 
           {/* Results count */}
@@ -242,12 +244,12 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
 
       {/* Action Buttons */}
       <div className="flex gap-2">
-        <button className="px-4 py-2 bg-[rgb(var(--color-success))] text-white rounded-lg hover:opacity-90 transition-colors">
+        <Button variant="success">
           Accept
-        </button>
-        <button className="px-4 py-2 bg-[rgb(var(--color-error))] text-white rounded-lg hover:opacity-90 transition-colors">
+        </Button>
+        <Button variant="danger">
           Reject
-        </button>
+        </Button>
       </div>
 
       {/* Report Details Modal */}
