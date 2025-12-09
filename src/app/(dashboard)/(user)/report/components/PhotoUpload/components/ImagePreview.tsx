@@ -17,18 +17,18 @@ export default function ImagePreview({
           src={preview} 
           alt="Animal preview" 
           fill
-          className="object-cover rounded-lg border"
+          className="object-cover rounded-lg border border-[rgb(var(--color-border))]"
         />
       </div>
       
-      <div className="text-sm text-gray-600">
-        <p className="font-medium">{fileName}</p>
+      <div className="text-sm text-[rgb(var(--color-text-secondary))]">
+        <p className="font-medium text-[rgb(var(--color-text-primary))]">{fileName}</p>
         <p>{fileSizeMB} MB</p>
       </div>
       
       <button
         onClick={onRemove}
-        className="text-sm text-red-600 hover:text-red-800 transition-colors"
+        className="text-sm text-[rgb(var(--color-error))] hover:opacity-80 transition-opacity"
       >
         Remove photo
       </button>

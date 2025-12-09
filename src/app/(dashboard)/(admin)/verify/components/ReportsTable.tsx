@@ -43,21 +43,21 @@ export default function ReportsTable({ reports, onRowClick, selectedColumns }: R
   const displayColumns = getDisplayColumns();
 
   return (
-    <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className="bg-[rgb(var(--color-surface))] rounded-lg shadow-sm border border-[rgb(var(--color-border))] overflow-hidden">
       <div className="overflow-x-auto">
         <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
+          <thead className="bg-[rgb(var(--color-background))] border-b border-[rgb(var(--color-border))]">
             <tr>
               {displayColumns.map((columnId) => {
                 const config = columnConfig[columnId as keyof typeof columnConfig];
                 return (
                   <th
                     key={columnId}
-                    className={`px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider ${config.width}`}
+                    className={`px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-text-secondary))] uppercase tracking-wider ${config.width}`}
                   >
                     <div className="flex items-center gap-1">
                       {config.label}
-                      <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <svg className="w-4 h-4 text-[rgb(var(--color-text-tertiary))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
                       </svg>
                     </div>
@@ -76,16 +76,16 @@ export default function ReportsTable({ reports, onRowClick, selectedColumns }: R
                       }
                     }}
                     onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                    className="rounded border-[rgb(var(--color-border))] text-[rgb(var(--color-primary))] focus:ring-[rgb(var(--color-primary))]"
                   />
                 </div>
               </th>
             </tr>
           </thead>
-          <tbody className="bg-white divide-y divide-gray-200">
+          <tbody className="bg-[rgb(var(--color-surface))] divide-y divide-[rgb(var(--color-border))]">
             {reports.length === 0 ? (
               <tr>
-                <td colSpan={displayColumns.length + 1} className="px-6 py-12 text-center text-gray-500">
+                <td colSpan={displayColumns.length + 1} className="px-6 py-12 text-center text-[rgb(var(--color-text-secondary))]">
                   No pending reports to verify
                 </td>
               </tr>
@@ -95,15 +95,15 @@ export default function ReportsTable({ reports, onRowClick, selectedColumns }: R
                 return (
                   <tr
                     key={report.id}
-                    className={`hover:bg-gray-50 cursor-pointer transition-colors ${
-                      isSelected ? 'bg-green-50' : ''
+                    className={`hover:bg-[rgb(var(--color-background))] cursor-pointer transition-colors ${
+                      isSelected ? 'bg-[rgb(var(--color-primary-light))]' : ''
                     }`}
                   >
                     {displayColumns.map((columnId) => (
                       <td
                         key={columnId}
                         onClick={() => onRowClick(report)}
-                        className="px-6 py-4 whitespace-nowrap text-sm text-gray-900"
+                        className="px-6 py-4 whitespace-nowrap text-sm text-[rgb(var(--color-text-primary))]"
                       >
                         {columnId === 'animalType' && (
                           <span className="capitalize">{report.animalType}</span>
@@ -132,7 +132,7 @@ export default function ReportsTable({ reports, onRowClick, selectedColumns }: R
                             handleSelectRow(report.id, e.target.checked);
                           }}
                           onClick={(e) => e.stopPropagation()}
-                          className="rounded border-gray-300 text-green-600 focus:ring-green-500"
+                          className="rounded border-[rgb(var(--color-border))] text-[rgb(var(--color-primary))] focus:ring-[rgb(var(--color-primary))]"
                         />
                       </div>
                     </td>
@@ -145,7 +145,7 @@ export default function ReportsTable({ reports, onRowClick, selectedColumns }: R
       </div>
 
       {/* Selection info */}
-      <div className="bg-gray-50 px-6 py-3 border-t border-gray-200 text-sm text-gray-500">
+      <div className="bg-[rgb(var(--color-background))] px-6 py-3 border-t border-[rgb(var(--color-border))] text-sm text-[rgb(var(--color-text-secondary))]">
         {selectedRows.size} of {reports.length} row(s) selected.
       </div>
     </div>

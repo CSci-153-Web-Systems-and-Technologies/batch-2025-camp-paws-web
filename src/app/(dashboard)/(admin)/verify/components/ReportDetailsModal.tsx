@@ -6,12 +6,13 @@ import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { ReportDetailsModalProps } from '../types/VerifyTypes';
 import { parsePhysicalProblems } from '../utils/PhysicalProblemsParser';
+import Button from '@/components/ui/Button';
 
 const ReportLocationMap = dynamic(() => import('./ReportLocationMap'), {
   ssr: false,
   loading: () => (
-    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
-      <div className="text-gray-500 text-sm">Loading map...</div>
+    <div className="w-full h-full bg-[rgb(var(--color-background))] flex items-center justify-center">
+      <div className="text-[rgb(var(--color-text-secondary))] text-sm">Loading map...</div>
     </div>
   ),
 });
@@ -85,11 +86,11 @@ export default function ReportDetailsModal({
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
           {/* Close button */}
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 z-10"
+            className="absolute top-4 right-4 text-[rgb(var(--color-text-tertiary))] hover:text-[rgb(var(--color-text-secondary))] z-10"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -101,7 +102,7 @@ export default function ReportDetailsModal({
               {/* Left Column - Photo and Map */}
               <div className="space-y-4 order-1">
                 {/* Photo */}
-                <div className="relative w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
+                <div className="relative w-full h-64 bg-[rgb(var(--color-background))] rounded-lg overflow-hidden">
                   <Image
                     src={report.photoUrl}
                     alt={`${report.animalType} sighting`}
@@ -111,65 +112,65 @@ export default function ReportDetailsModal({
                 </div>
 
                 {/* Report ID */}
-                <div className="text-sm text-gray-500">
+                <div className="text-sm text-[rgb(var(--color-text-secondary))]">
                   Report ID: {report.id}
                 </div>
 
                 {/* Map */}
                 <div className="space-y-2">
-                  <h3 className="font-semibold text-gray-900">Location</h3>
-                  <div className="h-64 rounded-lg overflow-hidden border border-gray-200">
+                  <h3 className="font-semibold text-[rgb(var(--color-text-primary))]">Location</h3>
+                  <div className="h-64 rounded-lg overflow-hidden border border-[rgb(var(--color-border))]">
                     <ReportLocationMap latitude={report.latitude} longitude={report.longitude} />
                   </div>
-                  <p className="text-xs text-gray-500">{report.locationDescription}</p>
+                  <p className="text-xs text-[rgb(var(--color-text-secondary))]">{report.locationDescription}</p>
                 </div>
               </div>
 
               {/* Right Column - Report Details */}
               <div className="space-y-6 order-2 lg:order-2">
-                <h2 className="text-2xl font-bold text-gray-900">Report Details</h2>
+                <h2 className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">Report Details</h2>
 
                 {/* Identification Section */}
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-900 border-b pb-2">Identification</h3>
+                  <h3 className="font-semibold text-[rgb(var(--color-text-primary))] border-b border-[rgb(var(--color-border))] pb-2">Identification</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <div className="text-xs font-medium text-gray-500">Animal Type</div>
-                      <div className="text-sm text-gray-900 capitalize">{report.animalType}</div>
+                      <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Animal Type</div>
+                      <div className="text-sm text-[rgb(var(--color-text-primary))] capitalize">{report.animalType}</div>
                     </div>
                     <div>
-                      <div className="text-xs font-medium text-gray-500">Sex</div>
-                      <div className="text-sm text-gray-900 capitalize">{report.sex}</div>
+                      <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Sex</div>
+                      <div className="text-sm text-[rgb(var(--color-text-primary))] capitalize">{report.sex}</div>
                     </div>
                     <div>
-                      <div className="text-xs font-medium text-gray-500">Collar</div>
-                      <div className="text-sm text-gray-900 capitalize">{report.collar}</div>
+                      <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Collar</div>
+                      <div className="text-sm text-[rgb(var(--color-text-primary))] capitalize">{report.collar}</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Physical Attributes */}
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-900 border-b pb-2">Physical Attributes</h3>
+                  <h3 className="font-semibold text-[rgb(var(--color-text-primary))] border-b border-[rgb(var(--color-border))] pb-2">Physical Attributes</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <div>
-                      <div className="text-xs font-medium text-gray-500">Color Pattern</div>
-                      <div className="text-sm text-gray-900 capitalize">{report.colorPattern}</div>
+                      <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Color Pattern</div>
+                      <div className="text-sm text-[rgb(var(--color-text-primary))] capitalize">{report.colorPattern}</div>
                     </div>
                     <div>
-                      <div className="text-xs font-medium text-gray-500">Primary Color</div>
-                      <div className="text-sm text-gray-900">{report.primaryColor}</div>
+                      <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Primary Color</div>
+                      <div className="text-sm text-[rgb(var(--color-text-primary))]">{report.primaryColor}</div>
                     </div>
                     <div className="col-span-2">
-                      <div className="text-xs font-medium text-gray-500">Body Condition Score</div>
-                      <div className="text-sm text-gray-900">{report.bodyConditionScore} - {report.bodyConditionScore <= 3 ? 'Thin' : report.bodyConditionScore <= 5 ? 'Ideal' : 'Overweight'}</div>
+                      <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Body Condition Score</div>
+                      <div className="text-sm text-[rgb(var(--color-text-primary))]">{report.bodyConditionScore} - {report.bodyConditionScore <= 3 ? 'Thin' : report.bodyConditionScore <= 5 ? 'Ideal' : 'Overweight'}</div>
                     </div>
                   </div>
                 </div>
 
                 {/* Physical Assessment */}
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-900 border-b pb-2">Physical Assessment</h3>
+                  <h3 className="font-semibold text-[rgb(var(--color-text-primary))] border-b border-[rgb(var(--color-border))] pb-2">Physical Assessment</h3>
                   {(() => {
                     const categorizedProblems = parsePhysicalProblems(report.physicalProblems);
                     const hasAnyProblems = categorizedProblems.skin.length > 0 || 
@@ -178,7 +179,7 @@ export default function ReportDetailsModal({
 
                     if (!hasAnyProblems) {
                       return (
-                        <div className="text-sm text-gray-600 italic">
+                        <div className="text-sm text-[rgb(var(--color-text-secondary))] italic">
                           No physical problems reported
                         </div>
                       );
@@ -189,10 +190,10 @@ export default function ReportDetailsModal({
                         {/* Skin Problems */}
                         {categorizedProblems.skin.length > 0 && (
                           <div>
-                            <div className="text-xs font-semibold text-gray-700 mb-1">Skin Problems:</div>
+                            <div className="text-xs font-semibold text-[rgb(var(--color-text-primary))] mb-1">Skin Problems:</div>
                             <ul className="list-disc list-inside space-y-0.5 ml-2">
                               {categorizedProblems.skin.map((problem, idx) => (
-                                <li key={idx} className="text-sm text-gray-800">{problem}</li>
+                                <li key={idx} className="text-sm text-[rgb(var(--color-text-primary))]">{problem}</li>
                               ))}
                             </ul>
                           </div>
@@ -201,10 +202,10 @@ export default function ReportDetailsModal({
                         {/* Eye Problems */}
                         {categorizedProblems.eye.length > 0 && (
                           <div>
-                            <div className="text-xs font-semibold text-gray-700 mb-1">Eye Problems:</div>
+                            <div className="text-xs font-semibold text-[rgb(var(--color-text-primary))] mb-1">Eye Problems:</div>
                             <ul className="list-disc list-inside space-y-0.5 ml-2">
                               {categorizedProblems.eye.map((problem, idx) => (
-                                <li key={idx} className="text-sm text-gray-800">{problem}</li>
+                                <li key={idx} className="text-sm text-[rgb(var(--color-text-primary))]">{problem}</li>
                               ))}
                             </ul>
                           </div>
@@ -213,10 +214,10 @@ export default function ReportDetailsModal({
                         {/* Gait Problems */}
                         {categorizedProblems.gait.length > 0 && (
                           <div>
-                            <div className="text-xs font-semibold text-gray-700 mb-1">Gait Problems:</div>
+                            <div className="text-xs font-semibold text-[rgb(var(--color-text-primary))] mb-1">Gait Problems:</div>
                             <ul className="list-disc list-inside space-y-0.5 ml-2">
                               {categorizedProblems.gait.map((problem, idx) => (
-                                <li key={idx} className="text-sm text-gray-800">{problem}</li>
+                                <li key={idx} className="text-sm text-[rgb(var(--color-text-primary))]">{problem}</li>
                               ))}
                             </ul>
                           </div>
@@ -229,91 +230,96 @@ export default function ReportDetailsModal({
                 {/* Additional Notes */}
                 {report.notes && (
                   <div className="space-y-2">
-                    <h3 className="font-semibold text-gray-900 border-b pb-2">Additional Notes</h3>
-                    <div className="bg-gray-50 rounded-lg p-3">
-                      <p className="text-sm text-gray-700">{report.notes}</p>
+                    <h3 className="font-semibold text-[rgb(var(--color-text-primary))] border-b border-[rgb(var(--color-border))] pb-2">Additional Notes</h3>
+                    <div className="bg-[rgb(var(--color-background))] rounded-lg p-3">
+                      <p className="text-sm text-[rgb(var(--color-text-primary))]">{report.notes}</p>
                     </div>
                   </div>
                 )}
 
                 {/* Date and Time */}
                 <div className="space-y-3">
-                  <h3 className="font-semibold text-gray-900 border-b pb-2">Date and Time</h3>
-                  <div className="text-sm text-gray-900">
+                  <h3 className="font-semibold text-[rgb(var(--color-text-primary))] border-b border-[rgb(var(--color-border))] pb-2">Date and Time</h3>
+                  <div className="text-sm text-[rgb(var(--color-text-primary))]">
                     {report.spottedDate} - {report.spottedTime}
                   </div>
                 </div>
               </div>
 
               {/* Reporter Info - Appears at the end on mobile */}
-              <div className="bg-gray-50 rounded-lg p-4 space-y-3 order-3 lg:order-3 col-span-1 lg:col-span-2">
-                <h3 className="font-semibold text-gray-900 border-b pb-2">Reporter Information</h3>
+              <div className="bg-[rgb(var(--color-background))] rounded-lg p-4 space-y-3 order-3 lg:order-3 col-span-1 lg:col-span-2">
+                <h3 className="font-semibold text-[rgb(var(--color-text-primary))] border-b border-[rgb(var(--color-border))] pb-2">Reporter Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
-                    <div className="text-xs font-medium text-gray-500">Reported By</div>
-                    <div className="text-sm text-gray-900">{report.reportedBy}</div>
-                    <div className="text-xs text-gray-500">{report.reporterEmail}</div>
+                    <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Reported By</div>
+                    <div className="text-sm text-[rgb(var(--color-text-primary))]">{report.reportedBy}</div>
+                    <div className="text-xs text-[rgb(var(--color-text-secondary))]">{report.reporterEmail}</div>
                   </div>
                   <div>
-                    <div className="text-xs font-medium text-gray-500">Date Reported</div>
-                    <div className="text-sm text-gray-900">{report.spottedDate}</div>
+                    <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Date Reported</div>
+                    <div className="text-sm text-[rgb(var(--color-text-primary))]">{report.spottedDate}</div>
                   </div>
                   <div>
-                    <div className="text-xs font-medium text-gray-500">Reports Submitted</div>
-                    <div className="text-sm text-gray-900">{report.reportsSubmitted} reports</div>
+                    <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Reports Submitted</div>
+                    <div className="text-sm text-[rgb(var(--color-text-primary))]">{report.reportsSubmitted} reports</div>
                   </div>
                   <div>
-                    <div className="text-xs font-medium text-gray-500">Warnings</div>
-                    <div className="text-sm text-gray-900 flex items-center gap-2">
+                    <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Warnings</div>
+                    <div className="text-sm text-[rgb(var(--color-text-primary))] flex items-center gap-2">
                       {report.warnings} warnings
                       {report.warnings > 0 && (
-                        <span className="text-yellow-600">⚠️</span>
+                        <span className="text-[rgb(var(--color-warning))]">⚠️</span>
                       )}
                     </div>
                   </div>
                 </div>
 
                 {/* User Actions */}
-                <div className="flex gap-2 pt-2 border-t border-gray-200">
-                  <button
+                <div className="flex gap-2 pt-2 border-t border-[rgb(var(--color-border))]">
+                  <Button
                     onClick={() => setShowWarnDialog(true)}
-                    className="flex-1 px-3 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors text-sm font-medium"
+                    variant="warning"
+                    size="sm"
+                    fullWidth
                   >
                     Warn User
-                  </button>
-                  <button
+                  </Button>
+                  <Button
                     onClick={() => setShowSuspendDialog(true)}
-                    className="flex-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
+                    variant="danger"
+                    size="sm"
+                    fullWidth
                   >
                     Suspend User
-                  </button>
+                  </Button>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-3 mt-6 pt-6 border-t border-gray-200">
-              <button
+            <div className="flex gap-3 mt-6 pt-6 border-t border-[rgb(var(--color-border))]">
+              <Button
                 onClick={() => setShowRejectDialog(true)}
                 disabled={isProcessing}
-                className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
+                variant="danger"
               >
                 Reject
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={() => alert('Edit functionality coming soon')}
                 disabled={isProcessing}
-                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+                variant="secondary"
               >
                 Edit
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleAccept}
                 disabled={isProcessing}
-                className="ml-auto px-6 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors disabled:opacity-50"
+                variant="success"
+                className="ml-auto"
               >
                 {isProcessing ? 'Processing...' : 'Accept'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -323,29 +329,31 @@ export default function ReportDetailsModal({
       {showRejectDialog && (
         <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowRejectDialog(false)} />
-          <div className="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Reject Report</h3>
+          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">Reject Report</h3>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Provide a reason for rejection..."
-              className="w-full border border-gray-300 rounded-lg p-3 text-sm resize-none"
+              className="w-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] rounded-lg p-3 text-sm resize-none"
               rows={4}
             />
             <div className="flex gap-2 mt-4">
-              <button
+              <Button
                 onClick={() => { setShowRejectDialog(false); setReason(''); }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                variant="secondary"
+                fullWidth
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleReject}
                 disabled={isProcessing}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                variant="danger"
+                fullWidth
               >
                 {isProcessing ? 'Processing...' : 'Confirm Reject'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -355,29 +363,31 @@ export default function ReportDetailsModal({
       {showWarnDialog && (
         <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowWarnDialog(false)} />
-          <div className="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Warn User</h3>
+          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">Warn User</h3>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Provide a reason for warning..."
-              className="w-full border border-gray-300 rounded-lg p-3 text-sm resize-none"
+              className="w-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] rounded-lg p-3 text-sm resize-none"
               rows={4}
             />
             <div className="flex gap-2 mt-4">
-              <button
+              <Button
                 onClick={() => { setShowWarnDialog(false); setReason(''); }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                variant="secondary"
+                fullWidth
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleWarn}
                 disabled={isProcessing}
-                className="flex-1 px-4 py-2 bg-yellow-600 text-white rounded-lg hover:bg-yellow-700 disabled:opacity-50"
+                variant="warning"
+                fullWidth
               >
                 {isProcessing ? 'Processing...' : 'Send Warning'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>
@@ -387,32 +397,34 @@ export default function ReportDetailsModal({
       {showSuspendDialog && (
         <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowSuspendDialog(false)} />
-          <div className="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">Suspend User</h3>
-            <p className="text-sm text-gray-600 mb-4">
+          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full">
+            <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">Suspend User</h3>
+            <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-4">
               This will suspend {report.reportedBy} from submitting reports.
             </p>
             <textarea
               value={reason}
               onChange={(e) => setReason(e.target.value)}
               placeholder="Provide a reason for suspension..."
-              className="w-full border border-gray-300 rounded-lg p-3 text-sm resize-none"
+              className="w-full border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] placeholder:text-[rgb(var(--color-text-tertiary))] rounded-lg p-3 text-sm resize-none"
               rows={4}
             />
             <div className="flex gap-2 mt-4">
-              <button
+              <Button
                 onClick={() => { setShowSuspendDialog(false); setReason(''); }}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50"
+                variant="secondary"
+                fullWidth
               >
                 Cancel
-              </button>
-              <button
+              </Button>
+              <Button
                 onClick={handleSuspend}
                 disabled={isProcessing}
-                className="flex-1 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 disabled:opacity-50"
+                variant="danger"
+                fullWidth
               >
                 {isProcessing ? 'Processing...' : 'Confirm Suspend'}
-              </button>
+              </Button>
             </div>
           </div>
         </div>

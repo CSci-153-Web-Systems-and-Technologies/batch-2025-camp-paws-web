@@ -9,6 +9,7 @@ import DateTimeSelection from './sections/DateTimeSelection';
 import LocationDescription from './sections/LocationDescription';
 import MapSelection from './sections/MapSelection';
 import ValidationFeedback from './feedback/ValidationFeedback';
+import Button from '@/components/ui/Button';
 
 // Open/Closed Principle: This component is open for extension (new location features)
 // but closed for modification (core logic doesn't change)
@@ -57,10 +58,10 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack }: Locat
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-lg shadow-lg p-8">
+      <div className="bg-[rgb(var(--color-surface))] rounded-lg shadow-lg p-8">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">When & Where</h2>
-          <div className="text-sm text-gray-500">Step 3 of 3</div>
+          <h2 className="text-3xl font-bold text-[rgb(var(--color-text-primary))]">When & Where</h2>
+          <div className="text-sm text-[rgb(var(--color-text-secondary))]">Step 3 of 3</div>
         </div>
 
         <div className="space-y-6">
@@ -88,24 +89,22 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack }: Locat
         </div>
 
         <div className="flex justify-between pt-8">
-          <button
+          <Button
             onClick={onBack}
-            className="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            variant="secondary"
+            size="lg"
           >
             Back
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={handleSubmit}
             disabled={!validation.isValid}
-            className={`px-6 py-2 rounded-md shadow-sm font-medium transition-colors ${
-              validation.isValid
-                ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            }`}
+            variant="primary"
+            size="lg"
           >
             Submit Report
-          </button>
+          </Button>
         </div>
       </div>
     </div>

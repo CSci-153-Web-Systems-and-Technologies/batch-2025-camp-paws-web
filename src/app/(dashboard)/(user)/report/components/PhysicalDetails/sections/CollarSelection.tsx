@@ -6,20 +6,18 @@ export default function CollarSelection({ selectedCollar, onSelect }: CollarSele
     { 
       value: 'with', 
       label: 'With Collar', 
-      description: 'Animal has a collar (may indicate ownership)',
-      color: 'green'
+      description: 'Animal has a collar (may indicate ownership)'
     },
     { 
       value: 'without', 
       label: 'Without Collar', 
-      description: 'Animal has no visible collar',
-      color: 'red'
+      description: 'Animal has no visible collar'
     }
   ];
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-3">Collar Status</label>
+      <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">Collar Status</label>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {collarOptions.map((option) => (
           <button
@@ -28,27 +26,21 @@ export default function CollarSelection({ selectedCollar, onSelect }: CollarSele
             onClick={() => onSelect(option.value)}
             className={`p-4 text-left border-2 rounded-lg transition-all duration-200 transform ${
               selectedCollar === option.value
-                ? option.color === 'green'
-                  ? 'border-green-600 bg-green-50 shadow-lg shadow-green-200 scale-105 ring-2 ring-green-300'
-                  : 'border-red-600 bg-red-50 shadow-lg shadow-red-200 scale-105 ring-2 ring-red-300'
-                : 'border-gray-300 bg-white hover:border-gray-400 hover:bg-gray-50 hover:scale-102'
+                ? 'border-[rgb(var(--color-primary))] bg-[rgb(var(--color-primary-light))] shadow-lg scale-105 ring-2 ring-[rgb(var(--color-primary-light))]'
+                : 'border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] hover:border-[rgb(var(--color-primary))] hover:scale-102'
             }`}
           >
             <div className={`text-sm font-bold mb-1 ${
               selectedCollar === option.value 
-                ? option.color === 'green' 
-                  ? 'text-green-700' 
-                  : 'text-red-700'
-                : 'text-gray-900'
+                ? 'text-[rgb(var(--color-primary))]'
+                : 'text-[rgb(var(--color-text-primary))]'
             }`}>
               {option.label}
             </div>
             <div className={`text-xs ${
               selectedCollar === option.value 
-                ? option.color === 'green' 
-                  ? 'text-green-600' 
-                  : 'text-red-600'
-                : 'text-gray-600'
+                ? 'text-[rgb(var(--color-primary))]'
+                : 'text-[rgb(var(--color-text-secondary))]'
             }`}>
               {option.description}
             </div>

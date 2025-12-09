@@ -12,7 +12,7 @@ export default function ReportPopup({ report }: ReportPopupProps) {
   const animalEmoji = report.animalType === 'dog' ? '🐕' : '🐈';
 
   return (
-    <div className="min-w-[200px]">
+    <div className="min-w-[200px] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))]">
       {/* Photo if available */}
       {report.photoUrl && (
         <div className="relative w-full h-32 mb-2">
@@ -28,7 +28,7 @@ export default function ReportPopup({ report }: ReportPopupProps) {
       {/* Animal Type */}
       <div className="flex items-center gap-2 mb-2">
         <span className="text-2xl">{animalEmoji}</span>
-        <span className="font-semibold text-gray-900 capitalize">
+        <span className="font-semibold text-[rgb(var(--color-text-primary))] capitalize">
           {report.animalType}
         </span>
         <span className={`px-2 py-1 rounded-full text-xs font-medium ${statusColors[report.status]}`}>
@@ -37,7 +37,7 @@ export default function ReportPopup({ report }: ReportPopupProps) {
       </div>
 
       {/* Date & Time */}
-      <div className="text-sm text-gray-600 mb-1">
+      <div className="text-sm text-[rgb(var(--color-text-secondary))] mb-1">
         <span className="font-medium">Spotted:</span>{' '}
         {new Date(report.spottedDate).toLocaleDateString('en-US', { 
           month: 'short', 
@@ -48,20 +48,20 @@ export default function ReportPopup({ report }: ReportPopupProps) {
       </div>
 
       {/* Location */}
-      <div className="text-sm text-gray-600 mb-1">
+      <div className="text-sm text-[rgb(var(--color-text-secondary))] mb-1">
         <span className="font-medium">Location:</span>{' '}
         {report.locationDescription || `${report.latitude.toFixed(6)}, ${report.longitude.toFixed(6)}`}
       </div>
 
       {/* Reporter */}
       {report.reporterName && (
-        <div className="text-sm text-gray-600 mb-1">
+        <div className="text-sm text-[rgb(var(--color-text-secondary))] mb-1">
           <span className="font-medium">Reporter:</span> {report.reporterName}
         </div>
       )}
 
       {/* Report ID */}
-      <div className="text-xs text-gray-400 mt-2 border-t pt-2">
+      <div className="text-xs text-[rgb(var(--color-text-tertiary))] mt-2 border-t border-[rgb(var(--color-border))] pt-2">
         ID: {report.id.slice(0, 8)}...
       </div>
     </div>

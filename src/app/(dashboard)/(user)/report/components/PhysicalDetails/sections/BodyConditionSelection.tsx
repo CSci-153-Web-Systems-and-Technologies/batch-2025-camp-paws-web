@@ -79,11 +79,11 @@ export default function BodyConditionSelection({ selectedScore, onSelect, animal
   if (!animalType) {
     return (
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-3">
+        <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">
           Body Condition Score
         </label>
-        <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 text-center">
-          <p className="text-gray-500 text-sm">Please select an animal type first to see body condition scores</p>
+        <div className="bg-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-lg p-4 text-center">
+          <p className="text-[rgb(var(--color-text-tertiary))] text-sm">Please select an animal type first to see body condition scores</p>
         </div>
       </div>
     );
@@ -91,64 +91,67 @@ export default function BodyConditionSelection({ selectedScore, onSelect, animal
 
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-3">
+      <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">
         Body Condition Score
       </label>
-      <p className="text-xs text-gray-600 mb-4">
+      <p className="text-xs text-[rgb(var(--color-text-secondary))] mb-4">
         Rate the animal&apos;s body condition from 1 (emaciated) to 9 (obese)
       </p>
       
       <div className="space-y-3">
-        {bodyConditionScores.map((condition) => (
-          <button
-            key={condition.score}
-            type="button"
-            onClick={() => onSelect(condition.score)}
-            className={`w-full flex items-center p-4 rounded-lg border-2 transition-all duration-200 transform text-left ${
-              selectedScore === condition.score
-                ? 'border-green-500 bg-green-50 shadow-md ring-2 ring-green-300'
-                : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25'
-            }`}
-          >
-            {/* Image Section (Left) */}
-            <div className="shrink-0 mr-4">
-              <Image
-                src={condition.image}
-                alt={`${animalType === 'cat' ? 'Cat' : 'Dog'} Body Condition Score ${condition.score}`}
-                width={120}
-                height={80}
-                className="rounded object-cover"
-              />
-            </div>
-            
-            {/* Text Section (Right) */}
-            <div className="flex-1">
-              <div className="flex items-center mb-2">
-                <div className={`text-2xl font-bold mr-3 transition-colors ${
-                  selectedScore === condition.score
-                    ? 'text-green-700'
-                    : 'text-gray-700'
-                }`}>
-                  {condition.score}
+        {bodyConditionScores.map((condition) => {
+          const isSelected = selectedScore === condition.score;
+          return (
+            <button
+              key={condition.score}
+              type="button"
+              onClick={() => onSelect(condition.score)}
+              className={`w-full flex items-center p-4 rounded-lg border-2 transition-all duration-200 transform text-left ${
+                isSelected
+                  ? 'border-[rgb(var(--color-primary))] bg-[rgb(var(--color-primary-light))] shadow-lg scale-[1.02] ring-2 ring-[rgb(var(--color-primary-light))]'
+                  : 'border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] hover:border-[rgb(var(--color-primary))] hover:scale-[1.01]'
+              }`}
+            >
+              {/* Image Section (Left) */}
+              <div className="shrink-0 mr-4">
+                <Image
+                  src={condition.image}
+                  alt={`${animalType === 'cat' ? 'Cat' : 'Dog'} Body Condition Score ${condition.score}`}
+                  width={120}
+                  height={80}
+                  className="rounded object-cover"
+                />
+              </div>
+              
+              {/* Text Section (Right) */}
+              <div className="flex-1">
+                <div className="flex items-center mb-2">
+                  <div className={`text-2xl font-bold mr-3 transition-colors ${
+                    isSelected
+                      ? 'text-[rgb(var(--color-primary))]'
+                      : 'text-[rgb(var(--color-text-primary))]'
+                  }`}>
+                    {condition.score}
+                  </div>
+                  <div className={`text-lg font-semibold transition-colors ${
+                    isSelected
+                      ? 'text-[rgb(var(--color-primary))]'
+                      : 'text-[rgb(var(--color-text-primary))]'
+                  }`}>
+                    {condition.label}
+                  </div>
                 </div>
-                <div className={`text-lg font-semibold transition-colors ${
-                  selectedScore === condition.score
-                    ? 'text-green-700'
-                    : 'text-gray-900'
+                <div className={`text-sm leading-relaxed transition-colors ${
+                  isSelected
+                    ? 'text-[rgb(var(--color-primary))]'
+                    : 'text-[rgb(var(--color-text-secondary))]'
                 }`}>
-                  {condition.label}
+                  {condition.description}
                 </div>
               </div>
-              <div className={`text-sm leading-relaxed transition-colors ${
-                selectedScore === condition.score
-                  ? 'text-green-600'
-                  : 'text-gray-600'
-              }`}>
-                {condition.description}
-              </div>
-            </div>
-          </button>
-        ))}
+            </button>
+          );
+        })}
       </div>
     </div>
   );

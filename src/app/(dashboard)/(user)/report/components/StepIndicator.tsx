@@ -24,16 +24,16 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
             {/* Step Circle - Responsive sizes */}
             <div className={`step-circle flex items-center justify-center rounded-full font-medium shrink-0 ${
               step.completed 
-                ? 'bg-green-600 text-white' 
+                ? 'bg-[rgb(var(--color-primary))] text-white' 
                 : step.active 
-                  ? 'bg-green-600 text-white' 
-                  : 'bg-gray-200 text-gray-600'
+                  ? 'bg-[rgb(var(--color-primary))] text-white' 
+                  : 'bg-[rgb(var(--color-border))] text-[rgb(var(--color-text-secondary))]'
             }`}>
               {step.completed ? '✓' : step.number}
             </div>
             
             {/* Step Label - Multi-breakpoint responsive */}
-            <span className={`step-label whitespace-nowrap ${step.active ? 'text-green-600 font-medium' : 'text-gray-500'}`}>
+            <span className={`step-label whitespace-nowrap ${step.active ? 'text-[rgb(var(--color-primary))] font-medium' : 'text-[rgb(var(--color-text-tertiary))]'}`}>
               {/* Ultra small screens (<400px): Single letters */}
               <span className="ultra-small-only">
                 {step.label === 'Photo' ? 'P' : step.label === 'Physical Status' ? 'S' : 'L'}
@@ -49,7 +49,7 @@ export default function StepIndicator({ currentStep }: StepIndicatorProps) {
             {/* Connector Line - Multi-breakpoint responsive */}
             {index < steps.length - 1 && (
               <div className={`step-connector h-0.5 shrink-0 ${
-                step.completed ? 'bg-green-600' : 'bg-gray-200'
+                step.completed ? 'bg-[rgb(var(--color-primary))]' : 'bg-[rgb(var(--color-border))]'
               }`} />
             )}
           </div>

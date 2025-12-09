@@ -6,6 +6,7 @@ import { VerifyReportsProps, Report } from '../types/VerifyTypes';
 import { getReportService } from '../services/ReportService';
 import ReportsTable from './ReportsTable';
 import ReportDetailsModal from './ReportDetailsModal';
+import Button from '@/components/ui/Button';
 
 const AVAILABLE_COLUMNS = ['animalType', 'sex', 'colorPattern', 'primaryColor', 'spottedTime', 'submittedBy'];
 
@@ -109,8 +110,8 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
     return (
       <div className="flex items-center justify-center h-96">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-green-600 mx-auto mb-4"></div>
-          <p className="text-gray-600 font-medium">Loading pending reports...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-[rgb(var(--color-primary))] mx-auto mb-4"></div>
+          <p className="text-[rgb(var(--color-text-secondary))] font-medium">Loading pending reports...</p>
         </div>
       </div>
     );
@@ -119,16 +120,16 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
   // Error state
   if (error) {
     return (
-      <div className="bg-red-50 border border-red-200 rounded-lg p-6 text-center">
-        <div className="text-red-600 text-5xl mb-3">⚠️</div>
-        <h3 className="text-xl font-semibold text-red-900 mb-2">Failed to Load Reports</h3>
-        <p className="text-red-700 mb-4">{error}</p>
-        <button
+      <div className="bg-[rgb(var(--color-error-bg))] border border-[rgb(var(--color-error))] rounded-lg p-6 text-center">
+        <div className="text-[rgb(var(--color-error))] text-5xl mb-3">⚠️</div>
+        <h3 className="text-xl font-semibold text-[rgb(var(--color-text-primary))] mb-2">Failed to Load Reports</h3>
+        <p className="text-[rgb(var(--color-error))] mb-4">{error}</p>
+        <Button
           onClick={() => window.location.reload()}
-          className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          variant="danger"
         >
           Retry
-        </button>
+        </Button>
       </div>
     );
   }
@@ -136,17 +137,17 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="bg-white rounded-lg shadow-sm p-6 border border-gray-200">
+      <div className="bg-[rgb(var(--color-surface))] rounded-lg shadow-sm p-6 border border-[rgb(var(--color-border))]">
         <div className="flex items-center justify-between">
           <div>
-            <h2 className="text-2xl font-bold text-gray-900">Verify Reports</h2>
-            <p className="text-gray-600 mt-1">
+            <h2 className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">Verify Reports</h2>
+            <p className="text-[rgb(var(--color-text-secondary))] mt-1">
               Review and validate submitted stray sightings to ensure data accuracy and reliability.
             </p>
           </div>
           <div className="text-right">
-            <div className="text-3xl font-bold text-green-600">{filteredReports.length}</div>
-            <div className="text-sm text-gray-500">
+            <div className="text-3xl font-bold text-[rgb(var(--color-primary))]">{filteredReports.length}</div>
+            <div className="text-sm text-[rgb(var(--color-text-tertiary))]">
               {filteredReports.length === reports.length ? 'Pending' : `of ${reports.length} total`}
             </div>
           </div>
@@ -154,20 +155,20 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
       </div>
 
       {/* Filters */}
-      <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+      <div className="bg-[rgb(var(--color-surface))] rounded-lg shadow-sm p-4 border border-[rgb(var(--color-border))]">
         <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
-            <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg className="w-5 h-5 text-[rgb(var(--color-text-tertiary))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
             </svg>
-            <span className="text-sm font-medium text-gray-700">Filters:</span>
+            <span className="text-sm font-medium text-[rgb(var(--color-text-primary))]">Filters:</span>
           </div>
 
           {/* Animal Type Filter */}
           <select
             value={filters.animalType}
             onChange={(e) => handleFilterChange('animalType', e.target.value)}
-            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="px-3 py-1.5 text-sm border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] rounded-lg focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:border-[rgb(var(--color-primary))]"
           >
             <option value="all">All Animals</option>
             <option value="dog">Dog</option>
@@ -178,7 +179,7 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
           <select
             value={filters.sex}
             onChange={(e) => handleFilterChange('sex', e.target.value)}
-            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="px-3 py-1.5 text-sm border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] rounded-lg focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:border-[rgb(var(--color-primary))]"
           >
             <option value="all">All Sexes</option>
             <option value="male">Male</option>
@@ -189,7 +190,7 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
           <select
             value={filters.colorPattern}
             onChange={(e) => handleFilterChange('colorPattern', e.target.value)}
-            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="px-3 py-1.5 text-sm border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] rounded-lg focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:border-[rgb(var(--color-primary))]"
           >
             <option value="all">All Patterns</option>
             <option value="solid">Solid</option>
@@ -203,7 +204,7 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
           <select
             value={filters.primaryColor}
             onChange={(e) => handleFilterChange('primaryColor', e.target.value)}
-            className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500"
+            className="px-3 py-1.5 text-sm border border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] rounded-lg focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:border-[rgb(var(--color-primary))]"
           >
             <option value="all">All Colors</option>
             <option value="Black">Black</option>
@@ -218,16 +219,17 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
 
           {/* Clear Filters */}
           {(filters.animalType !== 'all' || filters.sex !== 'all' || filters.colorPattern !== 'all' || filters.primaryColor !== 'all') && (
-            <button
+            <Button
               onClick={() => setFilters({ animalType: 'all', sex: 'all', colorPattern: 'all', primaryColor: 'all' })}
-              className="px-3 py-1.5 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+              variant="secondary"
+              size="sm"
             >
               Clear Filters
-            </button>
+            </Button>
           )}
 
           {/* Results count */}
-          <div className="ml-auto text-sm text-gray-500">
+          <div className="ml-auto text-sm text-[rgb(var(--color-text-tertiary))]">
             {filteredReports.length} of {reports.length} reports
           </div>
         </div>
@@ -242,12 +244,12 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
 
       {/* Action Buttons */}
       <div className="flex gap-2">
-        <button className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors">
+        <Button variant="success">
           Accept
-        </button>
-        <button className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors">
+        </Button>
+        <Button variant="danger">
           Reject
-        </button>
+        </Button>
       </div>
 
       {/* Report Details Modal */}

@@ -64,17 +64,17 @@ export default function AdminMapView({ reports, onReportSelect }: AdminMapViewPr
 
   if (!mounted) {
     return (
-      <div className="w-full h-[600px] bg-gray-200 rounded-lg flex items-center justify-center">
+      <div className="w-full h-[600px] bg-[rgb(var(--color-background))] rounded-lg flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600 mx-auto mb-3"></div>
-          <div className="text-gray-500">Loading map...</div>
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[rgb(var(--color-primary))] mx-auto mb-3"></div>
+          <div className="text-[rgb(var(--color-text-secondary))]">Loading map...</div>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-[600px] rounded-lg overflow-hidden border-2 border-gray-300 shadow-lg">
+    <div className="w-full h-[600px] rounded-lg overflow-hidden border-2 border-[rgb(var(--color-border))] shadow-lg">
       <MapContainer
         center={[VSU_CAMPUS_BOUNDARY.center.lat, VSU_CAMPUS_BOUNDARY.center.lng]}
         zoom={16}
