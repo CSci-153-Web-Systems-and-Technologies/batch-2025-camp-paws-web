@@ -1,20 +1,17 @@
 'use client';
 
 import { useState } from 'react';
-import { Users } from 'lucide-react';
+import { Users, Pencil, Trash2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
-import UngroupedReportCard from './UngroupedReportCard';
-import { UngroupedViewProps } from '../types/RecordsTypes';
+import Table from '@/components/ui/Table';
+import { UngroupedViewProps, AcceptedReport } from '../types/RecordsTypes';
 
 /**
- * View for displaying ungrouped reports.
- * Shows a grid of UngroupedReportCard components with bulk selection and actions.
+ * View for displaying ungrouped reports in a table format.
+ * Shows a table with selection and action buttons below.
  */
 export default function UngroupedView({
   reports,
-  onAddToGroup,
-  onCreateGroup,
-  onDeleteReport,
   onViewReport,
   selectedReportIds = [],
   onSelectReport,
@@ -31,15 +28,6 @@ export default function UngroupedView({
     setLocalSelectedIds(newSelection);
     if (onSelectReport) {
       onSelectReport(reportId);
-    }
-  };
-
-  // Select all / deselect all
-  const handleSelectAll = () => {
-    if (localSelectedIds.length === reports.length) {
-      setLocalSelectedIds([]);
-    } else {
-      setLocalSelectedIds(reports.map(r => r.id));
     }
   };
 
@@ -64,8 +52,8 @@ export default function UngroupedView({
 
   return (
     <div className="space-y-4">
-      {/* Header with Bulk Actions */}
-      <div className="flex items-center justify-between flex-wrap gap-4">
+      {/* Header with Action Buttons */}
+      <div className="flex items-start justify-between gap-4">
         <div>
           <h2 className="text-lg font-semibold text-[rgb(var(--color-text))]">
             Ungrouped Reports
@@ -80,47 +68,88 @@ export default function UngroupedView({
           </p>
         </div>
 
-        <div className="flex items-center gap-2">
-          {/* Select All Toggle */}
-          <Button
-            variant="secondary"
-            onClick={handleSelectAll}
-          >
-            {localSelectedIds.length === reports.length ? 'Deselect All' : 'Select All'}
-          </Button>
-
-          {/* Bulk Group Action */}
-          {hasSelection && onBulkGroup && (
+        {/* Action Buttons */}
+        {hasSelection && (
+          <div className="flex items-center gap-3">
             <Button
-              variant="primary"
-              leftIcon={<Users />}
-              onClick={() => onBulkGroup(localSelectedIds)}
+              variant="secondary"
+              leftIcon={<Pencil />}
+              disabled={localSelectedIds.length !== 1}
             >
-              Group Selected ({localSelectedIds.length})
+              Edit
             </Button>
-          )}
-        </div>
+            
+            <Button
+              variant="danger"
+              leftIcon={<Trash2 />}
+            >
+              Delete {localSelectedIds.length > 1 ? `(${localSelectedIds.length})` : ''}
+            </Button>
+
+            {onBulkGroup && (
+              <Button
+                variant="primary"
+                leftIcon={<Users />}
+                onClick={() => onBulkGroup(localSelectedIds)}
+              >
+                New Group {localSelectedIds.length > 1 ? `(${localSelectedIds.length})` : ''}
+              </Button>
+            )}
+          </div>
+        )}
       </div>
 
-      {/* Reports Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-        {reports.map((report) => {
-          const isSelected = localSelectedIds.includes(report.id);
-
-          return (
-            <UngroupedReportCard
-              key={report.id}
-              report={report}
-              onAddToGroup={() => onAddToGroup(report.id)}
-              onCreateGroup={() => onCreateGroup(report.id)}
-              onDelete={() => onDeleteReport(report.id)}
-              onViewDetails={() => onViewReport(report.id)}
-              isSelected={isSelected}
-              onSelect={onSelectReport ? () => handleSelectToggle(report.id) : undefined}
-            />
-          );
-        })}
-      </div>
+      {/* Reports Table */}
+      <Table
+        columns={[
+          {
+            id: 'animalType',
+            label: 'Animal Type',
+            width: 'w-32',
+            render: (report: AcceptedReport) => <span className="capitalize">{report.animalType}</span>
+          },
+          {
+            id: 'sex',
+            label: 'Sex',
+            width: 'w-24',
+            render: (report: AcceptedReport) => <span className="capitalize">{report.sex}</span>
+          },
+          {
+            id: 'colorPattern',
+            label: 'Color Pattern',
+            width: 'w-32',
+            render: (report: AcceptedReport) => <span className="capitalize">{report.colorPattern}</span>
+          },
+          {
+            id: 'primaryColor',
+            label: 'Color',
+            width: 'w-32',
+            render: (report: AcceptedReport) => report.primaryColor
+          },
+          {
+            id: 'spottedTime',
+            label: 'Sighting Time',
+            width: 'w-40',
+            render: (report: AcceptedReport) => `${report.spottedDate} - ${report.spottedTime}`
+          },
+          {
+            id: 'bcs',
+            label: 'BCS',
+            width: 'w-24',
+            render: (report: AcceptedReport) => `${report.bodyConditionScore}/9`
+          },
+        ]}
+        data={reports}
+        onRowClick={(report: AcceptedReport) => onViewReport(report.id)}
+        selectable={true}
+        selectedIds={new Set(localSelectedIds)}
+        onSelectRow={(id: string) => {
+          handleSelectToggle(id);
+        }}
+        getRowId={(report: AcceptedReport) => report.id}
+        emptyMessage="No ungrouped reports"
+        showSelectionInfo={false}
+      />
     </div>
   );
 }

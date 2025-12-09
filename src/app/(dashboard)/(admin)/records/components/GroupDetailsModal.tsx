@@ -1,12 +1,12 @@
 // Single Responsibility: Modal showing full group details with all reports and actions
 'use client';
 
-import { useState } from 'react';
-import { Edit2, Trash2, X, MapPin } from 'lucide-react';
-import { GroupDetailsModalProps } from '../types/RecordsTypes';
+import { Edit2, Trash2, X, MapPin, Eye } from 'lucide-react';
+import Image from 'next/image';
+import { GroupDetailsModalProps, AcceptedReport } from '../types/RecordsTypes';
 import Button from '@/components/ui/Button';
 import Modal from '@/components/ui/Modal';
-import ReportCard from './ReportCard';
+import Table from '@/components/ui/Table';
 
 export default function GroupDetailsModal({
   isOpen,
@@ -19,10 +19,12 @@ export default function GroupDetailsModal({
   onDeleteReport,
   onViewReport,
 }: GroupDetailsModalProps) {
-  const [selectedReportId, setSelectedReportId] = useState<string | null>(null);
-
   const animalEmoji = group.animalType === 'dog' ? '🐕' : '🐈';
   const sexEmoji = group.sex === 'male' ? '♂️' : group.sex === 'female' ? '♀️' : '❓';
+
+  // Get the first report (or admin-selected) photo
+  const primaryReport = reports.length > 0 ? reports[0] : null;
+  const primaryPhoto = primaryReport?.photoUrl;
 
   // Format date
   const formatDate = (dateString: string) => {
@@ -46,6 +48,21 @@ export default function GroupDetailsModal({
       size="xl"
     >
       <div className="space-y-6">
+        {/* Prominent Photo */}
+        {primaryPhoto ? (
+          <div className="relative w-full h-64 rounded-lg overflow-hidden bg-[rgb(var(--color-background))]">
+            <Image
+              src={primaryPhoto}
+              alt={`${group.name}`}
+              fill
+              className="object-cover"
+            />
+          </div>
+        ) : (
+          <div className="relative w-full h-64 rounded-lg bg-linear-to-br from-[rgb(var(--color-background))] to-[rgb(var(--color-surface-hover))] flex items-center justify-center border border-[rgb(var(--color-border))]">
+            <span className="text-8xl opacity-30">{animalEmoji}</span>
+          </div>
+        )}
         {/* Group Characteristics */}
         <div className="bg-[rgb(var(--color-background))] rounded-lg p-4 border border-[rgb(var(--color-border))]">
           <h3 className="text-sm font-semibold text-[rgb(var(--color-text-primary))] mb-3">
@@ -137,7 +154,7 @@ export default function GroupDetailsModal({
           </Button>
         </div>
 
-        {/* Reports List */}
+        {/* Reports Table */}
         <div>
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))]">
@@ -145,48 +162,90 @@ export default function GroupDetailsModal({
             </h3>
           </div>
 
-          {reports.length === 0 ? (
-            <div className="text-center py-8 bg-[rgb(var(--color-background))] rounded-lg border border-[rgb(var(--color-border))]">
-              <p className="text-[rgb(var(--color-text-secondary))]">
-                No reports in this group yet
-              </p>
-            </div>
-          ) : (
-            <div className="space-y-3 max-h-96 overflow-y-auto pr-2">
-              {sortedReports.map((report) => (
-                <div
-                  key={report.id}
-                  className={`
-                    relative transition-all
-                    ${selectedReportId === report.id ? 'ring-2 ring-[rgb(var(--color-primary))] rounded-lg' : ''}
-                  `}
-                >
-                  <ReportCard
-                    report={report}
-                    compact
-                    showActions
-                    onViewDetails={(id) => {
-                      setSelectedReportId(id);
-                      onViewReport(id);
-                    }}
-                    onDelete={onDeleteReport}
-                  />
-                  
-                  {/* Remove from Group button */}
-                  <div className="absolute top-2 right-2">
-                    <Button
-                      variant="warning"
-                      size="sm"
-                      leftIcon={<X className="w-3 h-3" />}
-                      onClick={() => onRemoveReport(report.id)}
+          <Table
+            columns={[
+              {
+                id: 'spottedDate',
+                label: 'Date',
+                width: 'w-32',
+                render: (report: AcceptedReport) => formatDate(report.spottedDate)
+              },
+              {
+                id: 'spottedTime',
+                label: 'Time',
+                width: 'w-24',
+                render: (report: AcceptedReport) => report.spottedTime
+              },
+              {
+                id: 'location',
+                label: 'Location',
+                width: 'w-48',
+                render: (report: AcceptedReport) => (
+                  <div className="max-w-xs truncate">{report.locationDescription}</div>
+                )
+              },
+              {
+                id: 'bcs',
+                label: 'BCS',
+                width: 'w-20',
+                render: (report: AcceptedReport) => `${report.bodyConditionScore}/9`
+              },
+              {
+                id: 'collar',
+                label: 'Collar',
+                width: 'w-24',
+                render: (report: AcceptedReport) => (
+                  <span className="capitalize">{report.collar}</span>
+                )
+              },
+              {
+                id: 'actions',
+                label: 'Actions',
+                width: 'w-32',
+                render: (report: AcceptedReport) => (
+                  <div className="flex items-center gap-1">
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onViewReport(report.id);
+                      }}
+                      className="p-1.5 rounded hover:bg-[rgb(var(--color-background))] text-[rgb(var(--color-text-muted))] hover:text-[rgb(var(--color-primary))] transition-colors"
+                      title="View Details"
                     >
-                      Remove
-                    </Button>
+                      <Eye className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onRemoveReport(report.id);
+                      }}
+                      className="p-1.5 rounded hover:bg-[rgb(var(--color-background))] text-[rgb(var(--color-text-muted))] hover:text-[rgb(var(--color-warning))] transition-colors"
+                      title="Remove from Group"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        onDeleteReport(report.id);
+                      }}
+                      className="p-1.5 rounded hover:bg-[rgb(var(--color-background))] text-[rgb(var(--color-text-muted))] hover:text-[rgb(var(--color-danger))] transition-colors"
+                      title="Delete Report"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
+                )
+              },
+            ]}
+            data={sortedReports}
+            onRowClick={(report: AcceptedReport) => {
+              onViewReport(report.id);
+            }}
+            getRowId={(report: AcceptedReport) => report.id}
+            emptyMessage="No reports in this group yet"
+            showSelectionInfo={false}
+          />
         </div>
 
         {/* Footer with metadata */}

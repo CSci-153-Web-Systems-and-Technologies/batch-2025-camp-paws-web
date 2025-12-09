@@ -11,39 +11,47 @@ export type Sex = 'male' | 'female' | 'unknown';
 export type CollarStatus = 'yes' | 'no' | 'unknown';
 
 // Individual report (accepted from verify page)
+// MATCHES: stray_animal_reports table in Supabase
 export interface AcceptedReport {
   id: string;
-  // Group assignment
+  // Group assignment (not in Supabase - managed separately in animal_groups)
   groupId: string | null; // null if ungrouped
   
-  // Photo
+  // Photo (MATCHES: photo_url)
   photoUrl: string;
   
-  // Physical Details
+  // Physical Details (MATCHES: animal_type, sex, collar_status, color_pattern, primary_color, body_condition_score)
   animalType: AnimalType;
   sex: Sex;
-  collar: CollarStatus;
-  colorPattern: string; // 'solid', 'spotted', 'striped', etc.
-  primaryColor: string;
-  bodyConditionScore: number; // 1-9
-  physicalProblems: string[]; // 'eye_problems', 'skin_problems', 'gait_problems'
-  notes: string;
+  collar: CollarStatus; // DB: collar_status
+  colorPattern: string; // DB: color_pattern - 'solid', 'spotted', 'striped', etc.
+  primaryColor: string; // DB: primary_color
+  bodyConditionScore: number; // DB: body_condition_score (1-9)
   
-  // Location & Time
+  // Health Assessment (MATCHES: skin_problems, eye_problems, gait_problems)
+  skinProblems: string[]; // DB: skin_problems (array)
+  eyeProblems: string[]; // DB: eye_problems (array)
+  gaitProblems: string[]; // DB: gait_problems (array)
+  notes: string; // DB: additional_notes
+  
+  // Location & Time (MATCHES: spotted_date, spotted_time, latitude, longitude, location_description)
   latitude: number;
   longitude: number;
-  locationDescription: string;
-  spottedDate: string; // YYYY-MM-DD
-  spottedTime: string; // HH:MM
+  locationDescription: string; // DB: location_description
+  spottedDate: string; // DB: spotted_date (DATE)
+  spottedTime: string; // DB: spotted_time (TIME)
   
-  // Reporter info
-  reportedBy: string;
-  reporterEmail: string;
+  // Reporter info (MATCHES: user_id from auth.users)
+  reportedBy: string; // DB: user_id (from join with auth.users)
+  reporterEmail: string; // From auth.users join
   
-  // Metadata
-  status: 'verified'; // Only verified reports appear in records
-  acceptedAt: string; // ISO timestamp when report was accepted
-  createdAt: string; // Original submission timestamp
+  // Metadata (MATCHES: status, verified_by, verified_at, created_at, updated_at)
+  status: 'verified'; // DB: status - Only verified reports appear in records
+  verifiedBy?: string; // DB: verified_by
+  verifiedAt?: string; // DB: verified_at
+  acceptedAt: string; // Same as verifiedAt
+  createdAt: string; // DB: created_at
+  updatedAt?: string; // DB: updated_at
 }
 
 // Group represents a unique individual animal

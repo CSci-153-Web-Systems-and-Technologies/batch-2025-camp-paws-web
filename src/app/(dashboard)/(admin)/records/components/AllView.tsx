@@ -1,25 +1,63 @@
+// Single Responsibility: Display all individual reports in a table format
 'use client';
 
-import GroupCard from './GroupCard';
-import UngroupedReportCard from './UngroupedReportCard';
-import { AllViewProps } from '../types/RecordsTypes';
+import { useState } from 'react';
+import { Edit2, Trash2 } from 'lucide-react';
+import Table from '@/components/ui/Table';
+import Button from '@/components/ui/Button';
+import { AllViewProps, AcceptedReport } from '../types/RecordsTypes';
 
 /**
- * View for displaying all groups and ungrouped reports together.
- * Shows grouped animals first, then ungrouped reports, with visual distinction.
+ * View for displaying all individual reports in a single table.
+ * This provides a comprehensive view of all individual sighting records.
  */
 export default function AllView({
-  groups,
   reports,
-  onViewGroup,
   onViewReport,
 }: AllViewProps) {
-  // Split reports into grouped and ungrouped
-  const groupedReportIds = new Set(groups.flatMap(g => g.reportIds));
-  const ungroupedReports = reports.filter(r => !groupedReportIds.has(r.id));
+  const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
-  // Empty state (no data at all)
-  if (groups.length === 0 && reports.length === 0) {
+  // Sort reports by date (most recent first)
+  const sortedReports = [...reports].sort((a, b) => 
+    new Date(b.spottedDate).getTime() - new Date(a.spottedDate).getTime()
+  );
+
+  // Handle selection
+  const handleSelectRow = (id: string, checked: boolean) => {
+    const newSelected = new Set(selectedIds);
+    if (checked) {
+      newSelected.add(id);
+    } else {
+      newSelected.delete(id);
+    }
+    setSelectedIds(newSelected);
+  };
+
+  const handleSelectAll = (checked: boolean) => {
+    if (checked) {
+      setSelectedIds(new Set(sortedReports.map(r => r.id)));
+    } else {
+      setSelectedIds(new Set());
+    }
+  };
+
+  // Handle actions
+  const handleEdit = () => {
+    if (selectedIds.size === 1) {
+      const reportId = Array.from(selectedIds)[0];
+      onViewReport(reportId);
+    }
+  };
+
+  const handleDelete = () => {
+    if (selectedIds.size > 0) {
+      console.log('Delete reports:', Array.from(selectedIds));
+      // TODO: Implement delete functionality
+    }
+  };
+
+  // Empty state
+  if (reports.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 px-4">
         <div className="text-center max-w-md">
@@ -28,7 +66,7 @@ export default function AllView({
             No Records Yet
           </h3>
           <p className="text-[rgb(var(--color-text-muted))]">
-            Accepted reports and groups will appear here.
+            Accepted reports will appear here.
           </p>
         </div>
       </div>
@@ -36,84 +74,98 @@ export default function AllView({
   }
 
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div>
-        <h2 className="text-lg font-semibold text-[rgb(var(--color-text))]">
-          All Records
-        </h2>
-        <p className="text-sm text-[rgb(var(--color-text-muted))]">
-          {groups.length} {groups.length === 1 ? 'group' : 'groups'} • {ungroupedReports.length} ungrouped {ungroupedReports.length === 1 ? 'report' : 'reports'}
-        </p>
+    <div className="space-y-4">
+      {/* Header with Action Buttons */}
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <h2 className="text-lg font-semibold text-[rgb(var(--color-text))]">
+            All Reports
+          </h2>
+          <p className="text-sm text-[rgb(var(--color-text-muted))]">
+            Complete list of all {reports.length} individual sighting {reports.length === 1 ? 'report' : 'reports'}
+          </p>
+        </div>
+
+        {/* Action Buttons */}
+        {selectedIds.size > 0 && (
+          <div className="flex items-center gap-3">
+            <Button
+              variant="secondary"
+              leftIcon={<Edit2 />}
+              onClick={handleEdit}
+              disabled={selectedIds.size !== 1}
+            >
+              Edit
+            </Button>
+            
+            <Button
+              variant="danger"
+              leftIcon={<Trash2 />}
+              onClick={handleDelete}
+            >
+              Delete {selectedIds.size > 1 ? `(${selectedIds.size})` : ''}
+            </Button>
+          </div>
+        )}
       </div>
-
-      {/* Grouped Animals Section */}
-      {groups.length > 0 && (
-        <section>
-          <div className="flex items-center gap-2 mb-4">
-            <h3 className="text-md font-semibold text-[rgb(var(--color-text))]">
-              📁 Grouped Animals
-            </h3>
-            <span className="px-2 py-0.5 text-xs rounded-full bg-[rgb(var(--color-primary)/0.2)] text-[rgb(var(--color-primary))]">
-              {groups.length}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-            {groups.map((group) => {
-              // Get reports for this group
-              const groupReports = reports.filter(r => group.reportIds.includes(r.id));
-
-              return (
-                <GroupCard
-                  key={group.id}
-                  group={group}
-                  reports={groupReports}
-                  onViewDetails={() => onViewGroup(group.id)}
-                  onEdit={() => {}} // Read-only in All view
-                  onDelete={() => {}} // Read-only in All view
-                />
-              );
-            })}
-          </div>
-        </section>
-      )}
-
-      {/* Ungrouped Reports Section */}
-      {ungroupedReports.length > 0 && (
-        <section>
-          <div className="flex items-center gap-2 mb-4">
-            <h3 className="text-md font-semibold text-[rgb(var(--color-text))]">
-              📋 Ungrouped Reports
-            </h3>
-            <span className="px-2 py-0.5 text-xs rounded-full bg-[rgb(var(--color-warning)/0.2)] text-[rgb(var(--color-warning))]">
-              {ungroupedReports.length}
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-            {ungroupedReports.map((report) => {
-              return (
-                <UngroupedReportCard
-                  key={report.id}
-                  report={report}
-                  onAddToGroup={() => {}} // Read-only in All view
-                  onCreateGroup={() => {}} // Read-only in All view
-                  onDelete={() => {}} // Read-only in All view
-                  onViewDetails={() => onViewReport(report.id)}
-                />
-              );
-            })}
-          </div>
-        </section>
-      )}
 
       {/* Info Banner */}
-      <div className="bg-[rgb(var(--color-muted)/0.3)] rounded-lg p-4 border border-[rgb(var(--color-border))]">
-        <p className="text-sm text-[rgb(var(--color-text-muted))]">
-          💡 <strong>Tip:</strong> Switch to <span className="text-[rgb(var(--color-primary))]">Grouped</span> or <span className="text-[rgb(var(--color-warning))]">Ungrouped</span> view to manage records individually.
+      <div className="bg-[rgb(var(--color-primary))]/10 border border-[rgb(var(--color-primary))]/20 rounded-lg p-4">
+        <p className="text-sm text-[rgb(var(--color-text-secondary))]">
+          ℹ️ This view shows every individual report, including those that are part of groups and those that are ungrouped.
         </p>
       </div>
+
+      {/* All Reports Table */}
+      <Table
+        columns={[
+          {
+            id: 'animalType',
+            label: 'Animal Type',
+            width: 'w-32',
+            render: (report: AcceptedReport) => <span className="capitalize">{report.animalType}</span>
+          },
+          {
+            id: 'sex',
+            label: 'Sex',
+            width: 'w-24',
+            render: (report: AcceptedReport) => <span className="capitalize">{report.sex}</span>
+          },
+          {
+            id: 'colorPattern',
+            label: 'Color Pattern',
+            width: 'w-32',
+            render: (report: AcceptedReport) => <span className="capitalize">{report.colorPattern}</span>
+          },
+          {
+            id: 'primaryColor',
+            label: 'Color',
+            width: 'w-32',
+            render: (report: AcceptedReport) => report.primaryColor
+          },
+          {
+            id: 'spottedTime',
+            label: 'Sighting Time',
+            width: 'w-40',
+            render: (report: AcceptedReport) => `${report.spottedDate} - ${report.spottedTime}`
+          },
+          {
+            id: 'bcs',
+            label: 'BCS',
+            width: 'w-24',
+            render: (report: AcceptedReport) => `${report.bodyConditionScore}/9`
+          },
+        ]}
+        data={sortedReports}
+        onRowClick={(report: AcceptedReport) => onViewReport(report.id)}
+        selectable={true}
+        selectedIds={selectedIds}
+        onSelectRow={handleSelectRow}
+        onSelectAll={handleSelectAll}
+        getRowId={(report: AcceptedReport) => report.id}
+        emptyMessage="No reports available"
+        showSelectionInfo={false}
+      />
     </div>
   );
 }

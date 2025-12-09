@@ -12,6 +12,7 @@ import GroupDetailsModal from './GroupDetailsModal';
 import AddToGroupModal from './AddToGroupModal';
 import DeleteConfirmation from './DeleteConfirmation';
 import DeleteGroupConfirmation from './DeleteGroupConfirmation';
+import ReportDetailsModal from '@/components/ui/ReportDetailsModal';
 import { 
   ViewType, 
   AcceptedReport, 
@@ -89,6 +90,13 @@ export default function RecordsRefactored() {
     isOpen: false
   });
 
+  const [reportDetailsModal, setReportDetailsModal] = useState<{
+    isOpen: boolean;
+    report?: AcceptedReport;
+  }>({
+    isOpen: false
+  });
+
   // Selected items for bulk operations
   const [selectedReportIds, setSelectedReportIds] = useState<string[]>([]);
 
@@ -115,14 +123,16 @@ export default function RecordsRefactored() {
         {
           id: 'report-1',
           groupId: null,
-          photoUrl: '',
+          photoUrl: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800',
           animalType: 'dog',
           sex: 'male',
           collar: 'yes',
           colorPattern: 'solid',
           primaryColor: 'brown',
           bodyConditionScore: 3,
-          physicalProblems: ['limping'],
+          skinProblems: [],
+          eyeProblems: [],
+          gaitProblems: ['limping', 'difficulty_walking'],
           notes: 'Friendly dog seen near library',
           latitude: 14.5995,
           longitude: 120.9842,
@@ -132,20 +142,25 @@ export default function RecordsRefactored() {
           reportedBy: 'user-1',
           reporterEmail: 'john@example.com',
           status: 'verified',
+          verifiedBy: 'admin-1',
+          verifiedAt: '2025-12-08T15:00:00Z',
           acceptedAt: '2025-12-08T15:00:00Z',
-          createdAt: '2025-12-08T14:35:00Z'
+          createdAt: '2025-12-08T14:35:00Z',
+          updatedAt: '2025-12-08T15:00:00Z'
         },
         {
           id: 'report-2',
           groupId: 'group-1',
-          photoUrl: '',
+          photoUrl: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800',
           animalType: 'cat',
           sex: 'female',
           collar: 'no',
           colorPattern: 'tabby',
           primaryColor: 'orange',
           bodyConditionScore: 4,
-          physicalProblems: [],
+          skinProblems: [],
+          eyeProblems: [],
+          gaitProblems: [],
           notes: 'Well-fed cat, appears to be owned',
           latitude: 14.5995,
           longitude: 120.9842,
@@ -155,21 +170,26 @@ export default function RecordsRefactored() {
           reportedBy: 'user-2',
           reporterEmail: 'jane@example.com',
           status: 'verified',
+          verifiedBy: 'admin-1',
+          verifiedAt: '2025-12-07T11:00:00Z',
           acceptedAt: '2025-12-07T11:00:00Z',
-          createdAt: '2025-12-07T10:20:00Z'
+          createdAt: '2025-12-07T10:20:00Z',
+          updatedAt: '2025-12-07T11:00:00Z'
         },
         {
           id: 'report-3',
           groupId: 'group-1',
-          photoUrl: '',
+          photoUrl: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800',
           animalType: 'cat',
           sex: 'female',
           collar: 'no',
           colorPattern: 'tabby',
           primaryColor: 'orange',
           bodyConditionScore: 4,
-          physicalProblems: [],
-          notes: 'Same cat as before, near cafeteria',
+          skinProblems: ['hair_loss', 'redness'],
+          eyeProblems: ['discharge', 'cloudiness'],
+          gaitProblems: [],
+          notes: 'Same cat as before, near cafeteria. Noticed some eye discharge.',
           latitude: 14.5995,
           longitude: 120.9842,
           locationDescription: 'Main Cafeteria',
@@ -178,8 +198,11 @@ export default function RecordsRefactored() {
           reportedBy: 'user-3',
           reporterEmail: 'mike@example.com',
           status: 'verified',
+          verifiedBy: 'admin-1',
+          verifiedAt: '2025-12-09T12:30:00Z',
           acceptedAt: '2025-12-09T12:30:00Z',
-          createdAt: '2025-12-09T12:05:00Z'
+          createdAt: '2025-12-09T12:05:00Z',
+          updatedAt: '2025-12-09T12:30:00Z'
         }
       ];
 
@@ -443,9 +466,14 @@ export default function RecordsRefactored() {
   };
 
   const handleViewReportDetails = (reportId: string) => {
-    // TODO: Implement report details modal or navigation
-    console.log('View report details:', reportId);
-    alert(`View details for report ${reportId} - TODO: Implement details modal`);
+    const report = reports.find(r => r.id === reportId);
+    if (report) {
+      setReportDetailsModal({ isOpen: true, report });
+    }
+  };
+
+  const closeReportDetailsModal = () => {
+    setReportDetailsModal({ isOpen: false });
   };
 
   // Bulk operations
@@ -559,23 +587,23 @@ export default function RecordsRefactored() {
         <UngroupedView
           reports={ungroupedReports}
           selectedReportIds={selectedReportIds}
-          onSelectReport={(reportId) => {
+          onSelectReport={(reportId: string) => {
             setSelectedReportIds(prev => 
               prev.includes(reportId)
                 ? prev.filter(id => id !== reportId)
                 : [...prev, reportId]
             );
           }}
-          onAddToGroup={(reportId) => {
+          onAddToGroup={(reportId: string) => {
             const report = reports.find(r => r.id === reportId);
             if (report) openAddToGroupModal(report);
           }}
-          onCreateGroup={(reportId) => {
+          onCreateGroup={(reportId: string) => {
             const report = reports.find(r => r.id === reportId);
             if (report) openCreateGroupModal('from-report', report);
           }}
           onViewReport={handleViewReportDetails}
-          onDeleteReport={(reportId) => {
+          onDeleteReport={(reportId: string) => {
             const report = reports.find(r => r.id === reportId);
             if (report) setDeleteReportModal({ isOpen: true, report });
           }}
@@ -587,7 +615,7 @@ export default function RecordsRefactored() {
         <AllView
           groups={groups}
           reports={reports}
-          onViewGroup={(groupId) => {
+          onViewGroup={(groupId: string) => {
             const group = groups.find(g => g.id === groupId);
             if (group) openGroupDetailsModal(group);
           }}
@@ -652,6 +680,14 @@ export default function RecordsRefactored() {
           report={addToGroupModal.report}
           groups={groups}
           onSubmit={handleAddToGroup}
+        />
+      )}
+
+      {reportDetailsModal.isOpen && reportDetailsModal.report && (
+        <ReportDetailsModal
+          isOpen={reportDetailsModal.isOpen}
+          onClose={closeReportDetailsModal}
+          report={reportDetailsModal.report}
         />
       )}
 

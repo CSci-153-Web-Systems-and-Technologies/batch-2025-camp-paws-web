@@ -179,13 +179,29 @@ export default function ReportCard({
         </div>
 
         {/* Physical Problems */}
-        {report.physicalProblems.length > 0 && (
+        {(report.skinProblems.length > 0 || report.eyeProblems.length > 0 || report.gaitProblems.length > 0) && (
           <div className="mb-4 p-3 bg-[rgb(var(--color-warning-bg))] border border-[rgb(var(--color-warning))] rounded-lg">
             <div className="text-sm font-semibold text-[rgb(var(--color-warning))] mb-2">
               ⚠️ Physical Issues Observed
             </div>
             <div className="flex flex-wrap gap-2">
-              {report.physicalProblems.map((problem) => (
+              {report.skinProblems.map((problem: string) => (
+                <span
+                  key={problem}
+                  className="text-xs px-2 py-1 bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] rounded border border-[rgb(var(--color-warning-light))]"
+                >
+                  {problem.replace(/_/g, ' ')}
+                </span>
+              ))}
+              {report.eyeProblems.map((problem: string) => (
+                <span
+                  key={problem}
+                  className="text-xs px-2 py-1 bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] rounded border border-[rgb(var(--color-warning-light))]"
+                >
+                  {problem.replace(/_/g, ' ')}
+                </span>
+              ))}
+              {report.gaitProblems.map((problem: string) => (
                 <span
                   key={problem}
                   className="text-xs px-2 py-1 bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-secondary))] rounded border border-[rgb(var(--color-warning-light))]"
