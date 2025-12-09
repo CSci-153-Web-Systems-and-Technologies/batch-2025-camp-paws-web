@@ -2,7 +2,8 @@
 'use client';
 
 import { useState } from 'react';
-import { ReportsTableProps } from '../types/VerifyTypes';
+import Table, { TableColumn } from '@/components/ui/Table';
+import { ReportsTableProps, Report } from '../types/VerifyTypes';
 
 export default function ReportsTable({ reports, onRowClick, selectedColumns }: ReportsTableProps) {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
@@ -25,129 +26,68 @@ export default function ReportsTable({ reports, onRowClick, selectedColumns }: R
     setSelectedRows(newSelected);
   };
 
-  const isAllSelected = reports.length > 0 && selectedRows.size === reports.length;
-  const isSomeSelected = selectedRows.size > 0 && selectedRows.size < reports.length;
-  const columnConfig = {
-    animalType: { label: 'Animal Type', width: 'w-32' },
-    sex: { label: 'Sex', width: 'w-24' },
-    colorPattern: { label: 'Color Pattern', width: 'w-32' },
-    primaryColor: { label: 'Color', width: 'w-32' },
-    spottedTime: { label: 'Sighting Time', width: 'w-40' },
-    submittedBy: { label: 'Submitted By', width: 'w-48' },
+  const columnConfig: Record<string, { label: string; width: string; render: (report: Report) => React.ReactNode }> = {
+    reportId: {
+      label: 'Report ID',
+      width: 'w-40',
+      render: (report) => (
+        <div className="font-mono text-xs text-[rgb(var(--color-text-secondary))]">
+          {report.id.slice(0, 8)}...
+        </div>
+      )
+    },
+    animalType: {
+      label: 'Animal Type',
+      width: 'w-32',
+      render: (report) => <span className="capitalize">{report.animalType}</span>
+    },
+    sex: {
+      label: 'Sex',
+      width: 'w-24',
+      render: (report) => <span className="capitalize">{report.sex}</span>
+    },
+    colorPattern: {
+      label: 'Color Pattern',
+      width: 'w-32',
+      render: (report) => <span className="capitalize">{report.colorPattern}</span>
+    },
+    primaryColor: {
+      label: 'Color',
+      width: 'w-32',
+      render: (report) => report.primaryColor
+    },
+    spottedTime: {
+      label: 'Sighting Time',
+      width: 'w-40',
+      render: (report) => `${report.spottedDate} - ${report.spottedTime}`
+    },
   };
 
-  const getDisplayColumns = () => {
-    return selectedColumns.filter(col => col in columnConfig);
+  const getDisplayColumns = (): TableColumn<Report>[] => {
+    return selectedColumns
+      .filter(col => col in columnConfig)
+      .map(columnId => ({
+        id: columnId,
+        label: columnConfig[columnId].label,
+        width: columnConfig[columnId].width,
+        render: columnConfig[columnId].render,
+      }));
   };
 
   const displayColumns = getDisplayColumns();
 
   return (
-    <div className="bg-[rgb(var(--color-surface))] rounded-lg shadow-sm border border-[rgb(var(--color-border))] overflow-hidden">
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-[rgb(var(--color-background))] border-b border-[rgb(var(--color-border))]">
-            <tr>
-              {displayColumns.map((columnId) => {
-                const config = columnConfig[columnId as keyof typeof columnConfig];
-                return (
-                  <th
-                    key={columnId}
-                    className={`px-6 py-3 text-left text-xs font-medium text-[rgb(var(--color-text-secondary))] uppercase tracking-wider ${config.width}`}
-                  >
-                    <div className="flex items-center gap-1">
-                      {config.label}
-                      <svg className="w-4 h-4 text-[rgb(var(--color-text-tertiary))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4" />
-                      </svg>
-                    </div>
-                  </th>
-                );
-              })}
-              {/* Checkbox column */}
-              <th className="px-6 py-3 w-12 text-center">
-                <div className="flex items-center justify-center">
-                  <input
-                    type="checkbox"
-                    checked={isAllSelected}
-                    ref={(input) => {
-                      if (input) {
-                        input.indeterminate = isSomeSelected;
-                      }
-                    }}
-                    onChange={(e) => handleSelectAll(e.target.checked)}
-                    className="rounded border-[rgb(var(--color-border))] text-[rgb(var(--color-primary))] focus:ring-[rgb(var(--color-primary))]"
-                  />
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="bg-[rgb(var(--color-surface))] divide-y divide-[rgb(var(--color-border))]">
-            {reports.length === 0 ? (
-              <tr>
-                <td colSpan={displayColumns.length + 1} className="px-6 py-12 text-center text-[rgb(var(--color-text-secondary))]">
-                  No pending reports to verify
-                </td>
-              </tr>
-            ) : (
-              reports.map((report) => {
-                const isSelected = selectedRows.has(report.id);
-                return (
-                  <tr
-                    key={report.id}
-                    className={`hover:bg-[rgb(var(--color-background))] cursor-pointer transition-colors ${
-                      isSelected ? 'bg-[rgb(var(--color-primary-light))]' : ''
-                    }`}
-                  >
-                    {displayColumns.map((columnId) => (
-                      <td
-                        key={columnId}
-                        onClick={() => onRowClick(report)}
-                        className="px-6 py-4 whitespace-nowrap text-sm text-[rgb(var(--color-text-primary))]"
-                      >
-                        {columnId === 'animalType' && (
-                          <span className="capitalize">{report.animalType}</span>
-                        )}
-                        {columnId === 'sex' && (
-                          <span className="capitalize">{report.sex}</span>
-                        )}
-                        {columnId === 'colorPattern' && (
-                          <span className="capitalize">{report.colorPattern}</span>
-                        )}
-                        {columnId === 'primaryColor' && report.primaryColor}
-                        {columnId === 'spottedTime' && `${report.spottedDate} - ${report.spottedTime}`}
-                        {columnId === 'submittedBy' && (
-                          <div className="max-w-xs truncate">{report.reportedBy}</div>
-                        )}
-                      </td>
-                    ))}
-                    {/* Checkbox column */}
-                    <td className="px-6 py-4 whitespace-nowrap text-center">
-                      <div className="flex items-center justify-center">
-                        <input
-                          type="checkbox"
-                          checked={isSelected}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            handleSelectRow(report.id, e.target.checked);
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                          className="rounded border-[rgb(var(--color-border))] text-[rgb(var(--color-primary))] focus:ring-[rgb(var(--color-primary))]"
-                        />
-                      </div>
-                    </td>
-                  </tr>
-                );
-              })
-            )}
-          </tbody>
-        </table>
-      </div>
-
-      {/* Selection info */}
-      <div className="bg-[rgb(var(--color-background))] px-6 py-3 border-t border-[rgb(var(--color-border))] text-sm text-[rgb(var(--color-text-secondary))]">
-        {selectedRows.size} of {reports.length} row(s) selected.
-      </div>
-    </div>
+    <Table
+      columns={displayColumns}
+      data={reports}
+      onRowClick={onRowClick}
+      selectable={true}
+      selectedIds={selectedRows}
+      onSelectRow={handleSelectRow}
+      onSelectAll={handleSelectAll}
+      getRowId={(report) => report.id}
+      emptyMessage="No pending reports to verify"
+      showSelectionInfo={true}
+    />
   );
 }

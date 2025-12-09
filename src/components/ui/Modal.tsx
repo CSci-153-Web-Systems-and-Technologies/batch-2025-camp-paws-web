@@ -82,17 +82,17 @@ export default function Modal({
       {/* Modal Container */}
       <div className="flex min-h-full items-center justify-center p-4">
         <div
-          className={`relative bg-surface rounded-lg shadow-xl ${sizeStyles[size]} w-full max-h-[90vh] overflow-y-auto`}
+          className={`relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl ${sizeStyles[size]} w-full max-h-[90vh] overflow-y-auto`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}
           {(title || showCloseButton) && (
-            <div className="flex items-center justify-between p-6 border-b border-primary">
-              {title && <h2 className="text-2xl font-bold text-primary">{title}</h2>}
+            <div className="flex items-center justify-between p-6 border-b border-[rgb(var(--color-border))]">
+              {title && <h2 className="text-2xl font-bold text-[rgb(var(--color-text))]">{title}</h2>}
               {showCloseButton && (
                 <button
                   onClick={onClose}
-                  className="p-1 rounded-lg text-tertiary hover:text-primary hover:bg-surface-hover transition-colors"
+                  className="p-1 rounded-lg text-[rgb(var(--color-text-muted))] hover:text-[rgb(var(--color-text))] hover:bg-[rgb(var(--color-surface-hover))] transition-colors"
                   aria-label="Close modal"
                 >
                   <X className="w-6 h-6" />
@@ -120,7 +120,7 @@ export function ModalBody({ children, className = '' }: { children: ReactNode; c
 
 export function ModalFooter({ children, className = '' }: { children: ReactNode; className?: string }) {
   return (
-    <div className={`flex gap-3 mt-6 pt-6 border-t border-primary ${className}`}>
+    <div className={`flex gap-3 mt-6 pt-6 border-t border-[rgb(var(--color-border))] ${className}`}>
       {children}
     </div>
   );

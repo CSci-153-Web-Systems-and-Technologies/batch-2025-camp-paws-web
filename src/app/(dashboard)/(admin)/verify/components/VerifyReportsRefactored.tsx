@@ -8,7 +8,7 @@ import ReportsTable from './ReportsTable';
 import ReportDetailsModal from './ReportDetailsModal';
 import Button from '@/components/ui/Button';
 
-const AVAILABLE_COLUMNS = ['animalType', 'sex', 'colorPattern', 'primaryColor', 'spottedTime', 'submittedBy'];
+const AVAILABLE_COLUMNS = ['reportId', 'animalType', 'sex', 'colorPattern', 'primaryColor', 'spottedTime'];
 
 export default function VerifyReportsRefactored({ initialReports }: VerifyReportsProps) {
   const [reports, setReports] = useState<Report[]>(initialReports || []);
