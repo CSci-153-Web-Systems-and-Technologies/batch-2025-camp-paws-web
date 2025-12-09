@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import "@/src/styles/theme.css";
 import "leaflet/dist/leaflet.css";
 import "react-datepicker/dist/react-datepicker.css";
+import { ThemeProvider } from "@/src/contexts/ThemeContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,7 +31,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider defaultTheme="system" storageKey="camp-paws-theme">
+          {children}
+        </ThemeProvider>
       </body>
     </html>
   );

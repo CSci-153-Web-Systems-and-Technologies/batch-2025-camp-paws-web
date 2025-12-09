@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { ThemeToggle } from '@/src/components/ThemeSwitcher';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -105,23 +106,23 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
       {/* Sidebar */}
       <aside 
         className={`
-          fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform transition-transform duration-300 ease-in-out
+          fixed lg:static inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-900 shadow-lg transform transition-transform duration-300 ease-in-out
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
         {/* Sidebar Header */}
-        <div className="flex items-center justify-between p-4 border-b border-gray-200">
+        <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-800">
           <div className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">CP</span>
             </div>
-            <span className="font-bold text-gray-900">CAMP-PAWS</span>
+            <span className="font-bold text-gray-900 dark:text-gray-100">CAMP-PAWS</span>
           </div>
           
           {/* Close button for mobile */}
           <button
             onClick={onClose}
-            className="lg:hidden p-1 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100"
+            className="lg:hidden p-1 rounded-md text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800"
           >
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -142,8 +143,8 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
                     className={`
                       flex items-center px-3 py-2 text-sm font-medium rounded-lg transition-colors
                       ${isActive
-                        ? 'bg-green-100 text-green-700'
-                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900'
+                        ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                        : 'text-gray-700 hover:bg-gray-100 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-gray-100'
                       }
                     `}
                   >
@@ -157,16 +158,23 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
         </nav>
 
         {/* Sidebar Footer */}
-        <div className="p-4 border-t border-gray-200">
+        <div className="p-4 border-t border-gray-200 dark:border-gray-800 space-y-3">
+          {/* Theme Toggle */}
+          <div className="flex items-center justify-between">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Theme</span>
+            <ThemeToggle />
+          </div>
+          
+          {/* User Info */}
           <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center">
-              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <div className="w-8 h-8 bg-gray-300 dark:bg-gray-700 rounded-full flex items-center justify-center">
+              <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-gray-900 truncate">Student User</p>
-              <p className="text-xs text-gray-500 truncate">student@vsu.edu.ph</p>
+              <p className="text-sm font-medium text-gray-900 dark:text-gray-100 truncate">Student User</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400 truncate">student@vsu.edu.ph</p>
             </div>
           </div>
         </div>
