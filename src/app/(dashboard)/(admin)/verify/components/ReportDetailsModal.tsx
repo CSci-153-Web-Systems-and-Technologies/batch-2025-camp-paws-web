@@ -3,8 +3,18 @@
 // Single Responsibility: Display detailed report information in a modal
 import { useState } from 'react';
 import Image from 'next/image';
+import dynamic from 'next/dynamic';
 import { ReportDetailsModalProps } from '../types/VerifyTypes';
 import { parsePhysicalProblems } from '../utils/PhysicalProblemsParser';
+
+const ReportLocationMap = dynamic(() => import('./ReportLocationMap'), {
+  ssr: false,
+  loading: () => (
+    <div className="w-full h-full bg-gray-200 flex items-center justify-center">
+      <div className="text-gray-500 text-sm">Loading map...</div>
+    </div>
+  ),
+});
 
 export default function ReportDetailsModal({
   report,
@@ -71,7 +81,7 @@ export default function ReportDetailsModal({
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black bg-opacity-50 transition-opacity" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm transition-opacity" onClick={onClose} />
 
       {/* Modal */}
       <div className="flex min-h-full items-center justify-center p-4">
@@ -89,7 +99,7 @@ export default function ReportDetailsModal({
           <div className="p-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Left Column - Photo and Map */}
-              <div className="space-y-4">
+              <div className="space-y-4 order-1">
                 {/* Photo */}
                 <div className="relative w-full h-64 bg-gray-200 rounded-lg overflow-hidden">
                   <Image
@@ -108,65 +118,15 @@ export default function ReportDetailsModal({
                 {/* Map */}
                 <div className="space-y-2">
                   <h3 className="font-semibold text-gray-900">Location</h3>
-                  <div className="h-64 rounded-lg overflow-hidden border border-gray-200 bg-gray-100 flex items-center justify-center">
-                    <div className="text-center">
-                      <svg className="w-12 h-12 text-gray-400 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                      </svg>
-                      <p className="text-sm text-gray-600">
-                        {report.latitude.toFixed(6)}, {report.longitude.toFixed(6)}
-                      </p>
-                      <p className="text-xs text-gray-500 mt-1">{report.locationDescription}</p>
-                    </div>
+                  <div className="h-64 rounded-lg overflow-hidden border border-gray-200">
+                    <ReportLocationMap latitude={report.latitude} longitude={report.longitude} />
                   </div>
-                </div>
-
-                {/* Date Reported & Reporter Info */}
-                <div className="bg-gray-50 rounded-lg p-4 space-y-3">
-                  <div>
-                    <div className="text-xs font-medium text-gray-500">Date Reported</div>
-                    <div className="text-sm text-gray-900">{report.spottedDate}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs font-medium text-gray-500">Reported By</div>
-                    <div className="text-sm text-gray-900">{report.reportedBy}</div>
-                    <div className="text-xs text-gray-500">{report.reporterEmail}</div>
-                  </div>
-                  <div>
-                    <div className="text-xs font-medium text-gray-500">Reports Submitted</div>
-                    <div className="text-sm text-gray-900">{report.reportsSubmitted} reports</div>
-                  </div>
-                  <div>
-                    <div className="text-xs font-medium text-gray-500">Warnings</div>
-                    <div className="text-sm text-gray-900 flex items-center gap-2">
-                      {report.warnings} warnings
-                      {report.warnings > 0 && (
-                        <span className="text-yellow-600">⚠️</span>
-                      )}
-                    </div>
-                  </div>
-
-                  {/* User Actions */}
-                  <div className="flex gap-2 pt-2 border-t border-gray-200">
-                    <button
-                      onClick={() => setShowWarnDialog(true)}
-                      className="flex-1 px-3 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors text-sm font-medium"
-                    >
-                      Warn User
-                    </button>
-                    <button
-                      onClick={() => setShowSuspendDialog(true)}
-                      className="flex-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
-                    >
-                      Suspend
-                    </button>
-                  </div>
+                  <p className="text-xs text-gray-500">{report.locationDescription}</p>
                 </div>
               </div>
 
               {/* Right Column - Report Details */}
-              <div className="space-y-6">
+              <div className="space-y-6 order-2 lg:order-2">
                 <h2 className="text-2xl font-bold text-gray-900">Report Details</h2>
 
                 {/* Identification Section */}
@@ -284,6 +244,51 @@ export default function ReportDetailsModal({
                   </div>
                 </div>
               </div>
+
+              {/* Reporter Info - Appears at the end on mobile */}
+              <div className="bg-gray-50 rounded-lg p-4 space-y-3 order-3 lg:order-3 col-span-1 lg:col-span-2">
+                <h3 className="font-semibold text-gray-900 border-b pb-2">Reporter Information</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                  <div>
+                    <div className="text-xs font-medium text-gray-500">Reported By</div>
+                    <div className="text-sm text-gray-900">{report.reportedBy}</div>
+                    <div className="text-xs text-gray-500">{report.reporterEmail}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-medium text-gray-500">Date Reported</div>
+                    <div className="text-sm text-gray-900">{report.spottedDate}</div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-medium text-gray-500">Reports Submitted</div>
+                    <div className="text-sm text-gray-900">{report.reportsSubmitted} reports</div>
+                  </div>
+                  <div>
+                    <div className="text-xs font-medium text-gray-500">Warnings</div>
+                    <div className="text-sm text-gray-900 flex items-center gap-2">
+                      {report.warnings} warnings
+                      {report.warnings > 0 && (
+                        <span className="text-yellow-600">⚠️</span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* User Actions */}
+                <div className="flex gap-2 pt-2 border-t border-gray-200">
+                  <button
+                    onClick={() => setShowWarnDialog(true)}
+                    className="flex-1 px-3 py-2 bg-yellow-100 text-yellow-700 rounded-lg hover:bg-yellow-200 transition-colors text-sm font-medium"
+                  >
+                    Warn User
+                  </button>
+                  <button
+                    onClick={() => setShowSuspendDialog(true)}
+                    className="flex-1 px-3 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors text-sm font-medium"
+                  >
+                    Suspend User
+                  </button>
+                </div>
+              </div>
             </div>
 
             {/* Action Buttons */}
@@ -294,6 +299,13 @@ export default function ReportDetailsModal({
                 className="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors disabled:opacity-50"
               >
                 Reject
+              </button>
+              <button
+                onClick={() => alert('Edit functionality coming soon')}
+                disabled={isProcessing}
+                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50"
+              >
+                Edit
               </button>
               <button
                 onClick={handleAccept}
@@ -310,7 +322,7 @@ export default function ReportDetailsModal({
       {/* Reject Dialog */}
       {showRejectDialog && (
         <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowRejectDialog(false)} />
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowRejectDialog(false)} />
           <div className="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Reject Report</h3>
             <textarea
@@ -342,7 +354,7 @@ export default function ReportDetailsModal({
       {/* Warn Dialog */}
       {showWarnDialog && (
         <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowWarnDialog(false)} />
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowWarnDialog(false)} />
           <div className="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Warn User</h3>
             <textarea
@@ -374,7 +386,7 @@ export default function ReportDetailsModal({
       {/* Suspend Dialog */}
       {showSuspendDialog && (
         <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black bg-opacity-50" onClick={() => setShowSuspendDialog(false)} />
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowSuspendDialog(false)} />
           <div className="relative bg-white rounded-lg shadow-xl p-6 max-w-md w-full">
             <h3 className="text-lg font-semibold text-gray-900 mb-4">Suspend User</h3>
             <p className="text-sm text-gray-600 mb-4">
