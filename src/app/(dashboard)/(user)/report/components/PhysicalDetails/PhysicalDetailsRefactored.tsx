@@ -100,7 +100,7 @@ export default function PhysicalDetailsRefactored({ data, onNext, onBack }: Phys
 
         {/* Physical Attributes Section */}
         <div>
-          <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-3 sm:mb-4">Physical Attributes</h3>
+          <h3 className="text-base sm:text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-3 sm:mb-4">Physical Attributes</h3>
           <div className="space-y-6">
             
             <BodyConditionSelection 

@@ -71,162 +71,63 @@ export default function HealthAssessment({ selectedProblems, onProblemsChange }:
     onProblemsChange(newProblems || []);
   };
 
+  const renderProblemSection = (title: string, problems: typeof skinProblems) => (
+    <div className="mb-8">
+      <h4 className="text-base font-medium text-[rgb(var(--color-text-primary))] mb-4">
+        {title}
+      </h4>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+        {problems.map((problem) => (
+          <button
+            key={problem.id}
+            type="button"
+            onClick={() => handleProblemToggle(problem.id)}
+            className={`text-left p-4 rounded-lg border-2 transition-all duration-200 transform ${
+              (selectedProblems || []).includes(problem.id)
+                ? 'border-[rgb(var(--color-primary))] bg-[rgb(var(--color-primary-light))] shadow-md ring-2 ring-[rgb(var(--color-primary-light))]'
+                : 'border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] hover:border-[rgb(var(--color-primary))]'
+            }`}
+          >
+            <div className="flex items-start space-x-3">
+              <div className={`shrink-0 w-5 h-5 min-w-5 min-h-5 rounded border-2 flex items-center justify-center transition-colors ${
+                (selectedProblems || []).includes(problem.id)
+                  ? 'border-[rgb(var(--color-primary))] bg-[rgb(var(--color-primary))]'
+                  : 'border-[rgb(var(--color-border))]'
+              }`}>
+                {(selectedProblems || []).includes(problem.id) && (
+                  <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                  </svg>
+                )}
+              </div>
+              <div className="flex-1">
+                <div className={`font-medium text-sm transition-colors ${
+                  (selectedProblems || []).includes(problem.id)
+                    ? 'text-[rgb(var(--color-primary))]'
+                    : 'text-[rgb(var(--color-text-primary))]'
+                }`}>
+                  {problem.label}
+                </div>
+                <div className={`text-xs mt-1 transition-colors ${
+                  (selectedProblems || []).includes(problem.id)
+                    ? 'text-[rgb(var(--color-primary))]'
+                    : 'text-[rgb(var(--color-text-secondary))]'
+                }`}>
+                  {problem.description}
+                </div>
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  );
+
   return (
     <div>
-      
-      
-      {/* Skin Problems - Matching original PhysicalDetails.tsx exactly */}
-      <div className="mb-8">
-        <h4 className="text-base font-medium text-gray-800 mb-4">
-          Skin Problems (Select all that apply)
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {skinProblems.map((problem) => (
-            <button
-              key={problem.id}
-              type="button"
-              onClick={() => handleProblemToggle(problem.id)}
-              className={`text-left p-4 rounded-lg border-2 transition-all duration-200 transform ${
-                (selectedProblems || []).includes(problem.id)
-                  ? 'border-green-500 bg-green-50 shadow-md ring-2 ring-green-300'
-                  : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25'
-              }`}
-            >
-              <div className="flex items-start space-x-3">
-                <div className={`shrink-0 w-5 h-5 min-w-5 min-h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                  (selectedProblems || []).includes(problem.id)
-                    ? 'border-green-500 bg-green-500'
-                    : 'border-gray-300'
-                }`}>
-                  {(selectedProblems || []).includes(problem.id) && (
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <div className={`font-medium text-sm transition-colors ${
-                    (selectedProblems || []).includes(problem.id)
-                      ? 'text-green-700'
-                      : 'text-gray-900'
-                  }`}>
-                    {problem.label}
-                  </div>
-                  <div className={`text-xs mt-1 transition-colors ${
-                    (selectedProblems || []).includes(problem.id)
-                      ? 'text-green-600'
-                      : 'text-gray-600'
-                  }`}>
-                    {problem.description}
-                  </div>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Eye Problems - Matching original PhysicalDetails.tsx exactly */}
-      <div className="mb-8">
-        <h4 className="text-base font-medium text-gray-800 mb-4">
-          Eye Problems (Select all that apply)
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {eyeProblems.map((problem) => (
-            <button
-              key={problem.id}
-              type="button"
-              onClick={() => handleProblemToggle(problem.id)}
-              className={`text-left p-4 rounded-lg border-2 transition-all duration-200 transform ${
-                (selectedProblems || []).includes(problem.id)
-                  ? 'border-green-500 bg-green-50 shadow-md ring-2 ring-green-300'
-                  : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25'
-              }`}
-            >
-              <div className="flex items-start space-x-3">
-                <div className={`shrink-0 w-5 h-5 min-w-5 min-h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                  (selectedProblems || []).includes(problem.id)
-                    ? 'border-green-500 bg-green-500'
-                    : 'border-gray-300'
-                }`}>
-                  {(selectedProblems || []).includes(problem.id) && (
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <div className={`font-medium text-sm transition-colors ${
-                    (selectedProblems || []).includes(problem.id)
-                      ? 'text-green-700'
-                      : 'text-gray-900'
-                  }`}>
-                    {problem.label}
-                  </div>
-                  <div className={`text-xs mt-1 transition-colors ${
-                    (selectedProblems || []).includes(problem.id)
-                      ? 'text-green-600'
-                      : 'text-gray-600'
-                  }`}>
-                    {problem.description}
-                  </div>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Gait Problems - Matching original PhysicalDetails.tsx exactly */}
-      <div className="mb-6">
-        <h4 className="text-base font-medium text-gray-800 mb-4">
-          Gait Problems (Select all that apply)
-        </h4>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {gaitProblems.map((problem) => (
-            <button
-              key={problem.id}
-              type="button"
-              onClick={() => handleProblemToggle(problem.id)}
-              className={`text-left p-4 rounded-lg border-2 transition-all duration-200 transform ${
-                (selectedProblems || []).includes(problem.id)
-                  ? 'border-green-500 bg-green-50 shadow-md ring-2 ring-green-300'
-                  : 'border-gray-300 bg-white hover:border-green-400 hover:bg-green-25'
-              }`}
-            >
-              <div className="flex items-start space-x-3">
-                <div className={`shrink-0 w-5 h-5 min-w-5 min-h-5 rounded border-2 flex items-center justify-center transition-colors ${
-                  (selectedProblems || []).includes(problem.id)
-                    ? 'border-green-500 bg-green-500'
-                    : 'border-gray-300'
-                }`}>
-                  {(selectedProblems || []).includes(problem.id) && (
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
-                    </svg>
-                  )}
-                </div>
-                <div className="flex-1">
-                  <div className={`font-medium text-sm transition-colors ${
-                    (selectedProblems || []).includes(problem.id)
-                      ? 'text-green-700'
-                      : 'text-gray-900'
-                  }`}>
-                    {problem.label}
-                  </div>
-                  <div className={`text-xs mt-1 transition-colors ${
-                    (selectedProblems || []).includes(problem.id)
-                      ? 'text-green-600'
-                      : 'text-gray-600'
-                  }`}>
-                    {problem.description}
-                  </div>
-                </div>
-              </div>
-            </button>
-          ))}
-        </div>
-      </div>
+      {renderProblemSection('Skin Problems (Select all that apply)', skinProblems)}
+      {renderProblemSection('Eye Problems (Select all that apply)', eyeProblems)}
+      {renderProblemSection('Gait Problems (Select all that apply)', gaitProblems)}
     </div>
   );
 }
