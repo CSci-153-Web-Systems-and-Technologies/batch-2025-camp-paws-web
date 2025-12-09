@@ -14,7 +14,7 @@ export default function MapSelection({
 }: MapSelectionProps) {
   return (
     <div>
-      <label className="block text-sm font-medium text-gray-700 mb-2">
+      <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-2">
         Location on Campus *
       </label>
       <div className="space-y-2">
@@ -22,11 +22,11 @@ export default function MapSelection({
           onLocationSelect={onLocationSelect}
           selectedLocation={selectedLocation}
         />
-        <div className="text-sm text-gray-600 space-y-1">
+        <div className="text-sm text-[rgb(var(--color-text-secondary))] space-y-1">
           <p>• Click anywhere on the map to pin the location where you found the animal</p>
           <p>• Only locations within the university campus boundaries are valid</p>
           {selectedLocation && (
-            <div className={`font-medium ${isLocationValid ? 'text-green-600' : 'text-red-600'}`}>
+            <div className={`font-medium ${isLocationValid ? 'text-[rgb(var(--color-success))]' : 'text-[rgb(var(--color-error))]'}`}>
               {isLocationValid ? (
                 <>✓ Valid location selected (Lat: {selectedLocation.lat.toFixed(6)}, Lng: {selectedLocation.lng.toFixed(6)})</>
               ) : (

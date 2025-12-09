@@ -57,10 +57,10 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack }: Locat
 
   return (
     <div className="max-w-4xl mx-auto">
-      <div className="bg-white rounded-lg shadow-lg p-8">
+      <div className="bg-[rgb(var(--color-surface))] rounded-lg shadow-lg p-8">
         <div className="flex items-center justify-between mb-8">
-          <h2 className="text-3xl font-bold text-gray-900">When & Where</h2>
-          <div className="text-sm text-gray-500">Step 3 of 3</div>
+          <h2 className="text-3xl font-bold text-[rgb(var(--color-text-primary))]">When & Where</h2>
+          <div className="text-sm text-[rgb(var(--color-text-secondary))]">Step 3 of 3</div>
         </div>
 
         <div className="space-y-6">
@@ -90,7 +90,7 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack }: Locat
         <div className="flex justify-between pt-8">
           <button
             onClick={onBack}
-            className="px-6 py-2 border border-gray-300 rounded-md shadow-sm text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+            className="px-6 py-2 border border-[rgb(var(--color-border))] rounded-md shadow-sm text-[rgb(var(--color-text-primary))] bg-[rgb(var(--color-surface))] hover:bg-[rgb(var(--color-background))] transition-colors"
           >
             Back
           </button>
@@ -100,8 +100,8 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack }: Locat
             disabled={!validation.isValid}
             className={`px-6 py-2 rounded-md shadow-sm font-medium transition-colors ${
               validation.isValid
-                ? 'bg-blue-600 hover:bg-blue-700 text-white'
-                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                ? 'bg-[rgb(var(--color-primary))] hover:opacity-90 text-white'
+                : 'bg-[rgb(var(--color-border))] text-[rgb(var(--color-text-tertiary))] cursor-not-allowed'
             }`}
           >
             Submit Report

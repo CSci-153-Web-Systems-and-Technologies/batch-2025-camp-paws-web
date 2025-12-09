@@ -75,14 +75,14 @@ export default function UniversityMap({ onLocationSelect, selectedLocation }: Un
 
   if (!mounted) {
     return (
-      <div className="w-full h-80 bg-gray-200 rounded-lg flex items-center justify-center">
-        <div className="text-gray-500">Loading map...</div>
+      <div className="w-full h-80 bg-[rgb(var(--color-background))] rounded-lg flex items-center justify-center">
+        <div className="text-[rgb(var(--color-text-secondary))]">Loading map...</div>
       </div>
     );
   }
 
   return (
-    <div className="w-full h-80 rounded-lg overflow-hidden border border-gray-300">
+    <div className="w-full h-80 rounded-lg overflow-hidden border border-[rgb(var(--color-border))]">
       <MapContainer
         center={[UNIVERSITY_BOUNDS.center.lat, UNIVERSITY_BOUNDS.center.lng]}
         zoom={17}
@@ -112,7 +112,7 @@ export default function UniversityMap({ onLocationSelect, selectedLocation }: Un
         {selectedLocation && (
           <Marker position={[selectedLocation.lat, selectedLocation.lng]}>
             <Popup>
-              <div className="text-sm">
+              <div className="text-sm text-gray-900">
                 <p className="font-semibold">Selected Location</p>
                 <p>Lat: {selectedLocation.lat.toFixed(6)}</p>
                 <p>Lng: {selectedLocation.lng.toFixed(6)}</p>

@@ -13,7 +13,7 @@ export default function DateTimeSelection({
     <div className="flex flex-col md:flex-row gap-6">
       {/* Modern Date Picker */}
       <div className="flex-1">
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-2">
           Date Spotted
         </label>
         <DatePicker
@@ -22,11 +22,11 @@ export default function DateTimeSelection({
           dateFormat="MMMM d, yyyy"
           maxDate={new Date()} // Can't select future dates
           placeholderText="Select date when you spotted the animal"
-          className="w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+          className="w-full px-3 py-2 border border-[rgb(var(--color-border))] rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-[rgb(var(--color-primary))] focus:border-[rgb(var(--color-primary))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))]"
           calendarClassName="custom-calendar"
           popperClassName="custom-popper"
         />
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-[rgb(var(--color-text-secondary))]">
           When did you first spot the animal?
         </p>
       </div>
@@ -38,7 +38,7 @@ export default function DateTimeSelection({
           onChange={onTimeChange}
           label="Time Spotted"
         />
-        <p className="mt-1 text-sm text-gray-500">
+        <p className="mt-1 text-sm text-[rgb(var(--color-text-secondary))]">
           What time did you spot the animal?
         </p>
       </div>
