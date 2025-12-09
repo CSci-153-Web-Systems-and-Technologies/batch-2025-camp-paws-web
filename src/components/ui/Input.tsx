@@ -33,8 +33,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     
     const baseInputStyles = 'px-3 py-2 rounded-lg border transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:opacity-60 disabled:cursor-not-allowed';
     
-    const normalStyles = 'border-primary bg-background text-primary focus:border-green-500 focus:ring-green-500';
-    const errorStyles = 'border-red-500 bg-red-50 text-red-900 focus:border-red-500 focus:ring-red-500 dark:bg-red-900/20 dark:text-red-100';
+    const normalStyles = 'border-[rgb(var(--color-border))] bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] focus:border-[rgb(var(--color-primary))] focus:ring-[rgb(var(--color-primary))]';
+    const errorStyles = 'border-[rgb(var(--color-error))] bg-[rgb(var(--color-error-bg))] text-[rgb(var(--color-text-primary))] focus:border-[rgb(var(--color-error))] focus:ring-[rgb(var(--color-error))]';
     
     const stateStyles = hasError ? errorStyles : normalStyles;
     const widthStyle = fullWidth ? 'w-full' : '';
@@ -46,14 +46,14 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className={`space-y-1 ${fullWidth ? 'w-full' : ''}`}>
         {label && (
-          <label className="block text-sm font-medium text-primary">
+          <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))]">
             {label}
           </label>
         )}
         
         <div className="relative">
           {leftIcon && (
-            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-tertiary">
+            <div className="absolute left-3 top-1/2 -translate-y-1/2 text-[rgb(var(--color-text-tertiary))]">
               {leftIcon}
             </div>
           )}

@@ -81,22 +81,22 @@ export default function DashboardLayout({
   }, [isSidebarOpen]);
 
   return (
-    <div className="flex h-screen bg-gray-50 dark:bg-gray-950">
+    <div className="flex h-screen bg-[rgb(var(--color-background))]">
       {/* Responsive Sidebar */}
       <Sidebar isOpen={isSidebarOpen} onClose={closeSidebar} userRole={userRole} />
 
       {/* Main Content Area */}
       <div className="flex-1 flex flex-col min-w-0">
         {/* Header with Hamburger Menu */}
-        <header className="bg-white dark:bg-gray-900 shadow-sm p-4 flex items-center justify-between border-b border-gray-200 dark:border-gray-800">
+        <header className="bg-[rgb(var(--color-surface))] shadow-sm p-4 flex items-center justify-between border-b border-[rgb(var(--color-border))]">
           <div className="flex items-center space-x-4">
             {/* Hamburger Menu for Mobile */}
             <HamburgerMenu isOpen={isSidebarOpen} onClick={toggleSidebar} />
             
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-green-600 dark:text-green-500">{headerInfo.title}</h1>
+              <h1 className="text-xl sm:text-2xl font-bold text-[rgb(var(--color-primary))]">{headerInfo.title}</h1>
               {headerInfo.description && (
-                <p className="text-gray-600 dark:text-gray-400 mt-1 text-sm sm:text-base hidden sm:block">{headerInfo.description}</p>
+                <p className="text-[rgb(var(--color-text-secondary))] mt-1 text-sm sm:text-base hidden sm:block">{headerInfo.description}</p>
               )}
             </div>
           </div>

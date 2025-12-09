@@ -19,12 +19,12 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 }
 
 const variantStyles: Record<ButtonVariant, string> = {
-  primary: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 disabled:bg-green-300',
-  secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 active:bg-gray-400 disabled:bg-gray-100 dark:bg-gray-700 dark:text-gray-100 dark:hover:bg-gray-600',
-  success: 'bg-green-600 text-white hover:bg-green-700 active:bg-green-800 disabled:bg-green-300',
-  warning: 'bg-yellow-600 text-white hover:bg-yellow-700 active:bg-yellow-800 disabled:bg-yellow-300',
-  danger: 'bg-red-600 text-white hover:bg-red-700 active:bg-red-800 disabled:bg-red-300',
-  ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 active:bg-gray-200 disabled:text-gray-400 dark:text-gray-300 dark:hover:bg-gray-800',
+  primary: 'bg-[rgb(var(--color-primary))] text-white hover:bg-[rgb(var(--color-primary-hover))] active:bg-[rgb(var(--color-primary-hover))] disabled:opacity-50',
+  secondary: 'bg-[rgb(var(--color-surface))] text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-border-hover))] active:bg-[rgb(var(--color-border-hover))] disabled:opacity-50 border border-[rgb(var(--color-border))]',
+  success: 'bg-[rgb(var(--color-success))] text-white hover:opacity-90 active:opacity-80 disabled:opacity-50',
+  warning: 'bg-[rgb(var(--color-warning))] text-white hover:opacity-90 active:opacity-80 disabled:opacity-50',
+  danger: 'bg-[rgb(var(--color-error))] text-white hover:opacity-90 active:opacity-80 disabled:opacity-50',
+  ghost: 'bg-transparent text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-surface))] active:bg-[rgb(var(--color-border))] disabled:opacity-50',
 };
 
 const sizeStyles: Record<ButtonSize, string> = {

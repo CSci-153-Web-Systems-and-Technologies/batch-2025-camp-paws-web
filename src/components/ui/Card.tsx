@@ -13,9 +13,9 @@ export interface CardProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 const variantStyles = {
-  default: 'bg-surface border border-primary',
-  outlined: 'bg-transparent border-2 border-primary',
-  elevated: 'bg-surface shadow-lg',
+  default: 'bg-[rgb(var(--color-surface))] border border-[rgb(var(--color-border))]',
+  outlined: 'bg-transparent border-2 border-[rgb(var(--color-border))]',
+  elevated: 'bg-[rgb(var(--color-surface))] shadow-lg',
 };
 
 const paddingStyles = {
