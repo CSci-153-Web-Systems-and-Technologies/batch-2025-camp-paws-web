@@ -87,6 +87,8 @@ export function ThemeProvider({
   // Initialize theme on mount
   useEffect(() => {
     const initializeTheme = () => {
+      if (typeof window === 'undefined') return;
+      
       try {
         // Get saved preference
         const savedTheme = localStorage.getItem(storageKey) as Theme | null;
@@ -102,14 +104,15 @@ export function ThemeProvider({
         // Update state
         setThemeState(initialTheme);
         setResolvedTheme(resolved);
-        setMounted(true);
       } catch (error) {
         console.warn('Failed to load theme preference:', error);
         const resolved = resolveTheme(defaultTheme);
         const root = document.documentElement;
+        root.classList.remove('light', 'dark');
         root.classList.add(resolved);
         setThemeState(defaultTheme);
         setResolvedTheme(resolved);
+      } finally {
         setMounted(true);
       }
     };

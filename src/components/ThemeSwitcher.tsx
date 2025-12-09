@@ -18,7 +18,7 @@ export default function ThemeSwitcher() {
   ];
 
   return (
-    <div className="flex items-center gap-1 p-1 bg-surface rounded-lg border border-primary">
+    <div className="flex items-center gap-1 p-1 bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
       {themes.map(({ value, label, icon: Icon }) => (
         <button
           key={value}
@@ -26,8 +26,8 @@ export default function ThemeSwitcher() {
           className={`
             flex items-center gap-2 px-3 py-2 rounded-md text-sm font-medium transition-colors
             ${theme === value
-              ? 'bg-primary-600 text-white'
-              : 'text-secondary hover:text-primary hover:bg-surface-hover'
+              ? 'bg-green-600 text-white'
+              : 'text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-700'
             }
           `}
           aria-label={`Switch to ${label} theme`}
@@ -48,7 +48,7 @@ export function ThemeToggle() {
   return (
     <button
       onClick={toggleTheme}
-      className="p-2 rounded-lg text-secondary hover:text-primary hover:bg-surface-hover transition-colors"
+      className="p-2 rounded-lg text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
       aria-label="Toggle theme"
       title={`Switch to ${resolvedTheme === 'light' ? 'dark' : 'light'} mode`}
     >
