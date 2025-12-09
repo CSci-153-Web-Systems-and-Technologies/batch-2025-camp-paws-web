@@ -8,6 +8,7 @@ import { ImagePreviewGenerator } from './utils/ImagePreviewGenerator';
 import DropZone from './components/DropZone';
 import ImagePreview from './components/ImagePreview';
 import UploadFeedback from './feedback/UploadFeedback';
+import Button from '@/components/ui/Button';
 
 // Open/Closed Principle: This component is open for extension (new upload features)
 // but closed for modification (core logic doesn't change)
@@ -158,17 +159,14 @@ export default function PhotoUploadRefactored({ data, onNext }: PhotoUploadProps
 
       {/* Navigation Buttons */}
       <div className="flex justify-end mt-8">
-        <button
+        <Button
           onClick={handleNext}
           disabled={!uploadState.selectedFile}
-          className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-            uploadState.selectedFile
-              ? 'bg-[rgb(var(--color-primary))] text-white hover:bg-[rgb(var(--color-primary-hover))]'
-              : 'bg-[rgb(var(--color-border))] text-[rgb(var(--color-text-tertiary))] cursor-not-allowed'
-          }`}
+          variant="primary"
+          size="lg"
         >
           Next
-        </button>
+        </Button>
       </div>
     </div>
   );

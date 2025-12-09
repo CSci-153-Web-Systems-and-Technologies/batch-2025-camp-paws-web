@@ -17,6 +17,7 @@ import ColorSelection from './sections/ColorSelection';
 import HealthAssessment from './sections/HealthAssessment';
 import NotesInput from './sections/NotesInput';
 import ValidationFeedback from './feedback/ValidationFeedback';
+import Button from '@/components/ui/Button';
 
 interface PhysicalDetailsProps {
   data: FormData;
@@ -145,24 +146,22 @@ export default function PhysicalDetailsRefactored({ data, onNext, onBack }: Phys
 
         {/* Navigation Buttons */}
         <div className="flex justify-between pt-6">
-          <button
+          <Button
             onClick={onBack}
-            className="px-6 py-2 border border-[rgb(var(--color-border))] rounded-lg text-[rgb(var(--color-text-primary))] hover:bg-[rgb(var(--color-background))] transition-colors"
+            variant="secondary"
+            size="lg"
           >
             Back
-          </button>
+          </Button>
           
-          <button
+          <Button
             onClick={handleSubmit}
             disabled={!validation.isValid}
-            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-              validation.isValid
-                ? 'bg-[rgb(var(--color-primary))] text-white hover:bg-[rgb(var(--color-primary-hover))]'
-                : 'bg-[rgb(var(--color-border))] text-[rgb(var(--color-text-tertiary))] cursor-not-allowed'
-            }`}
+            variant="primary"
+            size="lg"
           >
             Next
-          </button>
+          </Button>
         </div>
       </div>
     </div>

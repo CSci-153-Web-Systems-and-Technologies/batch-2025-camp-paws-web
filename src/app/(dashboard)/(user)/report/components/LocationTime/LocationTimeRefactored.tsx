@@ -9,6 +9,7 @@ import DateTimeSelection from './sections/DateTimeSelection';
 import LocationDescription from './sections/LocationDescription';
 import MapSelection from './sections/MapSelection';
 import ValidationFeedback from './feedback/ValidationFeedback';
+import Button from '@/components/ui/Button';
 
 // Open/Closed Principle: This component is open for extension (new location features)
 // but closed for modification (core logic doesn't change)
@@ -88,24 +89,22 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack }: Locat
         </div>
 
         <div className="flex justify-between pt-8">
-          <button
+          <Button
             onClick={onBack}
-            className="px-6 py-2 border border-[rgb(var(--color-border))] rounded-md shadow-sm text-[rgb(var(--color-text-primary))] bg-[rgb(var(--color-surface))] hover:bg-[rgb(var(--color-background))] transition-colors"
+            variant="secondary"
+            size="lg"
           >
             Back
-          </button>
+          </Button>
 
-          <button
+          <Button
             onClick={handleSubmit}
             disabled={!validation.isValid}
-            className={`px-6 py-2 rounded-md shadow-sm font-medium transition-colors ${
-              validation.isValid
-                ? 'bg-[rgb(var(--color-primary))] hover:opacity-90 text-white'
-                : 'bg-[rgb(var(--color-border))] text-[rgb(var(--color-text-tertiary))] cursor-not-allowed'
-            }`}
+            variant="primary"
+            size="lg"
           >
             Submit Report
-          </button>
+          </Button>
         </div>
       </div>
     </div>
