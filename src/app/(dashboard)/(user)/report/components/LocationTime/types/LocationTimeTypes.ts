@@ -32,6 +32,7 @@ export interface LocationTimeProps {
   data: FormData;
   onSubmit: (data: FormData) => void;
   onBack: () => void;
+  isSubmitting?: boolean;
 }
 
 export interface DateTimeSelectionProps {
