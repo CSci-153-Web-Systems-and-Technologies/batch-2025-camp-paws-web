@@ -1,3 +1,4 @@
+'use client';
 /**
  * Radio Component - Reusable radio button with label and consistent styling
  * Single Responsibility: Form radio button field with label and error handling

@@ -1,12 +1,28 @@
 // Dependency Inversion Principle: Abstract data transformation
 import { PhysicalDetailsFormData, BackendPhysicalData } from '../types/PhysicalDetailsTypes';
+import { FormData } from '../../PhotoUpload/types/PhotoUploadTypes';
 
 export interface DataTransformer<TInput, TOutput> {
   transform(input: TInput): TOutput;
 }
 
-export class PhysicalDetailsTransformer implements DataTransformer<PhysicalDetailsFormData, BackendPhysicalData> {
-  transform(formData: PhysicalDetailsFormData): BackendPhysicalData {
+export class PhysicalDetailsTransformer implements DataTransformer<PhysicalDetailsFormData, Partial<FormData>> {
+  transform(formData: PhysicalDetailsFormData): Partial<FormData> {
+    // Return FormData format for the main page
+    return {
+      animalType: formData.animalType,
+      sex: formData.sex,
+      collar: formData.collar,
+      bodyConditionScore: formData.bodyConditionScore,
+      colorPattern: formData.colorPattern,
+      primaryColor: formData.primaryColor,
+      physicalProblems: formData.physicalProblems,
+      notes: formData.notes,
+    };
+  }
+
+  // Keep the backend format method for when we actually submit to the backend
+  toBackendFormat(formData: PhysicalDetailsFormData): BackendPhysicalData {
     const skinProblems = this.filterProblemsByCategory(formData.physicalProblems, 'skin');
     const eyeProblems = this.filterProblemsByCategory(formData.physicalProblems, 'eye');
     const gaitProblems = this.filterProblemsByCategory(formData.physicalProblems, 'gait');

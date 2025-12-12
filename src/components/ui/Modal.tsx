@@ -1,3 +1,4 @@
+'use client';
 /**
  * Modal Component - Reusable modal/dialog
  * Single Responsibility: Handle modal overlay and positioning
@@ -71,7 +72,7 @@ export default function Modal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-9999 overflow-y-auto">
       {/* Backdrop */}
       <div
         className="fixed inset-0 bg-black/20 backdrop-blur-sm transition-opacity"

@@ -9,12 +9,15 @@ import LocationTimeRefactored from './components/LocationTime/LocationTimeRefact
 import { submitReport, ReportSubmissionData } from './actions/submitReport';
 import { uploadPhotoFromClient } from './utils/uploadPhoto';
 import { useToast } from '@/hooks/useToast';
+import Modal from '@/components/ui/Modal';
+import Button from '@/components/ui/Button';
 
 export default function UserReportPage() {
   const router = useRouter();
   const { success, error } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [formData, setFormData] = useState<FormData>({
     photo: null,
     animalType: '',
@@ -45,8 +48,28 @@ export default function UserReportPage() {
 
   // Handle form submission (Step 3)
   const handleSubmit = async (finalData: FormData) => {
+    // Validate all required fields
     if (!finalData.photo || !finalData.location) {
       error('Missing required data');
+      return;
+    }
+
+    // Validate physical details are complete
+    if (!finalData.animalType || !finalData.sex || !finalData.collar) {
+      error('Please complete all required fields (Animal Type, Sex, Collar Status)');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!finalData.colorPattern || !finalData.primaryColor) {
+      error('Please select both color pattern and primary color');
+      setIsSubmitting(false);
+      return;
+    }
+
+    if (!finalData.bodyConditionScore) {
+      error('Please select a body condition score');
+      setIsSubmitting(false);
       return;
     }
 
@@ -91,11 +114,9 @@ export default function UserReportPage() {
       const result = await submitReport(submissionData);
 
       if (result.success) {
+        setIsSubmitting(false);
+        setShowSuccessModal(true);
         success('Report submitted successfully!');
-        // Redirect to user dashboard after a brief delay
-        setTimeout(() => {
-          router.push('/user-dashboard');
-        }, 1500);
       } else {
         error(result.error || 'Failed to submit report');
         setIsSubmitting(false);
@@ -110,6 +131,13 @@ export default function UserReportPage() {
   // Navigation functions
   const goToStep = (step: number) => {
     setCurrentStep(step);
+  };
+
+  // Handle success modal close and redirect
+  const handleSuccessModalClose = () => {
+    console.log('Redirecting to user dashboard...');
+    setShowSuccessModal(false);
+    router.push('/user-dashboard');
   };
 
   return (
@@ -141,6 +169,50 @@ export default function UserReportPage() {
           />
         )}
       </div>
+
+      {/* Success Modal */}
+      <Modal
+        isOpen={showSuccessModal}
+        onClose={handleSuccessModalClose}
+        size="sm"
+        closeOnBackdropClick={false}
+        closeOnEscape={false}
+        showCloseButton={false}
+      >
+        <div className="text-center py-6">
+          <div className="mb-4 flex justify-center">
+            <div className="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center">
+              <svg
+                className="w-10 h-10 text-green-600 dark:text-green-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 13l4 4L19 7"
+                />
+              </svg>
+            </div>
+          </div>
+          <h3 className="text-2xl font-bold text-[rgb(var(--color-text-primary))] mb-2">
+            Report Submitted!
+          </h3>
+          <p className="text-[rgb(var(--color-text-secondary))] mb-6">
+            Thank you for helping stray animals in your community. Your report has been successfully submitted and will be reviewed by our team.
+          </p>
+          <Button
+            onClick={handleSuccessModalClose}
+            variant="primary"
+            size="lg"
+            className="w-full"
+          >
+            Go to Dashboard
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

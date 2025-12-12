@@ -1,3 +1,4 @@
+'use client';
 /**
  * Select Component - Reusable dropdown select with custom styling
  * Single Responsibility: Form select field with label, error handling, and consistent styling

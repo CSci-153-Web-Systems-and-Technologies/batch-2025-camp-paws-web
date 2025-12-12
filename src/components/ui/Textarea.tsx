@@ -1,3 +1,4 @@
+'use client';
 /**
  * Textarea Component - Reusable multi-line text input with label and error handling
  * Single Responsibility: Form textarea field with consistent styling

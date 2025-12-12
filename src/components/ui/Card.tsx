@@ -1,3 +1,4 @@
+'use client';
 /**
  * Card Component - Reusable card container
  * Single Responsibility: Provide consistent card styling

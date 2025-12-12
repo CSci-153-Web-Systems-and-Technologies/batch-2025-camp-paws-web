@@ -1,3 +1,4 @@
+'use client';
 /**
  * Input Component - Reusable form input
  * Single Responsibility: Handle text input UI and styling

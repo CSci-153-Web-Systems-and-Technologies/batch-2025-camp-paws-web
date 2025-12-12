@@ -50,6 +50,28 @@ export async function submitReport(
     console.log('🚀 Starting report submission...');
     console.log('📋 Data received:', data);
     
+    // Server-side validation
+    if (!data.animalType || !data.sex || !data.collar) {
+      return {
+        success: false,
+        error: 'Missing required fields: Animal Type, Sex, or Collar Status',
+      };
+    }
+
+    if (!data.colorPattern || !data.primaryColor) {
+      return {
+        success: false,
+        error: 'Missing required fields: Color Pattern or Primary Color',
+      };
+    }
+
+    if (!data.bodyConditionScore || data.bodyConditionScore < 1 || data.bodyConditionScore > 9) {
+      return {
+        success: false,
+        error: 'Invalid Body Condition Score',
+      };
+    }
+    
     const supabase = await createClient();
     
     // Get current user
