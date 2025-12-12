@@ -48,20 +48,26 @@ export async function signInWithEmail(email: string, password: string) {
 
 /**
  * Sign up with email and password
+ * Creates both auth user and database user entry
  */
 export async function signUpWithEmail(
   email: string,
   password: string,
-  name?: string
+  firstName: string,
+  lastName: string
 ) {
   const supabase = createClient();
+  
+  const fullName = `${firstName} ${lastName}`.trim();
   
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
     options: {
       data: {
-        name: name || '',
+        name: fullName,
+        first_name: firstName,
+        last_name: lastName,
         role: 'user', // Default role
       },
       emailRedirectTo: `${window.location.origin}/auth/callback`,
