@@ -36,5 +36,19 @@ export async function updateSession(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  return { supabaseResponse, user };
+  // Fetch user role from database if user is authenticated
+  let userRole: 'admin' | 'user' = 'user';
+  if (user) {
+    const { data: userData } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .single();
+
+    if (userData) {
+      userRole = userData.role as 'admin' | 'user';
+    }
+  }
+
+  return { supabaseResponse, user, userRole };
 }

@@ -13,7 +13,18 @@ export async function GET(request: Request) {
     if (!error) {
       // Get user to determine redirect
       const { data: { user } } = await supabase.auth.getUser();
-      const userRole = user?.user_metadata?.role || user?.app_metadata?.role || 'user';
+      
+      // Fetch user role from database
+      let userRole: 'admin' | 'user' = 'user';
+      if (user) {
+        const { data: userData } = await supabase
+          .from('users')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        
+        userRole = userData?.role || 'user';
+      }
       
       // Redirect based on role
       const redirectTo = userRole === 'admin' ? '/admin-dashboard' : '/user-dashboard';

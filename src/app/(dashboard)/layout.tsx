@@ -1,9 +1,11 @@
 'use client';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import HamburgerMenu from './components/HamburgerMenu';
 import { ThemeToggle } from '@/components/ThemeSwitcher';
+import { createClient } from '@/lib/supabase/client';
+import { useSessionTimeout } from '@/hooks/useSessionTimeout';
 
 const PAGE_HEADERS: Record<string, { title: string; description: string }> = {
   '/user-dashboard': {
@@ -43,29 +45,49 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [userRole, setUserRole] = useState<'user' | 'admin'>('user');
+  const [isLoading, setIsLoading] = useState(true);
   
-  // Determine if user is on admin pages
-  const isAdminPage = pathname.startsWith('/admin-dashboard') || 
-                      pathname.startsWith('/verify') || 
-                      pathname.startsWith('/map') || 
-                      pathname.startsWith('/records');
+  // Enable session timeout
+  useSessionTimeout();
   
-  const userRole = isAdminPage ? 'admin' : 'user';
+  // Fetch actual user role from database
+  useEffect(() => {
+    async function fetchUserRole() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (!user) {
+        router.push('/login');
+        return;
+      }
+      
+      const { data: userData } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+      
+      const role = userData?.role || 'user';
+      setUserRole(role);
+      setIsLoading(false);
+      
+      // Check if user is trying to access admin pages without permission
+      const isAdminPage = pathname.startsWith('/admin-dashboard') || 
+                          pathname.startsWith('/verify') || 
+                          pathname.startsWith('/map') || 
+                          pathname.startsWith('/records');
+      
+      if (isAdminPage && role !== 'admin') {
+        router.push('/user-dashboard');
+      }
+    }
+    
+    fetchUserRole();
+  }, [pathname, router]);
   
-  const headerInfo = PAGE_HEADERS[pathname] || { 
-    title: 'CAMP-PAWS Dashboard', 
-    description: '' 
-  };
-
-  const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen);
-  };
-
-  const closeSidebar = () => {
-    setIsSidebarOpen(false);
-  };
-
   // Prevent body scroll on mobile when sidebar is open
   useEffect(() => {
     if (isSidebarOpen) {
@@ -79,6 +101,31 @@ export default function DashboardLayout({
       document.body.classList.remove('sidebar-open');
     };
   }, [isSidebarOpen]);
+  
+  const headerInfo = PAGE_HEADERS[pathname] || { 
+    title: 'CAMP-PAWS Dashboard', 
+    description: '' 
+  };
+
+  const toggleSidebar = () => {
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  const closeSidebar = () => {
+    setIsSidebarOpen(false);
+  };
+  
+  // Show loading state while fetching user role
+  if (isLoading) {
+    return (
+      <div className="flex h-screen items-center justify-center bg-[rgb(var(--color-background))]">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-[rgb(var(--color-primary))] border-t-transparent rounded-full animate-spin mx-auto"></div>
+          <p className="mt-4 text-[rgb(var(--color-text-secondary))]">Loading...</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="flex h-screen bg-[rgb(var(--color-background))]">
