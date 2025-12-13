@@ -7,6 +7,95 @@ import Table from '@/components/ui/Table';
 import Button from '@/components/ui/Button';
 import { AllViewProps, AcceptedReport } from '../../types/RecordsTypes';
 
+// Normalize row shape: accept either AcceptedReport or server row (snake_case) and map to AcceptedReport
+function normalizeRow(r: AcceptedReport | Record<string, unknown>): AcceptedReport {
+  // if already normalized, assume it's correct
+  if ((r as AcceptedReport).animalType !== undefined) {
+    return r as AcceptedReport;
+  }
+
+  const row = r as Record<string, unknown>;
+
+  // Normalize animal type: accept either the human label or the id; be case-insensitive
+  const rawAnimal = String(row['animal_type'] ?? row['animal_type_id'] ?? row['animalType'] ?? '').trim().toLowerCase();
+  let animalType: AcceptedReport['animalType'] = 'cat';
+  if (rawAnimal.includes('dog')) animalType = 'dog';
+  else if (rawAnimal.includes('cat')) animalType = 'cat';
+
+  // Normalize sex similarly (accept 'male'/'female' in various forms)
+  const rawSex = String(row['sex'] ?? row['sex_id'] ?? row['sex_id'] ?? row['sex'] ?? '').trim().toLowerCase();
+  const sex: AcceptedReport['sex'] = rawSex.includes('male') ? 'male' : (rawSex.includes('female') ? 'female' : 'unknown');
+
+  const collarRaw = String(row['collar_status'] ?? row['collar'] ?? '').toLowerCase();
+  const collar: AcceptedReport['collar'] = collarRaw.includes('yes') || collarRaw.includes('with') ? 'yes' : (collarRaw.includes('no') || collarRaw.includes('without') ? 'no' : 'unknown');
+
+  const photoUrl = row['photo_url'] ? String(row['photo_url']) : '';
+  const colorPattern = row['color_pattern'] ? String(row['color_pattern']) : 'unknown';
+  const primaryColor = row['primary_color'] ? String(row['primary_color']) : (row['primaryColor'] ? String(row['primaryColor']) : 'unknown');
+
+  const bodyConditionScore = Number(row['body_condition_score'] ?? row['bodyConditionScore'] ?? 0) || 0;
+
+  // Server may return either *_problems or *_conditions (snake_case) or camelCase variants
+  const skinProblems = Array.isArray(row['skin_problems']) ? (row['skin_problems'] as string[])
+    : Array.isArray(row['skinProblems']) ? (row['skinProblems'] as string[])
+    : Array.isArray(row['skin_conditions']) ? (row['skin_conditions'] as string[])
+    : Array.isArray(row['skinConditions']) ? (row['skinConditions'] as string[])
+    : [];
+
+  const eyeProblems = Array.isArray(row['eye_problems']) ? (row['eye_problems'] as string[])
+    : Array.isArray(row['eyeProblems']) ? (row['eyeProblems'] as string[])
+    : Array.isArray(row['eye_conditions']) ? (row['eye_conditions'] as string[])
+    : Array.isArray(row['eyeConditions']) ? (row['eyeConditions'] as string[])
+    : [];
+
+  const gaitProblems = Array.isArray(row['gait_problems']) ? (row['gait_problems'] as string[])
+    : Array.isArray(row['gaitProblems']) ? (row['gaitProblems'] as string[])
+    : Array.isArray(row['gait_conditions']) ? (row['gait_conditions'] as string[])
+    : Array.isArray(row['gaitConditions']) ? (row['gaitConditions'] as string[])
+    : [];
+
+  const latitude = Number(row['latitude'] ?? 0) || 0;
+  const longitude = Number(row['longitude'] ?? 0) || 0;
+
+  const spottedDate = row['spotted_date'] ? String(row['spotted_date']) : (row['spottedDate'] ? String(row['spottedDate']) : new Date().toISOString().split('T')[0]);
+  const spottedTime = row['spotted_time'] ? String(row['spotted_time']) : (row['spottedTime'] ? String(row['spottedTime']) : '00:00:00');
+
+  const reportedBy = row['user_id'] ? String(row['user_id']) : (row['reportedBy'] ? String(row['reportedBy']) : (row['userId'] ? String(row['userId']) : ''));
+  const reporterEmail = row['reporter_email'] ? String(row['reporter_email']) : (row['reporterEmail'] ? String(row['reporterEmail']) : (row['user_email'] ? String(row['user_email']) : (row['userEmail'] ? String(row['userEmail']) : '')));
+
+  const verifiedBy = row['verified_by'] ? String(row['verified_by']) : (row['verifiedBy'] ? String(row['verifiedBy']) : undefined);
+  const verifiedAt = row['verified_at'] ? String(row['verified_at']) : (row['verifiedAt'] ? String(row['verifiedAt']) : (row['accepted_at'] ? String(row['accepted_at']) : undefined));
+
+  return {
+    id: String(row['id']),
+  groupId: row['group_id'] ? String(row['group_id']) : (row['groupId'] ? String(row['groupId']) : null),
+    photoUrl,
+    animalType,
+    sex,
+    collar,
+    colorPattern,
+    primaryColor,
+    bodyConditionScore,
+    skinProblems,
+    eyeProblems,
+    gaitProblems,
+  notes: row['additional_notes'] ? String(row['additional_notes']) : (row['notes'] ? String(row['notes']) : ''),
+    latitude,
+    longitude,
+    locationDescription: row['location_description'] ? String(row['location_description']) : (row['locationDescription'] ? String(row['locationDescription']) : ''),
+    spottedDate,
+    spottedTime,
+  reportedBy,
+  reporterEmail,
+  status: String(row['status'] ?? 'verified') === 'verified' ? 'verified' : 'verified',
+  verifiedBy,
+  verifiedAt,
+  acceptedAt: verifiedAt ?? (row['accepted_at'] ? String(row['accepted_at']) : (row['acceptedAt'] ? String(row['acceptedAt']) : new Date().toISOString())),
+    createdAt: row['created_at'] ? String(row['created_at']) : (row['createdAt'] ? String(row['createdAt']) : new Date().toISOString()),
+    updatedAt: row['updated_at'] ? String(row['updated_at']) : (row['updatedAt'] ? String(row['updatedAt']) : undefined),
+  };
+}
+
 /**
  * View for displaying all individual reports in a single table.
  * This provides a comprehensive view of all individual sighting records.
@@ -17,8 +106,11 @@ export default function AllView({
 }: AllViewProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
+  // Normalize incoming reports to AcceptedReport shape (accept server JSON)
+  const normalizedReports: AcceptedReport[] = reports.map(r => normalizeRow(r));
+
   // Sort reports by date (most recent first)
-  const sortedReports = [...reports].sort((a, b) => 
+  const sortedReports = [...normalizedReports].sort((a, b) => 
     new Date(b.spottedDate).getTime() - new Date(a.spottedDate).getTime()
   );
 

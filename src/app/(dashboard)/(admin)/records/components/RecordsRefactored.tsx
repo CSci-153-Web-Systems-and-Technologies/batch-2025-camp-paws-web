@@ -111,123 +111,70 @@ export default function RecordsRefactored() {
     setError(null);
     
     try {
-      // TODO: Replace with actual API calls
-      // const [reportsData, groupsData] = await Promise.all([
-      //   fetch('/api/reports/accepted').then(res => res.json()),
-      //   fetch('/api/groups').then(res => res.json())
-      // ]);
-      
-      // Mock data for development
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const mockReports: AcceptedReport[] = [
-        {
-          id: 'report-1',
-          groupId: null,
-          photoUrl: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800',
-          animalType: 'dog',
-          sex: 'male',
-          collar: 'yes',
-          colorPattern: 'solid',
-          primaryColor: 'brown',
-          bodyConditionScore: 3,
-          skinProblems: [],
-          eyeProblems: [],
-          gaitProblems: ['limping', 'difficulty_walking'],
-          notes: 'Friendly dog seen near library',
-          latitude: 14.5995,
-          longitude: 120.9842,
-          locationDescription: 'University Library',
-          spottedDate: '2025-12-08',
-          spottedTime: '14:30',
-          reportedBy: 'user-1',
-          reporterEmail: 'john@example.com',
-          status: 'verified',
-          verifiedBy: 'admin-1',
-          verifiedAt: '2025-12-08T15:00:00Z',
-          acceptedAt: '2025-12-08T15:00:00Z',
-          createdAt: '2025-12-08T14:35:00Z',
-          updatedAt: '2025-12-08T15:00:00Z'
-        },
-        {
-          id: 'report-2',
-          groupId: 'group-1',
-          photoUrl: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800',
-          animalType: 'cat',
-          sex: 'female',
-          collar: 'no',
-          colorPattern: 'tabby',
-          primaryColor: 'orange',
-          bodyConditionScore: 4,
-          skinProblems: [],
-          eyeProblems: [],
-          gaitProblems: [],
-          notes: 'Well-fed cat, appears to be owned',
-          latitude: 14.5995,
-          longitude: 120.9842,
-          locationDescription: 'Student Center',
-          spottedDate: '2025-12-07',
-          spottedTime: '10:15',
-          reportedBy: 'user-2',
-          reporterEmail: 'jane@example.com',
-          status: 'verified',
-          verifiedBy: 'admin-1',
-          verifiedAt: '2025-12-07T11:00:00Z',
-          acceptedAt: '2025-12-07T11:00:00Z',
-          createdAt: '2025-12-07T10:20:00Z',
-          updatedAt: '2025-12-07T11:00:00Z'
-        },
-        {
-          id: 'report-3',
-          groupId: 'group-1',
-          photoUrl: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800',
-          animalType: 'cat',
-          sex: 'female',
-          collar: 'no',
-          colorPattern: 'tabby',
-          primaryColor: 'orange',
-          bodyConditionScore: 4,
-          skinProblems: ['hair_loss', 'redness'],
-          eyeProblems: ['discharge', 'cloudiness'],
-          gaitProblems: [],
-          notes: 'Same cat as before, near cafeteria. Noticed some eye discharge.',
-          latitude: 14.5995,
-          longitude: 120.9842,
-          locationDescription: 'Main Cafeteria',
-          spottedDate: '2025-12-09',
-          spottedTime: '12:00',
-          reportedBy: 'user-3',
-          reporterEmail: 'mike@example.com',
-          status: 'verified',
-          verifiedBy: 'admin-1',
-          verifiedAt: '2025-12-09T12:30:00Z',
-          acceptedAt: '2025-12-09T12:30:00Z',
-          createdAt: '2025-12-09T12:05:00Z',
-          updatedAt: '2025-12-09T12:30:00Z'
-        }
-      ];
+      // Call the server-side records endpoint to fetch verified reports and groups
+      const [reportsRes, groupsRes] = await Promise.all([
+        fetch('/api/admin/records').then(r => r.json()),
+        fetch('/api/groups').then(r => r.json()).catch(() => ({ data: [] }))
+      ]);
 
-      const mockGroups: AnimalGroup[] = [
-        {
-          id: 'group-1',
-          name: 'Orange Tabby - Campus Center Area',
-          description: 'Well-fed orange tabby cat frequently seen around student center and cafeteria',
-          animalType: 'cat',
-          sex: 'female',
-          colorPattern: 'tabby',
-          primaryColor: 'orange',
-          reportCount: 2,
-          firstSightedDate: '2025-12-07',
-          lastSightedDate: '2025-12-09',
-          createdAt: '2025-12-07T11:30:00Z',
-          createdBy: 'admin-1',
-          updatedAt: '2025-12-09T12:35:00Z',
-          reportIds: ['report-2', 'report-3']
-        }
-      ];
+      if (reportsRes?.error) {
+        throw new Error(reportsRes.error);
+      }
 
-      setReports(mockReports);
-      setGroups(mockGroups);
+      const rows = (reportsRes?.data ?? []) as Array<Record<string, unknown>>;
+
+      // Map server rows to AcceptedReport shape
+        const mappedReports: AcceptedReport[] = rows.map((r) => ({
+        id: String(r.id),
+        groupId: null,
+        photoUrl: r.photo_url ? String(r.photo_url) : '',
+        // Normalize animal type case-insensitively and accept both label or id fields
+        animalType: String(r.animal_type ?? r.animal_type_id ?? r.animalType ?? '').toLowerCase().includes('dog') ? 'dog' : 'cat',
+        sex: (String(r.sex) as AcceptedReport['sex']) || 'unknown',
+        collar: String(r.collar_status) === 'yes' ? 'yes' : (String(r.collar_status) === 'no' ? 'no' : 'unknown'),
+        colorPattern: r.color_pattern ? String(r.color_pattern) : 'unknown',
+        primaryColor: r.primary_color ? String(r.primary_color) : 'unknown',
+        bodyConditionScore: Number(r.body_condition_score) || 0,
+        // Accept either server's *_problems or the records endpoint's *_conditions fields
+        skinProblems: Array.isArray(r.skin_problems)
+          ? (r.skin_problems as string[])
+          : Array.isArray(r.skin_conditions)
+          ? (r.skin_conditions as string[])
+          : Array.isArray((r as Record<string, unknown>)['skinProblems'])
+          ? ((r as Record<string, unknown>)['skinProblems'] as string[])
+          : [],
+        eyeProblems: Array.isArray(r.eye_problems)
+          ? (r.eye_problems as string[])
+          : Array.isArray(r.eye_conditions)
+          ? (r.eye_conditions as string[])
+          : Array.isArray((r as Record<string, unknown>)['eyeProblems'])
+          ? ((r as Record<string, unknown>)['eyeProblems'] as string[])
+          : [],
+        gaitProblems: Array.isArray(r.gait_problems)
+          ? (r.gait_problems as string[])
+          : Array.isArray(r.gait_conditions)
+          ? (r.gait_conditions as string[])
+          : Array.isArray((r as Record<string, unknown>)['gaitProblems'])
+          ? ((r as Record<string, unknown>)['gaitProblems'] as string[])
+          : [],
+        notes: r.additional_notes ? String(r.additional_notes) : '',
+        latitude: Number(r.latitude) || 0,
+        longitude: Number(r.longitude) || 0,
+        locationDescription: r.location_description ? String(r.location_description) : '',
+        spottedDate: r.spotted_date ? String(r.spotted_date) : '',
+        spottedTime: r.spotted_time ? String(r.spotted_time) : '',
+        reportedBy: r.user_id ? String(r.user_id) : '',
+        reporterEmail: r.reporter_email ? String(r.reporter_email) : '',
+        status: 'verified',
+        verifiedBy: r.verified_by ? String(r.verified_by) : undefined,
+        verifiedAt: r.verified_at ? String(r.verified_at) : undefined,
+        acceptedAt: r.verified_at ? String(r.verified_at) : new Date().toISOString(),
+        createdAt: r.created_at ? String(r.created_at) : new Date().toISOString(),
+        updatedAt: r.updated_at ? String(r.updated_at) : undefined,
+      }));
+
+      setReports(mappedReports);
+      setGroups(groupsRes?.data ?? []);
     } catch (err) {
       setError('Failed to load data. Please try again.');
       console.error('Error fetching data:', err);

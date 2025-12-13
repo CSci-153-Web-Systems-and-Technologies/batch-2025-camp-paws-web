@@ -259,7 +259,8 @@ export interface UngroupedViewProps {
 // All View
 export interface AllViewProps {
   groups: AnimalGroup[];
-  reports: AcceptedReport[];
+  // Accept either normalized AcceptedReport objects or raw DB rows (server JSON)
+  reports: Array<AcceptedReport | Record<string, unknown>>;
   onViewGroup: (groupId: string) => void;
   onViewReport: (reportId: string) => void;
   isLoading?: boolean;
