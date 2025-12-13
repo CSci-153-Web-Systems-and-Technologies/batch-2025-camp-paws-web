@@ -17,6 +17,9 @@ export default function SignupPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const [emailChecking, setEmailChecking] = useState(false);
+  const [emailExists, setEmailExists] = useState<boolean | null>(null);
+  const [emailCheckedFor, setEmailCheckedFor] = useState<string | null>(null);
 
   const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -44,9 +47,35 @@ export default function SignupPage() {
     }
     
     try {
-      await signUpWithEmail(email, password, firstName, lastName);
+      // Normalize email for lookup
+      const normalizedEmail = email.trim().toLowerCase();
+
+      // Call server-side endpoint to check email existence (bypasses RLS using service role key)
+      const lookupResp = await fetch("/api/check-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: normalizedEmail }),
+      });
+
+      if (!lookupResp.ok) {
+        const body = await lookupResp.json().catch(() => ({}));
+        console.error("Email lookup failed:", lookupResp.status, body);
+        setError(body?.error || "Unable to verify email uniqueness. Please try again later.");
+        setLoading(false);
+        return;
+      }
+
+      const lookupJson = await lookupResp.json();
+      if (lookupJson.exists) {
+        setError("An account with that email already exists. Please log in or use a different email.");
+        setLoading(false);
+        return;
+      }
+
+      // Proceed with signup since email is not present
+      await signUpWithEmail(normalizedEmail, password, firstName, lastName);
       setSuccess(true);
-      
+
       // Show success message then redirect
       setTimeout(() => {
         router.push("/login");
@@ -144,13 +173,64 @@ export default function SignupPage() {
         </div>
 
         <Input
+          id="signup-email"
           label="Email"
           type="email"
           placeholder="your.email@example.com"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            // Reset inline check if user edits after a previous check
+            if (emailCheckedFor && e.target.value.trim().toLowerCase() !== emailCheckedFor) {
+              setEmailExists(null);
+              setEmailCheckedFor(null);
+            }
+          }}
+          onBlur={async () => {
+            const val = email.trim().toLowerCase();
+            if (!val) return;
+            if (emailCheckedFor === val) return; // already checked
+
+            setEmailChecking(true);
+            setEmailExists(null);
+            try {
+              const resp = await fetch('/api/check-email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: val }),
+              });
+
+              if (!resp.ok) {
+                const body = await resp.json().catch(() => ({}));
+                console.error('Email lookup failed (blur):', resp.status, body);
+                // mark as unchecked but don't block user
+                setEmailExists(null);
+                setEmailCheckedFor(val);
+                setEmailChecking(false);
+                return;
+              }
+
+              const json = await resp.json();
+              setEmailExists(Boolean(json.exists));
+              setEmailCheckedFor(val);
+            } catch (err) {
+              console.error('Email lookup error (blur):', err);
+              setEmailExists(null);
+              setEmailCheckedFor(val);
+            } finally {
+              setEmailChecking(false);
+            }
+          }}
           required
           fullWidth
+          error={emailExists ? 'An account with that email already exists.' : undefined}
+          helperText={
+            emailChecking
+              ? 'Checking email…'
+              : emailExists === false
+              ? 'Email is available'
+              : undefined
+          }
         />
 
         <Input

@@ -43,6 +43,22 @@ export async function signInWithEmail(email: string, password: string) {
     throw error;
   }
 
+  // Require email verification: Supabase user object may include `email_confirmed_at` or `confirmed_at`.
+  // If neither is present, treat the account as unverified and prevent sign in.
+  const user = (data as { user?: { email_confirmed_at?: string; confirmed_at?: string } })?.user;
+  const isEmailVerified = !!(user?.email_confirmed_at || user?.confirmed_at);
+  if (user && !isEmailVerified) {
+    // Sign the user out if a session was created to prevent partial auth state.
+    try {
+      await supabase.auth.signOut();
+    } catch {
+      // ignore
+    }
+    const msg = 'Please verify your email before signing in.';
+    console.warn('Blocked sign-in for unverified email:', email);
+    throw new Error(msg);
+  }
+
   return data;
 }
 
@@ -70,7 +86,10 @@ export async function signUpWithEmail(
         last_name: lastName,
         role: 'user', // Default role
       },
-      emailRedirectTo: `${window.location.origin}/auth/callback`,
+      // After the user clicks the verification link, Supabase will redirect them
+      // here. We use `/auth/verify` which is a client page that will finish
+      // processing the session from the URL and redirect the user appropriately.
+      emailRedirectTo: `${window.location.origin}/auth/verify`,
     },
   });
 
@@ -163,3 +182,5 @@ export async function updatePassword(newPassword: string) {
 
   return data;
 }
+
+
