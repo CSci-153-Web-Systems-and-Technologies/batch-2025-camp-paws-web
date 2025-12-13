@@ -216,14 +216,14 @@ export class SupabaseReportService implements ReportService {
 
     try {
       if (identifier.includes('@')) {
-        const { data, error } = await supabase.from('users').select('id, full_name, name, email').eq('email', identifier).maybeSingle();
+  const { data, error } = await supabase.from('users').select('id, name, email').eq('email', identifier).maybeSingle();
         if (error) throw error;
         if (!data) return null;
         const d = data as Record<string, unknown>;
         const name = (typeof d['full_name'] === 'string' && d['full_name']) || (typeof d['name'] === 'string' && d['name']) || undefined;
         return { id: typeof d['id'] === 'string' ? (d['id'] as string) : undefined, name, email: typeof d['email'] === 'string' ? (d['email'] as string) : undefined };
       } else {
-        const { data, error } = await supabase.from('users').select('id, full_name, name, email').eq('id', identifier).maybeSingle();
+  const { data, error } = await supabase.from('users').select('id, name, email').eq('id', identifier).maybeSingle();
         if (error) throw error;
         if (!data) return null;
         const d = data as Record<string, unknown>;
@@ -268,9 +268,12 @@ function transformToReport(row: unknown): Report {
     locationDescription: r.location_description || r.locationDescription || '',
     spottedDate: r.spotted_date || r.spottedDate || '',
     spottedTime: r.spotted_time || r.spottedTime || '',
-  reportedBy: usersName || (r.reported_by as string) || (r.reportedBy as string) || '',
-  reporterEmail: usersEmail || (r.reporter_email as string) || (r.reporterEmail as string) || '',
-    reporterId: (r.reported_by as string) || (r.reportedBy as string) || (r.reporter_id as string) || undefined,
+  // Prefer embedded users' name/email, then legacy reported_by/report fields,
+  // then the server-provided `user_name`/`user_email` fields so reporter info
+  // returned by the API is respected.
+  reportedBy: usersName || (r.reported_by as string) || (r.reportedBy as string) || (r.user_name as string) || (r.user_email as string) || '',
+  reporterEmail: usersEmail || (r.reporter_email as string) || (r.reporterEmail as string) || (r.user_email as string) || '',
+    reporterId: (r.reported_by as string) || (r.reportedBy as string) || (r.reporter_id as string) || (r.user_id as string) || undefined,
     reportsSubmitted: r.reports_submitted || r.reportsSubmitted || 0,
     warnings: r.warnings || 0,
     status: r.status || 'pending',

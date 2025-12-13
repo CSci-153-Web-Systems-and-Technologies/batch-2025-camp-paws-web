@@ -55,17 +55,17 @@ export async function GET() {
     ]);
 
     // Fetch users (reporters and verifiers)
-    const userMap = new Map<string, { id: string; email?: string }>();
+    const userMap = new Map<string, { id: string; email?: string; name?: string }>();
     const allUserIds = new Set([...userIds, ...verifiedByIds]);
     if (allUserIds.size > 0) {
       const { data: usersData, error: usersError } = await supabase
         .from('users')
-        .select('id,email')
+        .select('id,email,name')
         .in('id', [...allUserIds]);
       if (usersError) {
         return NextResponse.json({ error: usersError.message || String(usersError) }, { status: 500 });
       }
-      ((usersData ?? []) as Array<{ id: string; email?: string }>).forEach((u) => userMap.set(String(u.id), u));
+      ((usersData ?? []) as Array<{ id: string; email?: string; name?: string }>).forEach((u) => userMap.set(String(u.id), u));
     }
 
     // Build frontend-ready rows matching the SELECT you provided
@@ -77,6 +77,7 @@ export async function GET() {
         id: r.id,
         user_id: r.user_id,
         user_email: reporter ? reporter.email : null,
+        user_name: reporter ? reporter.name ?? null : null,
         photo_url: r.photo_url,
         spotted_date: r.spotted_date,
         spotted_time: r.spotted_time,
@@ -91,9 +92,10 @@ export async function GET() {
         additional_notes: r.additional_notes,
   location_description: r.location_description,
         status: r.status,
-        verified_by: r.verified_by,
-        verified_by_email: verifier ? verifier.email : null,
-        verified_at: r.verified_at,
+  verified_by: r.verified_by,
+  verified_by_email: verifier ? verifier.email : null,
+  verified_by_name: verifier ? verifier.name ?? null : null,
+  verified_at: r.verified_at,
         created_at: r.created_at,
         updated_at: r.updated_at,
       };
