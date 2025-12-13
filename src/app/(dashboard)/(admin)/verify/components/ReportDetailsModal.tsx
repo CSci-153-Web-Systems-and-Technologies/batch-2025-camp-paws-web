@@ -1,10 +1,11 @@
 'use client';
 
 // Single Responsibility: Display detailed report information in a modal
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { ReportDetailsModalProps } from '../types/VerifyTypes';
+import { getReportService } from '../services/ReportService';
 import { parsePhysicalProblems } from '../utils/PhysicalProblemsParser';
 import Button from '@/components/ui/Button';
 
@@ -31,6 +32,25 @@ export default function ReportDetailsModal({
   const [showSuspendDialog, setShowSuspendDialog] = useState(false);
   const [reason, setReason] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [reporter, setReporter] = useState<{ id?: string; name?: string; email?: string } | null>(null);
+  // Fetch reporter details when modal opens
+  useEffect(() => {
+    let cancelled = false;
+    async function loadReporter() {
+      if (!report) return setReporter(null);
+      const svc = getReportService();
+      const identifier = report.reporterId ?? report.reporterEmail ?? report.reportedBy;
+      try {
+        const user = await svc.getUser(identifier || '');
+        if (!cancelled) setReporter(user);
+      } catch {
+        if (!cancelled) setReporter(null);
+      }
+    }
+
+    loadReporter();
+    return () => { cancelled = true; };
+  }, [report]);
 
   if (!isOpen || !report) return null;
 
@@ -60,7 +80,8 @@ export default function ReportDetailsModal({
       return;
     }
     setIsProcessing(true);
-    await onWarnUser(report.reporterEmail, reason);
+    const contact = reporter?.email || report.reporterEmail;
+    await onWarnUser(contact || '', reason);
     setIsProcessing(false);
     setShowWarnDialog(false);
     setReason('');
@@ -72,7 +93,8 @@ export default function ReportDetailsModal({
       return;
     }
     setIsProcessing(true);
-    await onSuspendUser(report.reporterEmail, reason);
+    const contact2 = reporter?.email || report.reporterEmail;
+    await onSuspendUser(contact2 || '', reason);
     setIsProcessing(false);
     setShowSuspendDialog(false);
     setReason('');
@@ -252,8 +274,8 @@ export default function ReportDetailsModal({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
                     <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Reported By</div>
-                    <div className="text-sm text-[rgb(var(--color-text-primary))]">{report.reportedBy}</div>
-                    <div className="text-xs text-[rgb(var(--color-text-secondary))]">{report.reporterEmail}</div>
+                    <div className="text-sm text-[rgb(var(--color-text-primary))]">{reporter?.name || report.reportedBy}</div>
+                    <div className="text-xs text-[rgb(var(--color-text-secondary))]">{reporter?.email || report.reporterEmail}</div>
                   </div>
                   <div>
                     <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Date Reported</div>

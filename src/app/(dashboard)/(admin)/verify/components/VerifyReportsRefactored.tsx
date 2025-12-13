@@ -14,7 +14,7 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
   const [reports, setReports] = useState<Report[]>(initialReports || []);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [isLoading, setIsLoading] = useState(!initialReports);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedColumns] = useState<string[]>(AVAILABLE_COLUMNS);
   
@@ -41,20 +41,18 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
 
   // Fetch reports
   useEffect(() => {
-    if (!initialReports) {
-      const reportService = getReportService();
-      
-      reportService.fetchPendingReports()
-        .then(fetchedReports => {
-          setReports(fetchedReports);
-          setIsLoading(false);
-        })
-        .catch(err => {
-          console.error('Failed to fetch reports:', err);
-          setError('Failed to load reports. Please try again.');
-          setIsLoading(false);
-        });
-    }
+    // Always refresh reports on mount to ensure UI reflects latest DB state.
+    const reportService = getReportService();
+    reportService.fetchPendingReports()
+      .then(fetchedReports => {
+        setReports(fetchedReports);
+        setIsLoading(false);
+      })
+      .catch(err => {
+        console.error('Failed to fetch reports:', err);
+        setError('Failed to load reports. Please try again.');
+        setIsLoading(false);
+      });
   }, [initialReports]);
 
   const handleRowClick = (report: Report) => {
