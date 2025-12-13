@@ -72,18 +72,18 @@ export default function Modal({
   };
 
   return (
-    <div className="fixed inset-0 z-9999 overflow-y-auto">
+  <div className="fixed inset-0 z-9999 overflow-y-auto">
       {/* Backdrop */}
       <div
-        className="fixed inset-0 bg-black/20 backdrop-blur-sm transition-opacity"
+        className="fixed inset-0 bg-black/20 backdrop-blur-sm transition-opacity z-9998"
         onClick={handleBackdropClick}
         aria-hidden="true"
       />
 
       {/* Modal Container */}
-      <div className="flex min-h-full items-center justify-center p-4">
+      <div className="flex min-h-full items-center justify-center p-4 z-9999">
         <div
-          className={`relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl ${sizeStyles[size]} w-full max-h-[90vh] overflow-y-auto`}
+          className={`relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl ${sizeStyles[size]} w-full max-h-[90vh] overflow-y-auto z-10000`}
           onClick={(e) => e.stopPropagation()}
         >
           {/* Header */}

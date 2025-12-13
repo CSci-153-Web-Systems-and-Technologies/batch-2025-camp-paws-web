@@ -148,65 +148,39 @@ export class SupabaseReportService implements ReportService {
   }
 
   async warnUser(userId: string, reason: string): Promise<void> {
-    const { createClient } = await import('@/lib/supabase/client');
-    const supabase = createClient();
+    const res = await fetch('/api/admin/user-actions/warn', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target: userId, reason }),
+    });
 
-    // Allow passing either user id or email. If email is provided, resolve to id first.
-    const identifier = userId;
-    let resolvedId: string | null = null;
-    try {
-      if (identifier.includes('@')) {
-        const { data: userRow } = await supabase.from('users').select('id').eq('email', identifier).maybeSingle();
-        const ur = userRow as Record<string, unknown> | null;
-        resolvedId = (ur && (ur['id'] as string)) || null;
-      } else {
-        resolvedId = identifier;
+    if (!res.ok) {
+      const payloadJson = (await res.json().catch(() => null)) as unknown;
+      let errMsg = `Warn failed: ${res.status}`;
+      if (payloadJson && typeof payloadJson === 'object' && 'error' in (payloadJson as Record<string, unknown>)) {
+        const p = payloadJson as Record<string, unknown>;
+        if (typeof p.error === 'string') errMsg = p.error;
       }
-    } catch {
-      // ignore lookup errors and proceed with identifier as-is
-      resolvedId = identifier.includes('@') ? null : identifier;
-    }
-
-    // Increment warnings via RPC if available, otherwise insert a warning record
-    if (resolvedId) {
-      try {
-        await supabase.rpc('increment_user_warnings', { user_id: resolvedId });
-      } catch {
-        await supabase.from('user_warnings').insert({ user_id: resolvedId, reason });
-      }
-    } else {
-      // Fallback: insert by email if id not resolvable
-      await supabase.from('user_warnings').insert({ user_email: identifier, reason });
+      throw new Error(errMsg);
     }
   }
 
   async suspendUser(userId: string, reason: string): Promise<void> {
-    const { createClient } = await import('@/lib/supabase/client');
-    const supabase = createClient();
+    const res = await fetch('/api/admin/user-actions/suspend', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ target: userId, reason }),
+    });
 
-    const identifier = userId;
-    let resolvedId: string | null = null;
-    try {
-      if (identifier.includes('@')) {
-        const { data: userRow } = await supabase.from('users').select('id').eq('email', identifier).maybeSingle();
-        const ur = userRow as Record<string, unknown> | null;
-        resolvedId = (ur && (ur['id'] as string)) || null;
-      } else {
-        resolvedId = identifier;
+    if (!res.ok) {
+      const payloadJson = (await res.json().catch(() => null)) as unknown;
+      let errMsg = `Suspend failed: ${res.status}`;
+      if (payloadJson && typeof payloadJson === 'object' && 'error' in (payloadJson as Record<string, unknown>)) {
+        const p = payloadJson as Record<string, unknown>;
+        if (typeof p.error === 'string') errMsg = p.error;
       }
-    } catch {
-      resolvedId = identifier.includes('@') ? null : identifier;
+      throw new Error(errMsg);
     }
-
-    let res;
-    if (resolvedId) {
-      res = await supabase.from('users').update({ is_suspended: true, suspension_reason: reason }).eq('id', resolvedId);
-    } else {
-      // try by email
-      res = await supabase.from('users').update({ is_suspended: true, suspension_reason: reason }).eq('email', identifier);
-    }
-
-    if (res.error) throw res.error;
   }
 
   async getUser(identifier: string): Promise<{ id?: string; name?: string; email?: string } | null> {

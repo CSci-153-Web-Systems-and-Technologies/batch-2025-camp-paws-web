@@ -102,13 +102,13 @@ export default function ReportDetailsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-9999 overflow-y-auto">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm transition-opacity" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm transition-opacity z-9998" onClick={onClose} />
 
       {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="flex min-h-full items-center justify-center p-4 z-9999">
+        <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto z-10000">
           {/* Close button */}
           <button
             onClick={onClose}
@@ -349,9 +349,9 @@ export default function ReportDetailsModal({
 
       {/* Reject Dialog */}
       {showRejectDialog && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowRejectDialog(false)} />
-          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 z-10010 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-10009" onClick={() => setShowRejectDialog(false)} />
+          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full z-10011">
             <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">Reject Report</h3>
             <textarea
               value={reason}
@@ -383,9 +383,9 @@ export default function ReportDetailsModal({
 
       {/* Warn Dialog */}
       {showWarnDialog && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowWarnDialog(false)} />
-          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 z-10010 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-10009" onClick={() => setShowWarnDialog(false)} />
+          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full z-10011">
             <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">Warn User</h3>
             <textarea
               value={reason}
@@ -417,9 +417,9 @@ export default function ReportDetailsModal({
 
       {/* Suspend Dialog */}
       {showSuspendDialog && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowSuspendDialog(false)} />
-          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 z-10010 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-10009" onClick={() => setShowSuspendDialog(false)} />
+          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full z-10011">
             <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">Suspend User</h3>
             <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-4">
               This will suspend {report.reportedBy} from submitting reports.
