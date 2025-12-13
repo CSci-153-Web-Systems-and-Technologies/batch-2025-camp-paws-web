@@ -20,8 +20,32 @@ export default function LoginPage() {
     setError("");
     
     try {
+      // First perform sign-in which creates an authenticated session (if successful)
       await signInWithEmail(email, password);
-      router.push("/user-dashboard");
+
+      // Then call server-side endpoint to read the user's DB row and get the role.
+      // This uses the server Supabase client and the browser cookies to authenticate.
+      const resp = await fetch('/api/get-role');
+      const json = await resp.json();
+
+      // If API returned a role, use it. If API failed but returned diagnostics, show a helpful message.
+      const role = json?.role || 'user';
+
+      if (resp.ok) {
+        if (role === 'admin') {
+          router.push('/admin-dashboard');
+        } else {
+          router.push('/user-dashboard');
+        }
+      } else {
+        console.warn('get-role response error:', json?.error ?? json);
+        // Use fallback role if present to avoid blocking the user completely
+        if (role === 'admin') {
+          router.push('/admin-dashboard');
+        } else {
+          router.push('/user-dashboard');
+        }
+      }
     } catch (err: unknown) {
       console.error("Login error:", err);
       const errorMessage = err instanceof Error ? err.message : "Failed to login";

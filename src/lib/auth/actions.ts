@@ -45,7 +45,8 @@ export async function signInWithEmail(email: string, password: string) {
 
   // Require email verification: Supabase user object may include `email_confirmed_at` or `confirmed_at`.
   // If neither is present, treat the account as unverified and prevent sign in.
-  const user = (data as { user?: { email_confirmed_at?: string; confirmed_at?: string } })?.user;
+  type TempUser = { id?: string; email_confirmed_at?: string; confirmed_at?: string };
+  const user = (data as { user?: TempUser })?.user;
   const isEmailVerified = !!(user?.email_confirmed_at || user?.confirmed_at);
   if (user && !isEmailVerified) {
     // Sign the user out if a session was created to prevent partial auth state.
@@ -59,7 +60,26 @@ export async function signInWithEmail(email: string, password: string) {
     throw new Error(msg);
   }
 
-  return data;
+  // Fetch role from our `users` table (public.users) to determine redirect
+  let role: 'admin' | 'user' = 'user';
+  try {
+    if (user?.id) {
+      const { data: userRow, error: rowErr } = await supabase
+        .from('users')
+        .select('role')
+        .eq('id', user.id)
+        .single();
+
+      if (!rowErr && userRow?.role) {
+        role = userRow.role as 'admin' | 'user';
+      }
+    }
+  } catch (err) {
+    // ignore — default to 'user'
+    console.warn('Error fetching user role after sign-in:', err);
+  }
+
+  return { data, role };
 }
 
 /**
