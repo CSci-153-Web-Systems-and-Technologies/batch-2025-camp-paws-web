@@ -19,47 +19,26 @@ export class MockReportService implements ReportDataService {
 export class SupabaseReportService implements ReportDataService {
   async fetchReports(): Promise<AnimalReport[]> {
     try {
-      // TODO: Uncomment when Supabase is ready
-      // const { createClient } = await import('@/lib/supabase/client');
-      // const supabase = createClient();
-      // 
-      // const { data, error } = await supabase
-      //   .from('stray_animal_reports')
-      //   .select(`
-      //     id,
-      //     latitude,
-      //     longitude,
-      //     animal_type,
-      //     spotted_date,
-      //     spotted_time,
-      //     status,
-      //     location_description,
-      //     photo_url,
-      //     users!user_id (
-      //       full_name
-      //     )
-      //   `)
-      //   .neq('status', 'rejected') // Exclude rejected reports
-      //   .order('spotted_date', { ascending: false });
-      //
-      // if (error) throw error;
-      //
-      // // Transform snake_case to camelCase
-      // return data.map(report => ({
-      //   id: report.id,
-      //   latitude: report.latitude,
-      //   longitude: report.longitude,
-      //   animalType: report.animal_type as 'dog' | 'cat',
-      //   spottedDate: report.spotted_date,
-      //   spottedTime: report.spotted_time,
-      //   status: report.status as 'pending' | 'verified' | 'rejected',
-      //   locationDescription: report.location_description,
-      //   photoUrl: report.photo_url,
-      //   reporterName: report.users?.full_name || 'Anonymous'
-      // }));
+      // Call the server-side map reports endpoint which joins lookup tables
+      const res = await fetch('/api/admin/map/reports');
+      const payload = await res.json();
+      if (!res.ok) {
+        throw new Error(payload?.error || 'Failed to fetch reports');
+      }
+      const rows = payload.data as Array<Record<string, unknown>>;
 
-      // For now, return mock data
-      return generateMockReports();
+      return rows.map(r => ({
+        id: String(r.id),
+        latitude: Number(r.latitude),
+        longitude: Number(r.longitude),
+        animalType: (String(r.animal_type) as 'dog' | 'cat'),
+        spottedDate: String(r.spotted_date),
+        spottedTime: String(r.spotted_time),
+        status: (String(r.status) as 'pending' | 'verified' | 'rejected'),
+        locationDescription: r.location_description ? String(r.location_description) : undefined,
+        photoUrl: r.photo_url ? String(r.photo_url) : undefined,
+        reporterName: r.user_name ? String(r.user_name) : undefined,
+      }));
     } catch (error) {
       console.error('Error fetching reports from Supabase:', error);
       throw error;
@@ -134,8 +113,8 @@ function generateMockReports(): AnimalReport[] {
 
 // Factory function to get the appropriate service
 export function getReportService(): ReportDataService {
-  // TODO: Change this to SupabaseReportService when backend is ready
-  const USE_SUPABASE = false; // Toggle this when ready
-  
+  // Use the Supabase-backed service for admin map by default
+  const USE_SUPABASE = true;
+
   return USE_SUPABASE ? new SupabaseReportService() : new MockReportService();
 }

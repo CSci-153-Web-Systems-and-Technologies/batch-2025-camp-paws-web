@@ -114,7 +114,7 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/30 z-40 lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/30 z-10005 lg:hidden backdrop-blur-sm"
           onClick={onClose}
         />
       )}
@@ -122,7 +122,7 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
       {/* Sidebar */}
       <aside 
         className={`
-          fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[rgb(var(--color-surface))] shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
+          fixed lg:static inset-y-0 left-0 z-10006 w-64 bg-[rgb(var(--color-surface))] shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
@@ -203,12 +203,12 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
             <>
               {/* Backdrop to close menu */}
               <div 
-                className="fixed inset-0 z-40" 
+                className="fixed inset-0 z-10004" 
                 onClick={() => setShowLogoutMenu(false)}
               />
               
               {/* Popup Menu */}
-              <div className="absolute bottom-full left-4 right-4 mb-2 bg-[rgb(var(--color-surface))] rounded-lg shadow-lg border border-[rgb(var(--color-border))] z-50 overflow-hidden">
+              <div className="absolute bottom-full left-4 right-4 mb-2 bg-[rgb(var(--color-surface))] rounded-lg shadow-lg border border-[rgb(var(--color-border))] z-10007 overflow-hidden">
                 <button
                   onClick={handleLogout}
                   disabled={isLoggingOut}

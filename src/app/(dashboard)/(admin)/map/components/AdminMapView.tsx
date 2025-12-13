@@ -1,7 +1,7 @@
 'use client';
 
 // Single Responsibility: Display map with animal report markers
-import { MapContainer, TileLayer, Marker, Popup, Polygon } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, Polygon, useMap } from 'react-leaflet';
 import { useState, useEffect } from 'react';
 import L from 'leaflet';
 import { AdminMapViewProps } from '../types/MapTypes';
@@ -81,6 +81,8 @@ export default function AdminMapView({ reports, onReportSelect }: AdminMapViewPr
         style={{ height: '100%', width: '100%' }}
         scrollWheelZoom={true}
       >
+        {/* Fit map bounds to reports when available */}
+        <FitBounds reports={reports} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -115,4 +117,21 @@ export default function AdminMapView({ reports, onReportSelect }: AdminMapViewPr
       </MapContainer>
     </div>
   );
+}
+
+function FitBounds({ reports }: { reports: AdminMapViewProps['reports'] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!reports || reports.length === 0) return;
+    const latLngs = reports.map(r => [r.latitude, r.longitude] as [number, number]);
+    // fitBounds can throw if latLngs are invalid; ignore errors silently
+    try {
+      map.fitBounds(latLngs, { padding: [40, 40] });
+    } catch {
+      // ignore
+    }
+  }, [reports, map]);
+
+  return null;
 }

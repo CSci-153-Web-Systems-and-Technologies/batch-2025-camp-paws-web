@@ -121,10 +121,20 @@ export default function AdminMapRefactored({ initialReports }: AdminMapProps) {
 
       {/* Map View */}
       <div className="bg-[rgb(var(--color-surface))] rounded-lg shadow-sm p-4 border border-[rgb(var(--color-border))]">
-        <AdminMapView 
-          reports={filteredReports}
-          onReportSelect={handleReportSelect}
-        />
+        {filteredReports.length === 0 ? (
+          <div className="p-6 text-center">
+            <p className="text-[rgb(var(--color-text-secondary))] mb-3">No reports match the selected time filter.</p>
+            <div className="flex items-center justify-center gap-3">
+              <Button variant="secondary" onClick={() => setSelectedFilter('week')}>Show this week</Button>
+              <Button variant="secondary" onClick={() => setSelectedFilter('month')}>Show last 30 days</Button>
+            </div>
+          </div>
+        ) : (
+          <AdminMapView 
+            reports={filteredReports}
+            onReportSelect={handleReportSelect}
+          />
+        )}
       </div>      {/* Legend */}
       <div className="bg-[rgb(var(--color-surface))] rounded-lg shadow-sm p-4 border border-[rgb(var(--color-border))]">
         <h3 className="text-sm font-semibold text-[rgb(var(--color-text-primary))] mb-3">Map Legend</h3>
