@@ -52,6 +52,7 @@ export interface VerifyReportsProps {
 export interface ReportsTableProps {
   reports: Report[];
   onRowClick: (report: Report) => void;
+  onSelectionChange?: (selectedIds: string[]) => void;
   selectedColumns: string[];
 }
 

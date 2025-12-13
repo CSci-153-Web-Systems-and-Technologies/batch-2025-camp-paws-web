@@ -110,15 +110,21 @@ export class SupabaseReportService implements ReportService {
   }
 
   async acceptReport(reportId: string): Promise<void> {
-    const { createClient } = await import('@/lib/supabase/client');
-    const supabase = createClient();
+    const res = await fetch('/api/admin/reports/verify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ reportId }),
+    });
 
-    const { error } = await supabase
-      .from('stray_animal_reports')
-      .update({ status: 'verified', verified_at: new Date().toISOString() })
-      .eq('id', reportId);
-
-    if (error) throw error;
+    if (!res.ok) {
+      const payloadJson = (await res.json().catch(() => null)) as unknown;
+      let errMsg = `Verify failed: ${res.status}`;
+      if (payloadJson && typeof payloadJson === 'object' && 'error' in (payloadJson as Record<string, unknown>)) {
+        const p = payloadJson as Record<string, unknown>;
+        if (typeof p.error === 'string') errMsg = p.error;
+      }
+      throw new Error(errMsg);
+    }
   }
 
   async rejectReport(reportId: string, reason: string): Promise<void> {

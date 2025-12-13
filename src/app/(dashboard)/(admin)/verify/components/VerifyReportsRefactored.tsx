@@ -13,8 +13,10 @@ const AVAILABLE_COLUMNS = ['reportId', 'animalType', 'sex', 'colorPattern', 'pri
 export default function VerifyReportsRefactored({ initialReports }: VerifyReportsProps) {
   const [reports, setReports] = useState<Report[]>(initialReports || []);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [selectedColumns] = useState<string[]>(AVAILABLE_COLUMNS);
   
@@ -28,6 +30,8 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
 
   // Apply filters to reports
   const filteredReports = reports.filter(report => {
+    // Only show reports that are pending verification in this view
+    if (report.status !== 'pending') return false;
     if (filters.animalType !== 'all' && report.animalType !== filters.animalType) return false;
     if (filters.sex !== 'all' && report.sex !== filters.sex) return false;
     if (filters.colorPattern !== 'all' && report.colorPattern !== filters.colorPattern) return false;
@@ -60,6 +64,17 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
     setIsModalOpen(true);
   };
 
+  const handleSelectionChange = (selectedIds: string[]) => {
+    setSelectedIds(selectedIds);
+    if (selectedIds.length === 0) {
+      setSelectedReport(null);
+      return;
+    }
+    const firstId = selectedIds[0];
+    const found = reports.find(r => r.id === firstId) || null;
+    setSelectedReport(found);
+  };
+
   const handleCloseModal = () => {
     setIsModalOpen(false);
     setSelectedReport(null);
@@ -72,11 +87,64 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
     setReports(reports.filter(r => r.id !== reportId));
   };
 
+  const handleAcceptBulk = async (ids: string[]) => {
+    if (!ids || ids.length === 0) return;
+    setIsProcessing(true);
+    const reportService = getReportService();
+    type BulkResult = { id: string; status: 'fulfilled' } | { id: string; status: 'rejected'; reason: unknown };
+    const promises: Promise<BulkResult>[] = ids.map(id =>
+      reportService.acceptReport(id)
+        .then((): BulkResult => ({ id, status: 'fulfilled' }))
+        .catch((err): BulkResult => ({ id, status: 'rejected', reason: err }))
+    );
+    const results: BulkResult[] = await Promise.all(promises);
+    const succeeded = results.filter((r): r is { id: string; status: 'fulfilled' } => r.status === 'fulfilled').map(r => r.id);
+    const failed = results.filter((r): r is { id: string; status: 'rejected'; reason: unknown } => r.status === 'rejected').map(r => ({ id: r.id, reason: r.reason }));
+    // remove succeeded from list
+    if (succeeded.length > 0) {
+      setReports(prev => prev.filter(r => !succeeded.includes(r.id)));
+    }
+    // clear selection of processed ids
+    setSelectedIds([]);
+    setSelectedReport(null);
+    setIsProcessing(false);
+    if (failed.length > 0) {
+      console.error('Some accepts failed', failed);
+      // Basic feedback - can be replaced with toast
+      alert(`${succeeded.length} accepted, ${failed.length} failed`);
+    }
+  };
+
   const handleReject = async (reportId: string, reason: string) => {
     const reportService = getReportService();
     await reportService.rejectReport(reportId, reason);
     // Remove from list
     setReports(reports.filter(r => r.id !== reportId));
+  };
+
+  const handleRejectBulk = async (ids: string[], reason: string) => {
+    if (!ids || ids.length === 0) return;
+    setIsProcessing(true);
+    const reportService = getReportService();
+    type BulkResult = { id: string; status: 'fulfilled' } | { id: string; status: 'rejected'; reason: unknown };
+    const promises: Promise<BulkResult>[] = ids.map(id =>
+      reportService.rejectReport(id, reason)
+        .then((): BulkResult => ({ id, status: 'fulfilled' }))
+        .catch((err): BulkResult => ({ id, status: 'rejected', reason: err }))
+    );
+    const results: BulkResult[] = await Promise.all(promises);
+    const succeeded = results.filter((r): r is { id: string; status: 'fulfilled' } => r.status === 'fulfilled').map(r => r.id);
+    const failed = results.filter((r): r is { id: string; status: 'rejected'; reason: unknown } => r.status === 'rejected').map(r => ({ id: r.id, reason: r.reason }));
+    if (succeeded.length > 0) {
+      setReports(prev => prev.filter(r => !succeeded.includes(r.id)));
+    }
+    setSelectedIds([]);
+    setSelectedReport(null);
+    setIsProcessing(false);
+    if (failed.length > 0) {
+      console.error('Some rejects failed', failed);
+      alert(`${succeeded.length} rejected, ${failed.length} failed`);
+    }
   };
 
   const handleEdit = async (reportId: string, data: Partial<Report>) => {
@@ -238,15 +306,39 @@ export default function VerifyReportsRefactored({ initialReports }: VerifyReport
         reports={filteredReports}
         onRowClick={handleRowClick}
         selectedColumns={selectedColumns}
+        onSelectionChange={handleSelectionChange}
       />
 
       {/* Action Buttons */}
       <div className="flex gap-2">
-        <Button variant="success">
-          Accept
+        <Button
+          variant="success"
+          onClick={() => {
+            if (selectedIds.length > 0) {
+              void handleAcceptBulk(selectedIds);
+            } else if (selectedReport) {
+              void handleAccept(selectedReport.id);
+            }
+          }}
+          disabled={isProcessing || (selectedIds.length === 0 && !selectedReport)}
+        >
+          {selectedIds.length > 0 ? `Accept (${selectedIds.length})` : 'Accept'}
         </Button>
-        <Button variant="danger">
-          Reject
+        <Button
+          variant="danger"
+          onClick={() => {
+            if (selectedIds.length > 0) {
+              const reason = window.prompt('Reason for rejection (applied to all selected):');
+              if (reason && reason.trim().length > 0) {
+                void handleRejectBulk(selectedIds, reason.trim());
+              }
+            } else if (selectedReport) {
+              setIsModalOpen(true);
+            }
+          }}
+          disabled={isProcessing || (selectedIds.length === 0 && !selectedReport)}
+        >
+          {selectedIds.length > 0 ? `Reject (${selectedIds.length})` : 'Reject'}
         </Button>
       </div>
 

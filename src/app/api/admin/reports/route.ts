@@ -4,10 +4,11 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     const supabase = await createServerClient();
-    // Fetch reports (all statuses) and then join lookup tables server-side
+    // Fetch only pending reports and then join lookup tables server-side
     const { data: reports, error: reportsError } = await supabase
       .from('stray_animal_reports')
       .select('*')
+      .eq('status', 'pending')
       .order('created_at', { ascending: false });
 
     if (reportsError) {

@@ -5,14 +5,17 @@ import { useState } from 'react';
 import Table, { TableColumn } from '@/components/ui/Table';
 import { ReportsTableProps, Report } from '../types/VerifyTypes';
 
-export default function ReportsTable({ reports, onRowClick, selectedColumns }: ReportsTableProps) {
+export default function ReportsTable({ reports, onRowClick, selectedColumns, onSelectionChange }: ReportsTableProps) {
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
 
   const handleSelectAll = (checked: boolean) => {
     if (checked) {
-      setSelectedRows(new Set(reports.map(r => r.id)));
+      const newSet = new Set(reports.map(r => r.id));
+      setSelectedRows(newSet);
+      if (onSelectionChange) onSelectionChange([...newSet]);
     } else {
       setSelectedRows(new Set());
+      if (onSelectionChange) onSelectionChange([]);
     }
   };
 
@@ -24,6 +27,7 @@ export default function ReportsTable({ reports, onRowClick, selectedColumns }: R
       newSelected.delete(reportId);
     }
     setSelectedRows(newSelected);
+    if (onSelectionChange) onSelectionChange([...newSelected]);
   };
 
   const columnConfig: Record<string, { label: string; width: string; render: (report: Report) => React.ReactNode }> = {
