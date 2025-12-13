@@ -105,3 +105,117 @@ export async function GET() {
     return NextResponse.json({ error: (err as Error).message || String(err) }, { status: 500 });
   }
 }
+
+export async function POST(req: Request) {
+  try {
+    const supabase = await createServerClient();
+    const body = await req.json();
+
+    const {
+      name,
+      description,
+      animalType,
+      sex,
+      colorPattern,
+      primaryColor,
+      initialReportId,
+      reportIds = [],
+  } = body as Record<string, unknown>;
+
+    // Helper to find lookup id by name/label
+    async function findId(table: string, col: string, value?: string) {
+      if (!value) return null;
+      const { data, error } = await supabase.from(table).select('id').eq(col, value).limit(1).maybeSingle();
+      if (error) throw error;
+      return data ? String((data as Record<string, unknown>).id) : null;
+    }
+
+  const animal_type_id = await findId('animal_types', 'name', typeof animalType === 'string' ? animalType : undefined);
+  const sex_id = await findId('sexes', 'name', typeof sex === 'string' ? sex : undefined);
+  const color_pattern_id = await findId('color_patterns', 'name', typeof colorPattern === 'string' ? colorPattern : undefined);
+  const primary_color_id = await findId('primary_colors', 'label', typeof primaryColor === 'string' ? primaryColor : undefined);
+
+    // Compute report statistics if reportIds provided (or initialReportId)
+    const ids = Array.isArray(reportIds) && reportIds.length > 0 ? reportIds : (initialReportId ? [initialReportId] : []);
+
+    let firstSightedDate: string | null = null;
+    let lastSightedDate: string | null = null;
+
+    if (ids.length > 0) {
+      const { data: rd, error: rdErr } = await supabase
+        .from('stray_animal_reports')
+        .select('spotted_date')
+        .in('id', ids as string[]);
+      if (rdErr) throw rdErr;
+  const dates = (rd ?? []).map((r: Record<string, unknown>) => r.spotted_date).filter(Boolean).map((d: unknown) => new Date(String(d)).getTime());
+      if (dates.length > 0) {
+        firstSightedDate = new Date(Math.min(...dates)).toISOString().split('T')[0];
+        lastSightedDate = new Date(Math.max(...dates)).toISOString().split('T')[0];
+      }
+    }
+
+    // Create group
+    const insertPayload: Record<string, unknown> = {
+      name,
+      description,
+      animal_type_id,
+      sex_id,
+      color_pattern_id,
+      primary_color_id,
+      report_count: ids.length,
+      first_sighted_date: firstSightedDate,
+      last_sighted_date: lastSightedDate,
+      created_at: new Date().toISOString(),
+    };
+
+    // Use cookie-backed server client and set created_by from the authenticated session
+    const supabaseServer = await createServerClient();
+
+    // Get user from session
+    const { data: { user }, error: authErr } = await supabaseServer.auth.getUser();
+    if (authErr) {
+      throw authErr;
+    }
+
+    // Attach created_by to the payload so RLS policies that check auth.uid() will pass
+    if (user?.id) {
+      insertPayload.created_by = user.id;
+    }
+
+    const { data: created, error: createErr } = await supabaseServer.from('animal_groups').insert(insertPayload).select().limit(1).maybeSingle();
+    if (createErr) throw createErr;
+    const createdGroup = created as Record<string, unknown>;
+
+    // If we have report ids, insert into group_reports and mark reports as grouped
+    if (ids.length > 0) {
+      const rows = ids.map((rid: string) => ({ group_id: createdGroup.id, report_id: rid }));
+      const { error: grErr } = await supabaseServer.from('group_reports').insert(rows);
+      if (grErr) throw grErr;
+
+      const { error: updErr } = await supabaseServer.from('stray_animal_reports').update({ is_grouped: 'yes' }).in('id', ids);
+      if (updErr) throw updErr;
+    }
+
+    // Return created group in similar shape as GET
+    const result = {
+      group_id: createdGroup.id,
+      group_name: createdGroup.name,
+      group_description: createdGroup.description,
+      animal_type_id: createdGroup.animal_type_id,
+      sex_id: createdGroup.sex_id,
+      color_pattern_id: createdGroup.color_pattern_id,
+      primary_color_id: createdGroup.primary_color_id,
+      report_count: createdGroup.report_count ?? ids.length,
+      first_sighted_date: createdGroup.first_sighted_date ?? firstSightedDate,
+      last_sighted_date: createdGroup.last_sighted_date ?? lastSightedDate,
+      group_created_by: createdGroup.created_by ?? null,
+      group_created_at: createdGroup.created_at,
+      group_updated_at: createdGroup.updated_at,
+      report_ids: ids,
+    };
+
+    return NextResponse.json({ data: result });
+  } catch (err) {
+    return NextResponse.json({ error: (err as Error).message || String(err) }, { status: 500 });
+  }
+}

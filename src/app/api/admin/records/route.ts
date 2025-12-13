@@ -8,7 +8,7 @@ export async function GET() {
     const { data: reports, error: reportsError } = await supabase
       .from('stray_animal_reports')
       .select(
-        'id, user_id, photo_url, animal_type_id, sex_id, collar_status_id, color_pattern_id, primary_color_id, body_condition_score, additional_notes, spotted_date, spotted_time, latitude, longitude, location_description, status, verified_by, verified_at, created_at, updated_at'
+        'id, user_id, photo_url, animal_type_id, sex_id, collar_status_id, color_pattern_id, primary_color_id, body_condition_score, additional_notes, spotted_date, spotted_time, latitude, longitude, location_description, is_grouped, status, verified_by, verified_at, created_at, updated_at'
       )
       .eq('status', 'verified')
       .order('verified_at', { ascending: false });
@@ -126,6 +126,7 @@ export async function GET() {
   return {
     id: r.id,
     user_id: r.user_id,
+    is_grouped: r.is_grouped,
     user_email: u ? (u.email ?? null) : null,
     user_name: u ? (u.name ?? null) : null,
     photo_url: r.photo_url,

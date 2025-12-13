@@ -52,6 +52,9 @@ export interface AcceptedReport {
   acceptedAt: string; // Same as verifiedAt
   createdAt: string; // DB: created_at
   updatedAt?: string; // DB: updated_at
+  // Server indicates whether this report has been grouped into an AnimalGroup
+  // DB: is_grouped ('yes' | 'no') — exposed here as a boolean for convenience
+  isGrouped?: boolean;
 }
 
 // Group represents a unique individual animal

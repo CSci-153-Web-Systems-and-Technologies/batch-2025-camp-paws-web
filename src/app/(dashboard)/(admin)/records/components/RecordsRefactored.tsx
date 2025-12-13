@@ -14,6 +14,7 @@ import {
   DeleteGroupConfirmation,
 } from './modals';
 import ReportDetailsModal from '@/components/ui/ReportDetailsModal';
+import { normalizeRows } from '@/lib/transformers/records';
 import { 
   ViewType, 
   AcceptedReport, 
@@ -35,6 +36,8 @@ export default function RecordsRefactored() {
   // Data state
   const [reports, setReports] = useState<AcceptedReport[]>([]);
   const [groups, setGroups] = useState<AnimalGroup[]>([]);
+  // Track server-provided is_grouped flags so we can accurately compute ungrouped reports
+  const [ungroupedIds, setUngroupedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,6 +50,9 @@ export default function RecordsRefactored() {
     isOpen: false,
     mode: 'manual'
   });
+
+  // When creating a group from multiple selected reports, store pending selection here
+  const [pendingGroupSelection, setPendingGroupSelection] = useState<string[] | null>(null);
 
   const [editGroupModal, setEditGroupModal] = useState<{
     isOpen: boolean;
@@ -121,59 +127,16 @@ export default function RecordsRefactored() {
         throw new Error(reportsRes.error);
       }
 
-      const rows = (reportsRes?.data ?? []) as Array<Record<string, unknown>>;
+  const rows = (reportsRes?.data ?? []) as Array<Record<string, unknown>>;
 
-      // Map server rows to AcceptedReport shape
-        const mappedReports: AcceptedReport[] = rows.map((r) => ({
-        id: String(r.id),
-        groupId: null,
-        photoUrl: r.photo_url ? String(r.photo_url) : '',
-        // Normalize animal type case-insensitively and accept both label or id fields
-        animalType: String(r.animal_type ?? r.animal_type_id ?? r.animalType ?? '').toLowerCase().includes('dog') ? 'dog' : 'cat',
-        sex: (String(r.sex) as AcceptedReport['sex']) || 'unknown',
-        collar: String(r.collar_status) === 'yes' ? 'yes' : (String(r.collar_status) === 'no' ? 'no' : 'unknown'),
-        colorPattern: r.color_pattern ? String(r.color_pattern) : 'unknown',
-        primaryColor: r.primary_color ? String(r.primary_color) : 'unknown',
-        bodyConditionScore: Number(r.body_condition_score) || 0,
-        // Accept either server's *_problems or the records endpoint's *_conditions fields
-        skinProblems: Array.isArray(r.skin_problems)
-          ? (r.skin_problems as string[])
-          : Array.isArray(r.skin_conditions)
-          ? (r.skin_conditions as string[])
-          : Array.isArray((r as Record<string, unknown>)['skinProblems'])
-          ? ((r as Record<string, unknown>)['skinProblems'] as string[])
-          : [],
-        eyeProblems: Array.isArray(r.eye_problems)
-          ? (r.eye_problems as string[])
-          : Array.isArray(r.eye_conditions)
-          ? (r.eye_conditions as string[])
-          : Array.isArray((r as Record<string, unknown>)['eyeProblems'])
-          ? ((r as Record<string, unknown>)['eyeProblems'] as string[])
-          : [],
-        gaitProblems: Array.isArray(r.gait_problems)
-          ? (r.gait_problems as string[])
-          : Array.isArray(r.gait_conditions)
-          ? (r.gait_conditions as string[])
-          : Array.isArray((r as Record<string, unknown>)['gaitProblems'])
-          ? ((r as Record<string, unknown>)['gaitProblems'] as string[])
-          : [],
-        notes: r.additional_notes ? String(r.additional_notes) : '',
-        latitude: Number(r.latitude) || 0,
-        longitude: Number(r.longitude) || 0,
-        locationDescription: r.location_description ? String(r.location_description) : '',
-        spottedDate: r.spotted_date ? String(r.spotted_date) : '',
-        spottedTime: r.spotted_time ? String(r.spotted_time) : '',
-        reportedBy: r.user_id ? String(r.user_id) : '',
-        reporterEmail: r.reporter_email ? String(r.reporter_email) : '',
-        status: 'verified',
-        verifiedBy: r.verified_by ? String(r.verified_by) : undefined,
-        verifiedAt: r.verified_at ? String(r.verified_at) : undefined,
-        acceptedAt: r.verified_at ? String(r.verified_at) : new Date().toISOString(),
-        createdAt: r.created_at ? String(r.created_at) : new Date().toISOString(),
-        updatedAt: r.updated_at ? String(r.updated_at) : undefined,
-      }));
+      // Normalize server rows to AcceptedReport using shared utility
+      const mappedReports: AcceptedReport[] = normalizeRows(rows as Array<Record<string, unknown>>);
+
+      // Compute which rows are flagged as grouped/ungrouped by the server using the normalized shape
+      const ungroupedSet = new Set<string>(mappedReports.filter(r => !r.isGrouped).map(r => r.id));
 
       setReports(mappedReports);
+      setUngroupedIds(ungroupedSet);
       setGroups(groupsRes?.data ?? []);
     } catch (err) {
       setError('Failed to load data. Please try again.');
@@ -186,44 +149,48 @@ export default function RecordsRefactored() {
   // Group actions
   const handleCreateGroup = async (input: CreateGroupInput) => {
     try {
-      // TODO: Replace with actual API call
-      // const newGroup = await fetch('/api/groups', {
-      //   method: 'POST',
-      //   body: JSON.stringify(input)
-      // }).then(res => res.json());
+      // Build payload: include pending selection (reportIds) if present
+      const selectedIds = pendingGroupSelection ?? (input.initialReportId ? [input.initialReportId] : []);
+      const payload = { ...input, reportIds: selectedIds } as Record<string, unknown>;
 
-      // Mock implementation
-      const newGroup: AnimalGroup = {
-        id: `group-${Date.now()}`,
-        name: input.name,
-        description: input.description,
+      const res = await fetch('/api/groups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (json?.error) throw new Error(json.error);
+
+  const g = (json?.data ?? {}) as Record<string, unknown>;
+
+      // Convert server result into local AnimalGroup shape
+      const createdGroup: AnimalGroup = {
+        id: String(g.group_id),
+        name: String(g.group_name ?? input.name),
+        description: String(g.group_description ?? input.description ?? ''),
         animalType: input.animalType,
-        sex: input.sex || 'unknown',
-        primaryColor: input.primaryColor,
-        colorPattern: input.colorPattern,
-        reportCount: input.initialReportId ? 1 : 0,
-        firstSightedDate: input.initialReportId 
-          ? reports.find(r => r.id === input.initialReportId)?.spottedDate || new Date().toISOString().split('T')[0]
-          : new Date().toISOString().split('T')[0],
-        lastSightedDate: input.initialReportId
-          ? reports.find(r => r.id === input.initialReportId)?.spottedDate || new Date().toISOString().split('T')[0]
-          : new Date().toISOString().split('T')[0],
-        createdAt: new Date().toISOString(),
-        createdBy: 'current-admin',
-        updatedAt: new Date().toISOString(),
-        reportIds: input.initialReportId ? [input.initialReportId] : []
+  sex: (input.sex as unknown as AcceptedReport['sex']) ?? 'unknown',
+        primaryColor: input.primaryColor ?? '',
+        colorPattern: input.colorPattern ?? '',
+        reportCount: Number(g.report_count ?? (selectedIds.length)),
+        firstSightedDate: String(g.first_sighted_date ?? new Date().toISOString().split('T')[0]),
+        lastSightedDate: String(g.last_sighted_date ?? new Date().toISOString().split('T')[0]),
+        createdAt: String(g.group_created_at ?? new Date().toISOString()),
+        createdBy: String(g.group_created_by ?? 'current-admin'),
+        updatedAt: String(g.group_updated_at ?? new Date().toISOString()),
+        reportIds: Array.isArray(g.report_ids) ? g.report_ids.map(String) : selectedIds,
       };
 
-      setGroups(prev => [...prev, newGroup]);
-
-      // If creating from report, update the report's groupId
-      if (input.initialReportId) {
-        setReports(prev => prev.map(r => 
-          r.id === input.initialReportId ? { ...r, groupId: newGroup.id } : r
-        ));
+      // Update client state
+      setGroups(prev => [...prev, createdGroup]);
+      if (createdGroup.reportIds.length > 0) {
+        setReports(prev => prev.map(r => createdGroup.reportIds.includes(r.id) ? { ...r, groupId: createdGroup.id, isGrouped: true } : r));
       }
 
-      console.log('Group created successfully:', newGroup);
+      // Clear pending selection after creation
+      setPendingGroupSelection(null);
+
+      console.log('Group created successfully (server):', createdGroup);
     } catch (err) {
       console.error('Error creating group:', err);
       alert('Failed to create group. Please try again.');
@@ -426,10 +393,9 @@ export default function RecordsRefactored() {
 
   // Bulk operations
   const handleBulkGroup = async (reportIds: string[]) => {
-    // TODO: Open a modal to select which group to add these reports to
-    // For now, just log
-    console.log('Bulk group reports:', reportIds);
-    alert(`TODO: Select a group for ${reportIds.length} reports`);
+    // Open the CreateGroup modal in manual mode and remember the selected IDs.
+    setPendingGroupSelection(reportIds);
+    openCreateGroupModal('manual');
   };
 
   // Modal handlers
@@ -466,7 +432,11 @@ export default function RecordsRefactored() {
   };
 
   // Get counts for each view
-  const ungroupedReports = reports.filter(r => r.groupId === null);
+  // Determine ungrouped reports based on server's is_grouped flag when available,
+  // otherwise fall back to groupId === null
+  const ungroupedReports = (ungroupedIds && ungroupedIds.size > 0)
+    ? reports.filter(r => ungroupedIds.has(r.id))
+    : reports.filter(r => r.groupId === null);
 
   // Loading state
   if (loading) {

@@ -85,26 +85,56 @@ export default function CreateGroupModal({
     { value: 'unknown', label: '❓ Unknown' },
   ];
 
-  const colorPatternOptions = [
-    { value: 'solid', label: 'Solid' },
-    { value: 'spotted', label: 'Spotted' },
-    { value: 'striped', label: 'Striped' },
-    { value: 'patched', label: 'Patched' },
-    { value: 'brindle', label: 'Brindle' },
-    { value: 'merle', label: 'Merle' },
-  ];
+  // All possible color patterns with their associated animal type
+  const allColorPatterns = useMemo(() => [
+    { id: 'bi-color-dog', name: 'Bi-color', animal_type_id: 'dog' },
+    { id: 'bi-color-puspin', name: 'Bi-color Puspin', animal_type_id: 'cat' },
+    { id: 'black-puspin', name: 'Black Puspin', animal_type_id: 'cat' },
+    { id: 'blenheim', name: 'Blenheim', animal_type_id: 'dog' },
+    { id: 'brindle', name: 'Brindle', animal_type_id: 'dog' },
+    { id: 'calico-puspin', name: 'Calico(Tri-color) Puspin', animal_type_id: 'cat' },
+    { id: 'harlequin', name: 'Harlequin', animal_type_id: 'dog' },
+    { id: 'hound-coat', name: 'Hound Coat', animal_type_id: 'dog' },
+    { id: 'mantle', name: 'Mantle', animal_type_id: 'dog' },
+    { id: 'merle', name: 'Merle', animal_type_id: 'dog' },
+    { id: 'not-sure-cat-pattern', name: 'Not Sure', animal_type_id: 'cat' },
+    { id: 'not-sure-dog-pattern', name: 'Not Sure', animal_type_id: 'dog' },
+    { id: 'orange-tabby-puspin', name: 'Orange-Tabby Puspin', animal_type_id: 'cat' },
+    { id: 'patchy', name: 'Patchy', animal_type_id: 'dog' },
+    { id: 'plain', name: 'Plain', animal_type_id: 'dog' },
+    { id: 'sable', name: 'Sable', animal_type_id: 'dog' },
+    { id: 'tabby-puspin', name: 'Tabby Puspin', animal_type_id: 'cat' },
+    { id: 'tortoiseshell-puspin', name: 'Tortoiseshell Puspin', animal_type_id: 'cat' },
+    { id: 'tri-color-dog', name: 'Tri-color', animal_type_id: 'dog' },
+    { id: 'tuxedo', name: 'Tuxedo', animal_type_id: 'dog' },
+    { id: 'white-puspin', name: 'White Puspin', animal_type_id: 'cat' },
+  ], []);
 
+  // Primary colors provided
   const primaryColorOptions = [
     { value: 'black', label: 'Black' },
+    { value: 'brown', label: 'Brown / Chocolate' },
+    { value: 'cream', label: 'Cream / Yellow' },
+    { value: 'grey', label: 'Grey / Blue' },
+    { value: 'other', label: 'Other / Unsure' },
+    { value: 'red', label: 'Red / Orange / Ginger' },
+    { value: 'tan', label: 'Tan / Fawn' },
     { value: 'white', label: 'White' },
-    { value: 'brown', label: 'Brown' },
-    { value: 'gray', label: 'Gray' },
-    { value: 'tan', label: 'Tan' },
-    { value: 'golden', label: 'Golden' },
-    { value: 'cream', label: 'Cream' },
-    { value: 'red', label: 'Red' },
-    { value: 'orange', label: 'Orange' },
   ];
+
+  // Derive color pattern options based on selected animal type
+  const colorPatternOptionsForType = useMemo(() => {
+    const at = formData.animalType || 'dog';
+    return allColorPatterns
+      .filter(p => p.animal_type_id === at)
+      .map(p => ({ value: p.id, label: p.name }));
+  }, [formData.animalType, allColorPatterns]);
+
+  // Ensure select shows the correct options; if current colorPattern is not in options, clear it via setter
+  if (formData.colorPattern && !colorPatternOptionsForType.some(o => o.value === formData.colorPattern)) {
+    // use a micro-task to avoid changing state during render
+    setTimeout(() => setFormData(prev => ({ ...prev, colorPattern: '' })), 0);
+  }
 
   // Generate unique key to force remount when mode or report changes
   const modalKey = `${mode}-${initialReport?.id || 'manual'}`;
@@ -190,7 +220,8 @@ export default function CreateGroupModal({
           <Select
             value={formData.colorPattern}
             onChange={(e) => handleChange('colorPattern', e.target.value)}
-            options={colorPatternOptions}
+            // Use the full list of color patterns (id/name) as the dropdown values
+            options={allColorPatterns.map(p => ({ value: p.id, label: p.name }))}
             error={errors.colorPattern}
           />
         </div>
