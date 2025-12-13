@@ -1,0 +1,276 @@
+@import "tailwindcss";
+
+/**
+ * Theme System - Consolidated CSS Variables
+ * All theme colors and design tokens in one place
+ */
+
+:root {
+  /* ===== Colors - Light Mode ===== */
+  
+  /* Primary (Green) */
+  --color-primary: 34 197 94;
+  --color-primary-hover: 22 163 74;
+  --color-primary-light: 220 252 231;
+  
+  /* Background */
+  --color-background: 249 250 251;
+  --color-surface: 255 255 255;
+  
+  /* Text */
+  --color-text-primary: 17 24 39;
+  --color-text-secondary: 75 85 99;
+  --color-text-tertiary: 156 163 175;
+  
+  /* Border */
+  --color-border: 229 231 235;
+  --color-border-hover: 209 213 219;
+  
+  /* Status */
+  --color-success: 34 197 94;
+  --color-success-bg: 220 252 231;
+  --color-warning: 234 179 8;
+  --color-warning-bg: 254 249 195;
+  --color-error: 239 68 68;
+  --color-error-bg: 254 226 226;
+  --color-info: 59 130 246;
+  --color-info-bg: 219 234 254;
+}
+
+.dark {
+  /* ===== Colors - Dark Mode ===== */
+  
+  /* Primary (Green) */
+  --color-primary: 34 197 94;
+  --color-primary-hover: 74 222 128;
+  --color-primary-light: 22 101 52;
+  
+  /* Background */
+  --color-background: 17 24 39;
+  --color-surface: 31 41 55;
+  
+  /* Text */
+  --color-text-primary: 243 244 246;
+  --color-text-secondary: 209 213 219;
+  --color-text-tertiary: 156 163 175;
+  
+  /* Border */
+  --color-border: 55 65 81;
+  --color-border-hover: 75 85 99;
+  
+  /* Status */
+  --color-success: 74 222 128;
+  --color-success-bg: 22 101 52;
+  --color-warning: 250 204 21;
+  --color-warning-bg: 113 63 18;
+  --color-error: 248 113 113;
+  --color-error-bg: 127 29 29;
+  --color-info: 96 165 250;
+  --color-info-bg: 30 58 138;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: rgb(var(--color-background));
+  color: rgb(var(--color-text-primary));
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Prevent body scroll when mobile sidebar is open */
+body.sidebar-open {
+  overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+  body.sidebar-open {
+    overflow: visible;
+  }
+}
+
+/* Step Indicator Responsive Styles */
+
+/* Ultra small screens (<400px): Tiny circles, single letters, minimal spacing */
+@media (max-width: 399px) {
+  .step-circle {
+    width: 24px;
+    height: 24px;
+    min-width: 24px;
+    min-height: 24px;
+    font-size: 10px;
+  }
+  
+  .step-label {
+    margin-left: 2px;
+    font-size: 10px;
+  }
+  
+  .step-connector {
+    width: 4px;
+    margin: 0 2px;
+  }
+  
+  .ultra-small-only { display: inline; }
+  .small-only { display: none; }
+  .medium-plus { display: none; }
+}
+
+/* Small screens (400-499px): Small circles, short labels, compact spacing */
+@media (min-width: 400px) and (max-width: 499px) {
+  .step-circle {
+    width: 28px;
+    height: 28px;
+    min-width: 28px;
+    min-height: 28px;
+    font-size: 12px;
+  }
+  
+  .step-label {
+    margin-left: 4px;
+    font-size: 12px;
+  }
+  
+  .step-connector {
+    width: 8px;
+    margin: 0 4px;
+  }
+  
+  .ultra-small-only { display: none; }
+  .small-only { display: inline; }
+  .medium-plus { display: none; }
+}
+
+/* Medium screens (500-639px): Medium circles, full labels, normal spacing */
+@media (min-width: 500px) and (max-width: 639px) {
+  .step-circle {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 14px;
+  }
+  
+  .step-label {
+    margin-left: 6px;
+    font-size: 14px;
+  }
+  
+  .step-connector {
+    width: 16px;
+    margin: 0 6px;
+  }
+  
+  .ultra-small-only { display: none; }
+  .small-only { display: none; }
+  .medium-plus { display: inline; }
+}
+
+/* Large screens (≥640px): Full size circles, full labels, spacious layout */
+@media (min-width: 640px) {
+  .step-circle {
+    width: 32px;
+    height: 32px;
+    min-width: 32px;
+    min-height: 32px;
+    font-size: 14px;
+  }
+  
+  .step-label {
+    margin-left: 8px;
+    font-size: 14px;
+  }
+  
+  .step-connector {
+    width: 24px;
+    margin: 0 8px;
+  }
+  
+  .ultra-small-only { display: none; }
+  .small-only { display: none; }
+  .medium-plus { display: inline; }
+}
+
+/* Extra large screens (≥768px): Even more spacious */
+@media (min-width: 768px) {
+  .step-connector {
+    width: 32px;
+    margin: 0 12px;
+  }
+}
+
+/* XXL screens (≥1024px): Maximum spacing */
+@media (min-width: 1024px) {
+  .step-connector {
+    width: 48px;
+    margin: 0 16px;
+  }
+}
+
+/* Custom DatePicker Styles to match theme */
+.custom-calendar {
+  border: 1px solid #d1d5db;
+  border-radius: 0.5rem;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  font-family: inherit;
+}
+
+.react-datepicker__header {
+  background-color: #3b82f6;
+  border-bottom: 1px solid #2563eb;
+  border-radius: 0.5rem 0.5rem 0 0;
+}
+
+.react-datepicker__current-month {
+  color: white;
+  font-weight: 600;
+}
+
+.react-datepicker__day-name {
+  color: white;
+  font-weight: 500;
+}
+
+.react-datepicker__day {
+  border-radius: 0.25rem;
+  transition: all 0.15s ease-in-out;
+}
+
+.react-datepicker__day:hover {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.react-datepicker__day--selected {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.react-datepicker__day--selected:hover {
+  background-color: #2563eb;
+}
+
+.react-datepicker__day--disabled {
+  color: #9ca3af;
+}
+
+.react-datepicker__time-container .react-datepicker__time {
+  background: white;
+  border-radius: 0 0 0.5rem 0;
+}
+
+.react-datepicker__time-list-item:hover {
+  background-color: #dbeafe;
+  color: #1e40af;
+}
+
+.react-datepicker__time-list-item--selected {
+  background-color: #3b82f6;
+  color: white;
+}
+
+.react-datepicker__triangle {
+  border-bottom-color: #3b82f6;
+}
+
+.react-datepicker-popper {
+  z-index: 9999;
+}
