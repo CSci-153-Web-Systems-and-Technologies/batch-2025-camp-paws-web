@@ -1,3 +1,4 @@
+"use client";
 // Reusable error page component
 import Link from 'next/link';
 

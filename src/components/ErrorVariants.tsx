@@ -1,3 +1,4 @@
+"use client";
 // Common error page variants
 
 import ErrorPage from './ErrorPage';
