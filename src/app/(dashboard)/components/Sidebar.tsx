@@ -1,7 +1,9 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useState } from 'react';
+import { signOut } from '@/lib/auth/actions';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -17,6 +19,21 @@ interface NavItem {
 
 export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [showLogoutMenu, setShowLogoutMenu] = useState(false);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await signOut();
+      router.push('/login');
+      router.refresh();
+    } catch (error) {
+      console.error('Logout error:', error);
+      setIsLoggingOut(false);
+    }
+  };
 
   // User navigation items
   const userNavItems: NavItem[] = [
@@ -37,16 +54,16 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
         </svg>
       ),
-    },
-    {
-      href: '/profile',
-      label: 'Profile',
-      icon: (
-        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-        </svg>
-      ),
-    },
+    }
+    // {
+    //   href: '/profile',
+    //   label: 'Profile',
+    //   icon: (
+    //     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    //       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+    //     </svg>
+    //   ),
+    // },
   ];
 
   // Admin navigation items
@@ -97,7 +114,7 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
       {/* Mobile Overlay */}
       {isOpen && (
         <div 
-          className="fixed inset-0 bg-black/30 z-40 lg:hidden backdrop-blur-sm"
+          className="fixed inset-0 bg-black/30 z-10005 lg:hidden backdrop-blur-sm"
           onClick={onClose}
         />
       )}
@@ -105,7 +122,7 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
       {/* Sidebar */}
       <aside 
         className={`
-          fixed lg:static inset-y-0 left-0 z-50 w-64 bg-[rgb(var(--color-surface))] shadow-lg transform transition-transform duration-300 ease-in-out
+          fixed lg:static inset-y-0 left-0 z-10006 w-64 bg-[rgb(var(--color-surface))] shadow-lg transform transition-transform duration-300 ease-in-out flex flex-col
           ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
         `}
       >
@@ -130,7 +147,7 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6">
+        <nav className="px-4 py-6 flex-1 overflow-y-auto">
           <ul className="space-y-2">
             {navigationItems.map((item) => {
               const isActive = pathname === item.href;
@@ -156,19 +173,57 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
           </ul>
         </nav>
 
-        {/* Sidebar Footer */}
-        <div className="p-4 border-t border-[rgb(var(--color-border))]">
-          <div className="flex items-center space-x-3">
+        {/* Sidebar Footer - Positioned at bottom */}
+        <div className="mt-auto p-4 border-t border-[rgb(var(--color-border))] relative">
+          <button
+            onClick={() => setShowLogoutMenu(!showLogoutMenu)}
+            className="w-full flex items-center space-x-3 p-2 rounded-lg hover:bg-[rgb(var(--color-background))] transition-colors"
+          >
             <div className="w-8 h-8 bg-[rgb(var(--color-background))] rounded-full flex items-center justify-center">
               <svg className="w-5 h-5 text-[rgb(var(--color-text-secondary))]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
               </svg>
             </div>
-            <div className="flex-1 min-w-0">
+            <div className="flex-1 min-w-0 text-left">
               <p className="text-sm font-medium text-[rgb(var(--color-text-primary))] truncate">Student User</p>
               <p className="text-xs text-[rgb(var(--color-text-secondary))] truncate">student@vsu.edu.ph</p>
             </div>
-          </div>
+            <svg 
+              className={`w-4 h-4 text-[rgb(var(--color-text-secondary))] transition-transform ${showLogoutMenu ? 'rotate-180' : ''}`}
+              fill="none" 
+              stroke="currentColor" 
+              viewBox="0 0 24 24"
+            >
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+            </svg>
+          </button>
+
+          {/* Logout Popup Menu */}
+          {showLogoutMenu && (
+            <>
+              {/* Backdrop to close menu */}
+              <div 
+                className="fixed inset-0 z-10004" 
+                onClick={() => setShowLogoutMenu(false)}
+              />
+              
+              {/* Popup Menu */}
+              <div className="absolute bottom-full left-4 right-4 mb-2 bg-[rgb(var(--color-surface))] rounded-lg shadow-lg border border-[rgb(var(--color-border))] z-10007 overflow-hidden">
+                <button
+                  onClick={handleLogout}
+                  disabled={isLoggingOut}
+                  className="w-full flex items-center space-x-3 px-4 py-3 text-sm text-left hover:bg-[rgb(var(--color-background))] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <svg className="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                  </svg>
+                  <span className="text-[rgb(var(--color-text-primary))]">
+                    {isLoggingOut ? 'Logging out...' : 'Logout'}
+                  </span>
+                </button>
+              </div>
+            </>
+          )}
         </div>
       </aside>
     </>

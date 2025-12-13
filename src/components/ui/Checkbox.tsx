@@ -1,3 +1,4 @@
+'use client';
 /**
  * Checkbox Component - Reusable checkbox with label and consistent styling
  * Single Responsibility: Form checkbox field with label and error handling

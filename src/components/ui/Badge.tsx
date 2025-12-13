@@ -1,3 +1,4 @@
+'use client';
 /**
  * Badge Component - Reusable badge/pill for labels and status indicators
  * Single Responsibility: Display small labeled indicators

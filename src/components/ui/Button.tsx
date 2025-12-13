@@ -1,3 +1,4 @@
+'use client';
 /**
  * Button Component - Reusable button with variants
  * Single Responsibility: Handle button UI and styling

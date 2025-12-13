@@ -52,6 +52,9 @@ export interface AcceptedReport {
   acceptedAt: string; // Same as verifiedAt
   createdAt: string; // DB: created_at
   updatedAt?: string; // DB: updated_at
+  // Server indicates whether this report has been grouped into an AnimalGroup
+  // DB: is_grouped ('yes' | 'no') — exposed here as a boolean for convenience
+  isGrouped?: boolean;
 }
 
 // Group represents a unique individual animal
@@ -259,7 +262,8 @@ export interface UngroupedViewProps {
 // All View
 export interface AllViewProps {
   groups: AnimalGroup[];
-  reports: AcceptedReport[];
+  // Accept either normalized AcceptedReport objects or raw DB rows (server JSON)
+  reports: Array<AcceptedReport | Record<string, unknown>>;
   onViewGroup: (groupId: string) => void;
   onViewReport: (reportId: string) => void;
   isLoading?: boolean;

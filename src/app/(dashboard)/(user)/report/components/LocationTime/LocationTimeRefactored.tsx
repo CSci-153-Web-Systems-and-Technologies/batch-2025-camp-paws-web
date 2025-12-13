@@ -10,10 +10,11 @@ import LocationDescription from './sections/LocationDescription';
 import MapSelection from './sections/MapSelection';
 import ValidationFeedback from './feedback/ValidationFeedback';
 import Button from '@/components/ui/Button';
+import Spinner from '@/components/ui/Spinner';
 
 // Open/Closed Principle: This component is open for extension (new location features)
 // but closed for modification (core logic doesn't change)
-export default function LocationTimeRefactored({ data, onSubmit, onBack }: LocationTimeProps) {
+export default function LocationTimeRefactored({ data, onSubmit, onBack, isSubmitting = false }: LocationTimeProps) {
   // Single Responsibility: State management only
   const [formState, setFormState] = useState<LocationTimeFormData>({
     locationDescription: data.locationDescription || '',
@@ -93,17 +94,25 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack }: Locat
             onClick={onBack}
             variant="secondary"
             size="lg"
+            disabled={isSubmitting}
           >
             Back
           </Button>
 
           <Button
             onClick={handleSubmit}
-            disabled={!validation.isValid}
+            disabled={!validation.isValid || isSubmitting}
             variant="primary"
             size="lg"
           >
-            Submit Report
+            {isSubmitting ? (
+              <>
+                <Spinner size="sm" className="mr-2" />
+                Submitting...
+              </>
+            ) : (
+              'Submit Report'
+            )}
           </Button>
         </div>
       </div>

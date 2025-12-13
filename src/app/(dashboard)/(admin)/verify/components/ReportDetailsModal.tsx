@@ -1,10 +1,11 @@
 'use client';
 
 // Single Responsibility: Display detailed report information in a modal
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import dynamic from 'next/dynamic';
 import { ReportDetailsModalProps } from '../types/VerifyTypes';
+import { getReportService } from '../services/ReportService';
 import { parsePhysicalProblems } from '../utils/PhysicalProblemsParser';
 import Button from '@/components/ui/Button';
 
@@ -31,6 +32,25 @@ export default function ReportDetailsModal({
   const [showSuspendDialog, setShowSuspendDialog] = useState(false);
   const [reason, setReason] = useState('');
   const [isProcessing, setIsProcessing] = useState(false);
+  const [reporter, setReporter] = useState<{ id?: string; name?: string; email?: string } | null>(null);
+  // Fetch reporter details when modal opens
+  useEffect(() => {
+    let cancelled = false;
+    async function loadReporter() {
+      if (!report) return setReporter(null);
+      const svc = getReportService();
+      const identifier = report.reporterId ?? report.reporterEmail ?? report.reportedBy;
+      try {
+        const user = await svc.getUser(identifier || '');
+        if (!cancelled) setReporter(user);
+      } catch {
+        if (!cancelled) setReporter(null);
+      }
+    }
+
+    loadReporter();
+    return () => { cancelled = true; };
+  }, [report]);
 
   if (!isOpen || !report) return null;
 
@@ -60,7 +80,8 @@ export default function ReportDetailsModal({
       return;
     }
     setIsProcessing(true);
-    await onWarnUser(report.reporterEmail, reason);
+    const contact = reporter?.email || report.reporterEmail;
+    await onWarnUser(contact || '', reason);
     setIsProcessing(false);
     setShowWarnDialog(false);
     setReason('');
@@ -72,7 +93,8 @@ export default function ReportDetailsModal({
       return;
     }
     setIsProcessing(true);
-    await onSuspendUser(report.reporterEmail, reason);
+    const contact2 = reporter?.email || report.reporterEmail;
+    await onSuspendUser(contact2 || '', reason);
     setIsProcessing(false);
     setShowSuspendDialog(false);
     setReason('');
@@ -80,13 +102,13 @@ export default function ReportDetailsModal({
   };
 
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto">
+    <div className="fixed inset-0 z-9999 overflow-y-auto">
       {/* Backdrop */}
-      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm transition-opacity" onClick={onClose} />
+      <div className="fixed inset-0 bg-black/20 backdrop-blur-sm transition-opacity z-9998" onClick={onClose} />
 
       {/* Modal */}
-      <div className="flex min-h-full items-center justify-center p-4">
-        <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+      <div className="flex min-h-full items-center justify-center p-4 z-9999">
+        <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl max-w-4xl w-full max-h-[90vh] overflow-y-auto z-10000">
           {/* Close button */}
           <button
             onClick={onClose}
@@ -252,8 +274,8 @@ export default function ReportDetailsModal({
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div>
                     <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Reported By</div>
-                    <div className="text-sm text-[rgb(var(--color-text-primary))]">{report.reportedBy}</div>
-                    <div className="text-xs text-[rgb(var(--color-text-secondary))]">{report.reporterEmail}</div>
+                    <div className="text-sm text-[rgb(var(--color-text-primary))]">{reporter?.name || report.reportedBy}</div>
+                    <div className="text-xs text-[rgb(var(--color-text-secondary))]">{reporter?.email || report.reporterEmail}</div>
                   </div>
                   <div>
                     <div className="text-xs font-medium text-[rgb(var(--color-text-secondary))]">Date Reported</div>
@@ -327,9 +349,9 @@ export default function ReportDetailsModal({
 
       {/* Reject Dialog */}
       {showRejectDialog && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowRejectDialog(false)} />
-          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 z-10010 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-10009" onClick={() => setShowRejectDialog(false)} />
+          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full z-10011">
             <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">Reject Report</h3>
             <textarea
               value={reason}
@@ -361,9 +383,9 @@ export default function ReportDetailsModal({
 
       {/* Warn Dialog */}
       {showWarnDialog && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowWarnDialog(false)} />
-          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 z-10010 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-10009" onClick={() => setShowWarnDialog(false)} />
+          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full z-10011">
             <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">Warn User</h3>
             <textarea
               value={reason}
@@ -395,9 +417,9 @@ export default function ReportDetailsModal({
 
       {/* Suspend Dialog */}
       {showSuspendDialog && (
-        <div className="fixed inset-0 z-60 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={() => setShowSuspendDialog(false)} />
-          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full">
+        <div className="fixed inset-0 z-10010 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-black/30 backdrop-blur-sm z-10009" onClick={() => setShowSuspendDialog(false)} />
+          <div className="relative bg-[rgb(var(--color-surface))] rounded-lg shadow-xl p-6 max-w-md w-full z-10011">
             <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] mb-4">Suspend User</h3>
             <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-4">
               This will suspend {report.reportedBy} from submitting reports.

@@ -1,12 +1,12 @@
 // Single Responsibility: Display all individual reports in a table format
-'use client';
+ 'use client';
 
 import { useState } from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
 import Table from '@/components/ui/Table';
 import Button from '@/components/ui/Button';
 import { AllViewProps, AcceptedReport } from '../../types/RecordsTypes';
-
+import { normalizeRow } from '@/lib/transformers/records';
 /**
  * View for displaying all individual reports in a single table.
  * This provides a comprehensive view of all individual sighting records.
@@ -17,8 +17,11 @@ export default function AllView({
 }: AllViewProps) {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
 
+  // Normalize incoming reports to AcceptedReport shape (accept server JSON)
+  const normalizedReports: AcceptedReport[] = reports.map(r => normalizeRow(r));
+
   // Sort reports by date (most recent first)
-  const sortedReports = [...reports].sort((a, b) => 
+  const sortedReports = [...normalizedReports].sort((a, b) => 
     new Date(b.spottedDate).getTime() - new Date(a.spottedDate).getTime()
   );
 

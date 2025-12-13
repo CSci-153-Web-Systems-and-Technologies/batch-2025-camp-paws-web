@@ -4,7 +4,9 @@ import { useState } from 'react';
 import { Users, Pencil, Trash2 } from 'lucide-react';
 import Button from '@/components/ui/Button';
 import Table from '@/components/ui/Table';
+import Modal from '@/components/ui/Modal';
 import { UngroupedViewProps, AcceptedReport } from '../../types/RecordsTypes';
+// removed toast; using modal for coming-soon messages
 
 /**
  * View for displaying ungrouped reports in a table format.
@@ -15,9 +17,10 @@ export default function UngroupedView({
   onViewReport,
   selectedReportIds = [],
   onSelectReport,
-  onBulkGroup,
 }: UngroupedViewProps) {
   const [localSelectedIds, setLocalSelectedIds] = useState<string[]>(selectedReportIds);
+  const [showComingSoon, setShowComingSoon] = useState(false);
+  const [comingSoonMessage] = useState('Feature will arrive soon');
 
   // Handle selection toggle
   const handleSelectToggle = (reportId: string) => {
@@ -75,6 +78,7 @@ export default function UngroupedView({
               variant="secondary"
               leftIcon={<Pencil />}
               disabled={localSelectedIds.length !== 1}
+              onClick={() => setShowComingSoon(true)}
             >
               Edit
             </Button>
@@ -82,19 +86,18 @@ export default function UngroupedView({
             <Button
               variant="danger"
               leftIcon={<Trash2 />}
+              onClick={() => setShowComingSoon(true)}
             >
               Delete {localSelectedIds.length > 1 ? `(${localSelectedIds.length})` : ''}
             </Button>
 
-            {onBulkGroup && (
-              <Button
-                variant="primary"
-                leftIcon={<Users />}
-                onClick={() => onBulkGroup(localSelectedIds)}
-              >
-                New Group {localSelectedIds.length > 1 ? `(${localSelectedIds.length})` : ''}
-              </Button>
-            )}
+            <Button
+              variant="primary"
+              leftIcon={<Users />}
+              onClick={() => setShowComingSoon(true)}
+            >
+              New Group {localSelectedIds.length > 1 ? `(${localSelectedIds.length})` : ''}
+            </Button>
           </div>
         )}
       </div>
@@ -150,6 +153,20 @@ export default function UngroupedView({
         emptyMessage="No ungrouped reports"
         showSelectionInfo={false}
       />
+
+      <Modal isOpen={showComingSoon} onClose={() => setShowComingSoon(false)} title="Coming soon">
+        <div className="space-y-4">
+          <p className="text-sm text-[rgb(var(--color-text-secondary))]">{comingSoonMessage}</p>
+          <div className="flex justify-end pt-2">
+            <button
+              onClick={() => setShowComingSoon(false)}
+              className="px-4 py-2 bg-[rgb(var(--color-primary))] text-white rounded-lg"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </Modal>
     </div>
   );
 }

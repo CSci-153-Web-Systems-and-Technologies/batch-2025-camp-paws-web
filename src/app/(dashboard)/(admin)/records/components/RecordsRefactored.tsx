@@ -14,6 +14,7 @@ import {
   DeleteGroupConfirmation,
 } from './modals';
 import ReportDetailsModal from '@/components/ui/ReportDetailsModal';
+import { normalizeRows } from '@/lib/transformers/records';
 import { 
   ViewType, 
   AcceptedReport, 
@@ -35,6 +36,8 @@ export default function RecordsRefactored() {
   // Data state
   const [reports, setReports] = useState<AcceptedReport[]>([]);
   const [groups, setGroups] = useState<AnimalGroup[]>([]);
+  // Track server-provided is_grouped flags so we can accurately compute ungrouped reports
+  const [ungroupedIds, setUngroupedIds] = useState<Set<string>>(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,6 +50,9 @@ export default function RecordsRefactored() {
     isOpen: false,
     mode: 'manual'
   });
+
+  // When creating a group from multiple selected reports, store pending selection here
+  const [pendingGroupSelection, setPendingGroupSelection] = useState<string[] | null>(null);
 
   const [editGroupModal, setEditGroupModal] = useState<{
     isOpen: boolean;
@@ -111,123 +117,27 @@ export default function RecordsRefactored() {
     setError(null);
     
     try {
-      // TODO: Replace with actual API calls
-      // const [reportsData, groupsData] = await Promise.all([
-      //   fetch('/api/reports/accepted').then(res => res.json()),
-      //   fetch('/api/groups').then(res => res.json())
-      // ]);
-      
-      // Mock data for development
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const mockReports: AcceptedReport[] = [
-        {
-          id: 'report-1',
-          groupId: null,
-          photoUrl: 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?w=800',
-          animalType: 'dog',
-          sex: 'male',
-          collar: 'yes',
-          colorPattern: 'solid',
-          primaryColor: 'brown',
-          bodyConditionScore: 3,
-          skinProblems: [],
-          eyeProblems: [],
-          gaitProblems: ['limping', 'difficulty_walking'],
-          notes: 'Friendly dog seen near library',
-          latitude: 14.5995,
-          longitude: 120.9842,
-          locationDescription: 'University Library',
-          spottedDate: '2025-12-08',
-          spottedTime: '14:30',
-          reportedBy: 'user-1',
-          reporterEmail: 'john@example.com',
-          status: 'verified',
-          verifiedBy: 'admin-1',
-          verifiedAt: '2025-12-08T15:00:00Z',
-          acceptedAt: '2025-12-08T15:00:00Z',
-          createdAt: '2025-12-08T14:35:00Z',
-          updatedAt: '2025-12-08T15:00:00Z'
-        },
-        {
-          id: 'report-2',
-          groupId: 'group-1',
-          photoUrl: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800',
-          animalType: 'cat',
-          sex: 'female',
-          collar: 'no',
-          colorPattern: 'tabby',
-          primaryColor: 'orange',
-          bodyConditionScore: 4,
-          skinProblems: [],
-          eyeProblems: [],
-          gaitProblems: [],
-          notes: 'Well-fed cat, appears to be owned',
-          latitude: 14.5995,
-          longitude: 120.9842,
-          locationDescription: 'Student Center',
-          spottedDate: '2025-12-07',
-          spottedTime: '10:15',
-          reportedBy: 'user-2',
-          reporterEmail: 'jane@example.com',
-          status: 'verified',
-          verifiedBy: 'admin-1',
-          verifiedAt: '2025-12-07T11:00:00Z',
-          acceptedAt: '2025-12-07T11:00:00Z',
-          createdAt: '2025-12-07T10:20:00Z',
-          updatedAt: '2025-12-07T11:00:00Z'
-        },
-        {
-          id: 'report-3',
-          groupId: 'group-1',
-          photoUrl: 'https://images.unsplash.com/photo-1574158622682-e40e69881006?w=800',
-          animalType: 'cat',
-          sex: 'female',
-          collar: 'no',
-          colorPattern: 'tabby',
-          primaryColor: 'orange',
-          bodyConditionScore: 4,
-          skinProblems: ['hair_loss', 'redness'],
-          eyeProblems: ['discharge', 'cloudiness'],
-          gaitProblems: [],
-          notes: 'Same cat as before, near cafeteria. Noticed some eye discharge.',
-          latitude: 14.5995,
-          longitude: 120.9842,
-          locationDescription: 'Main Cafeteria',
-          spottedDate: '2025-12-09',
-          spottedTime: '12:00',
-          reportedBy: 'user-3',
-          reporterEmail: 'mike@example.com',
-          status: 'verified',
-          verifiedBy: 'admin-1',
-          verifiedAt: '2025-12-09T12:30:00Z',
-          acceptedAt: '2025-12-09T12:30:00Z',
-          createdAt: '2025-12-09T12:05:00Z',
-          updatedAt: '2025-12-09T12:30:00Z'
-        }
-      ];
+      // Call the server-side records endpoint to fetch verified reports and groups
+      const [reportsRes, groupsRes] = await Promise.all([
+        fetch('/api/admin/records').then(r => r.json()),
+        fetch('/api/groups').then(r => r.json()).catch(() => ({ data: [] }))
+      ]);
 
-      const mockGroups: AnimalGroup[] = [
-        {
-          id: 'group-1',
-          name: 'Orange Tabby - Campus Center Area',
-          description: 'Well-fed orange tabby cat frequently seen around student center and cafeteria',
-          animalType: 'cat',
-          sex: 'female',
-          colorPattern: 'tabby',
-          primaryColor: 'orange',
-          reportCount: 2,
-          firstSightedDate: '2025-12-07',
-          lastSightedDate: '2025-12-09',
-          createdAt: '2025-12-07T11:30:00Z',
-          createdBy: 'admin-1',
-          updatedAt: '2025-12-09T12:35:00Z',
-          reportIds: ['report-2', 'report-3']
-        }
-      ];
+      if (reportsRes?.error) {
+        throw new Error(reportsRes.error);
+      }
 
-      setReports(mockReports);
-      setGroups(mockGroups);
+  const rows = (reportsRes?.data ?? []) as Array<Record<string, unknown>>;
+
+      // Normalize server rows to AcceptedReport using shared utility
+      const mappedReports: AcceptedReport[] = normalizeRows(rows as Array<Record<string, unknown>>);
+
+      // Compute which rows are flagged as grouped/ungrouped by the server using the normalized shape
+      const ungroupedSet = new Set<string>(mappedReports.filter(r => !r.isGrouped).map(r => r.id));
+
+      setReports(mappedReports);
+      setUngroupedIds(ungroupedSet);
+      setGroups(groupsRes?.data ?? []);
     } catch (err) {
       setError('Failed to load data. Please try again.');
       console.error('Error fetching data:', err);
@@ -239,44 +149,48 @@ export default function RecordsRefactored() {
   // Group actions
   const handleCreateGroup = async (input: CreateGroupInput) => {
     try {
-      // TODO: Replace with actual API call
-      // const newGroup = await fetch('/api/groups', {
-      //   method: 'POST',
-      //   body: JSON.stringify(input)
-      // }).then(res => res.json());
+      // Build payload: include pending selection (reportIds) if present
+      const selectedIds = pendingGroupSelection ?? (input.initialReportId ? [input.initialReportId] : []);
+      const payload = { ...input, reportIds: selectedIds } as Record<string, unknown>;
 
-      // Mock implementation
-      const newGroup: AnimalGroup = {
-        id: `group-${Date.now()}`,
-        name: input.name,
-        description: input.description,
+      const res = await fetch('/api/groups', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const json = await res.json();
+      if (json?.error) throw new Error(json.error);
+
+  const g = (json?.data ?? {}) as Record<string, unknown>;
+
+      // Convert server result into local AnimalGroup shape
+      const createdGroup: AnimalGroup = {
+        id: String(g.group_id),
+        name: String(g.group_name ?? input.name),
+        description: String(g.group_description ?? input.description ?? ''),
         animalType: input.animalType,
-        sex: input.sex || 'unknown',
-        primaryColor: input.primaryColor,
-        colorPattern: input.colorPattern,
-        reportCount: input.initialReportId ? 1 : 0,
-        firstSightedDate: input.initialReportId 
-          ? reports.find(r => r.id === input.initialReportId)?.spottedDate || new Date().toISOString().split('T')[0]
-          : new Date().toISOString().split('T')[0],
-        lastSightedDate: input.initialReportId
-          ? reports.find(r => r.id === input.initialReportId)?.spottedDate || new Date().toISOString().split('T')[0]
-          : new Date().toISOString().split('T')[0],
-        createdAt: new Date().toISOString(),
-        createdBy: 'current-admin',
-        updatedAt: new Date().toISOString(),
-        reportIds: input.initialReportId ? [input.initialReportId] : []
+  sex: (input.sex as unknown as AcceptedReport['sex']) ?? 'unknown',
+        primaryColor: input.primaryColor ?? '',
+        colorPattern: input.colorPattern ?? '',
+        reportCount: Number(g.report_count ?? (selectedIds.length)),
+        firstSightedDate: String(g.first_sighted_date ?? new Date().toISOString().split('T')[0]),
+        lastSightedDate: String(g.last_sighted_date ?? new Date().toISOString().split('T')[0]),
+        createdAt: String(g.group_created_at ?? new Date().toISOString()),
+        createdBy: String(g.group_created_by ?? 'current-admin'),
+        updatedAt: String(g.group_updated_at ?? new Date().toISOString()),
+        reportIds: Array.isArray(g.report_ids) ? g.report_ids.map(String) : selectedIds,
       };
 
-      setGroups(prev => [...prev, newGroup]);
-
-      // If creating from report, update the report's groupId
-      if (input.initialReportId) {
-        setReports(prev => prev.map(r => 
-          r.id === input.initialReportId ? { ...r, groupId: newGroup.id } : r
-        ));
+      // Update client state
+      setGroups(prev => [...prev, createdGroup]);
+      if (createdGroup.reportIds.length > 0) {
+        setReports(prev => prev.map(r => createdGroup.reportIds.includes(r.id) ? { ...r, groupId: createdGroup.id, isGrouped: true } : r));
       }
 
-      console.log('Group created successfully:', newGroup);
+      // Clear pending selection after creation
+      setPendingGroupSelection(null);
+
+      console.log('Group created successfully (server):', createdGroup);
     } catch (err) {
       console.error('Error creating group:', err);
       alert('Failed to create group. Please try again.');
@@ -479,10 +393,9 @@ export default function RecordsRefactored() {
 
   // Bulk operations
   const handleBulkGroup = async (reportIds: string[]) => {
-    // TODO: Open a modal to select which group to add these reports to
-    // For now, just log
-    console.log('Bulk group reports:', reportIds);
-    alert(`TODO: Select a group for ${reportIds.length} reports`);
+    // Open the CreateGroup modal in manual mode and remember the selected IDs.
+    setPendingGroupSelection(reportIds);
+    openCreateGroupModal('manual');
   };
 
   // Modal handlers
@@ -519,7 +432,11 @@ export default function RecordsRefactored() {
   };
 
   // Get counts for each view
-  const ungroupedReports = reports.filter(r => r.groupId === null);
+  // Determine ungrouped reports based on server's is_grouped flag when available,
+  // otherwise fall back to groupId === null
+  const ungroupedReports = (ungroupedIds && ungroupedIds.size > 0)
+    ? reports.filter(r => ungroupedIds.has(r.id))
+    : reports.filter(r => r.groupId === null);
 
   // Loading state
   if (loading) {

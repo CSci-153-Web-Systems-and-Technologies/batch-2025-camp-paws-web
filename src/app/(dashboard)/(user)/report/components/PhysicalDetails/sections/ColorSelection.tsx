@@ -14,11 +14,11 @@ export default function ColorSelection({ animalType, selectedPattern, selectedCo
         { id: 'bi-color-puspin', label: 'Bi-color Puspin', shortLabel: 'Bi-color', image: '/cat-color/Bi-color.png' },
         { id: 'calico-puspin', label: 'Calico(Tri-color) Puspin', shortLabel: 'Calico', image: '/cat-color/Calico.jpg' },
         { id: 'tortoiseshell-puspin', label: 'Tortoiseshell Puspin', shortLabel: 'Tortoiseshell', image: '/cat-color/Tortoiseshell.jpg' },
-        { id: 'not-sure-cat', label: 'Not Sure', shortLabel: 'Not Sure', image: '' }
+        { id: 'not-sure-cat-pattern', label: 'Not Sure', shortLabel: 'Not Sure', image: '' }
       ];
     } else if (animalType === 'dog') {
       return [
-        { id: 'bi-color', label: 'Bi-color', shortLabel: 'Bi-color', image: '/dog-color/Bi-color.png' },
+        { id: 'bi-color-dog', label: 'Bi-color', shortLabel: 'Bi-color', image: '/dog-color/Bi-color.png' },
         { id: 'blenheim', label: 'Blenheim', shortLabel: 'Blenheim', image: '/dog-color/Blenheim.png' },
         { id: 'brindle', label: 'Brindle', shortLabel: 'Brindle', image: '/dog-color/Brindle.png' },
         { id: 'harlequin', label: 'Harlequin', shortLabel: 'Harlequin', image: '/dog-color/Harlequin.png' },
@@ -28,9 +28,9 @@ export default function ColorSelection({ animalType, selectedPattern, selectedCo
         { id: 'patchy', label: 'Patchy', shortLabel: 'Patchy', image: '/dog-color/Patchy.png' },
         { id: 'plain', label: 'Plain', shortLabel: 'Plain', image: '/dog-color/Plain.png' },
         { id: 'sable', label: 'Sable', shortLabel: 'Sable', image: '/dog-color/Sable.png' },
-        { id: 'tri-color', label: 'Tri-color', shortLabel: 'Tri-color', image: '/dog-color/Tri-color.png' },
+        { id: 'tri-color-dog', label: 'Tri-color', shortLabel: 'Tri-color', image: '/dog-color/Tri-color.png' },
         { id: 'tuxedo', label: 'Tuxedo', shortLabel: 'Tuxedo', image: '/dog-color/Tuxedo.png' },
-        { id: 'not-sure-dog', label: 'Not Sure', shortLabel: 'Not Sure', image: '' }
+        { id: 'not-sure-dog-pattern', label: 'Not Sure', shortLabel: 'Not Sure', image: '' }
       ];
     }
     return [];
@@ -83,7 +83,7 @@ export default function ColorSelection({ animalType, selectedPattern, selectedCo
                     : 'bg-[rgb(var(--color-background))]'
                 }`}>
                   {/* Color pattern image */}
-                  {pattern.id === 'not-sure-cat' || pattern.id === 'not-sure-dog' ? (
+                  {pattern.id === 'not-sure-cat-pattern' || pattern.id === 'not-sure-dog-pattern' ? (
                     // Not Sure placeholder
                     <div className="w-20 h-20 bg-[rgb(var(--color-border))] rounded-lg flex items-center justify-center border-2 border-dashed border-[rgb(var(--color-text-tertiary))]">
                       <span className="text-2xl">❓</span>

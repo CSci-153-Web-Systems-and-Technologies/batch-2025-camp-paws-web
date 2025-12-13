@@ -23,6 +23,8 @@ export interface Report {
   // Reporter info (from backend)
   reportedBy: string;
   reporterEmail: string;
+  // optional raw reporter id (UUID) if available from DB
+  reporterId?: string;
   reportsSubmitted: number;
   warnings: number;
   status: 'pending' | 'verified' | 'rejected';
@@ -50,6 +52,7 @@ export interface VerifyReportsProps {
 export interface ReportsTableProps {
   reports: Report[];
   onRowClick: (report: Report) => void;
+  onSelectionChange?: (selectedIds: string[]) => void;
   selectedColumns: string[];
 }
 
