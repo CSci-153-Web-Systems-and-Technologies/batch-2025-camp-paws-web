@@ -21,10 +21,19 @@ export interface BackendLocationTimeData {
   location_description: string;
 }
 
+// Validation errors
+export interface ValidationErrors {
+  date?: string | null;
+  time?: string | null;
+  locationDescription?: string | null;
+  location?: string | null;
+}
+
 // Validation result
 export interface LocationTimeValidationResult {
   isValid: boolean;
   missingFields: string[];
+  errors: ValidationErrors;
 }
 
 // Component props following Interface Segregation

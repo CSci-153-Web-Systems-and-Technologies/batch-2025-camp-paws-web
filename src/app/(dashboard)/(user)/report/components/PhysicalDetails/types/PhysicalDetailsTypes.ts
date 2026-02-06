@@ -87,7 +87,18 @@ export interface HealthAssessmentProps {
   onProblemsChange: (problems: string[]) => void;
 }
 
+// Validation errors
+export interface ValidationErrors {
+  animalType?: string | null;
+  sex?: string | null;
+  collar?: string | null;
+  bodyConditionScore?: string | null;
+  colorPattern?: string | null;
+  primaryColor?: string | null;
+}
+
 export interface FormValidationResult {
   isValid: boolean;
   missingFields: string[];
+  errors: ValidationErrors;
 }
