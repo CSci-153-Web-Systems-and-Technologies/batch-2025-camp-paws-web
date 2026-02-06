@@ -8,7 +8,7 @@ export default function LocationDescription({
   error,
   touched,
 }: LocationDescriptionProps) {
-  const showError = touched && error;
+  const showError = !!(touched && error);
 
   return (
     <div>
