@@ -1,52 +1,11 @@
 // Single Responsibility Principle: Component focused only on color pattern and primary color selection
 import { ColorSelectionProps } from '../types/PhysicalDetailsTypes';
 import Image from 'next/image';
+import { PRIMARY_COLORS, getColorPatternsForAnimal } from '@/lib/constants/animalAttributes';
 
 export default function ColorSelection({ animalType, selectedPattern, selectedColor, onPatternSelect, onColorSelect }: ColorSelectionProps) {
-  // Color patterns vary by animal type - matching PhysicalDetails.tsx exactly
-  const getColorPatterns = () => {
-    if (animalType === 'cat') {
-      return [
-        { id: 'white-puspin', label: 'White Puspin', shortLabel: 'White', image: '/cat-color/white.png' },
-        { id: 'black-puspin', label: 'Black Puspin', shortLabel: 'Black', image: '/cat-color/black.png' },
-        { id: 'tabby-puspin', label: 'Tabby Puspin', shortLabel: 'Tabby', image: '/cat-color/Tabby.jpg' },
-        { id: 'orange-tabby-puspin', label: 'Orange-Tabby Puspin', shortLabel: 'Orange Tabby', image: '/cat-color/orange-tabby.png' },
-        { id: 'bi-color-puspin', label: 'Bi-color Puspin', shortLabel: 'Bi-color', image: '/cat-color/Bi-color.png' },
-        { id: 'calico-puspin', label: 'Calico(Tri-color) Puspin', shortLabel: 'Calico', image: '/cat-color/Calico.jpg' },
-        { id: 'tortoiseshell-puspin', label: 'Tortoiseshell Puspin', shortLabel: 'Tortoiseshell', image: '/cat-color/Tortoiseshell.jpg' },
-        { id: 'not-sure-cat-pattern', label: 'Not Sure', shortLabel: 'Not Sure', image: '' }
-      ];
-    } else if (animalType === 'dog') {
-      return [
-        { id: 'bi-color-dog', label: 'Bi-color', shortLabel: 'Bi-color', image: '/dog-color/Bi-color.png' },
-        { id: 'blenheim', label: 'Blenheim', shortLabel: 'Blenheim', image: '/dog-color/Blenheim.png' },
-        { id: 'brindle', label: 'Brindle', shortLabel: 'Brindle', image: '/dog-color/Brindle.png' },
-        { id: 'harlequin', label: 'Harlequin', shortLabel: 'Harlequin', image: '/dog-color/Harlequin.png' },
-        { id: 'hound-coat', label: 'Hound Coat', shortLabel: 'Hound Coat', image: '/dog-color/Hound-coat.png' },
-        { id: 'mantle', label: 'Mantle', shortLabel: 'Mantle', image: '/dog-color/Mantle.png' },
-        { id: 'merle', label: 'Merle', shortLabel: 'Merle', image: '/dog-color/Merle.png' },
-        { id: 'patchy', label: 'Patchy', shortLabel: 'Patchy', image: '/dog-color/Patchy.png' },
-        { id: 'plain', label: 'Plain', shortLabel: 'Plain', image: '/dog-color/Plain.png' },
-        { id: 'sable', label: 'Sable', shortLabel: 'Sable', image: '/dog-color/Sable.png' },
-        { id: 'tri-color-dog', label: 'Tri-color', shortLabel: 'Tri-color', image: '/dog-color/Tri-color.png' },
-        { id: 'tuxedo', label: 'Tuxedo', shortLabel: 'Tuxedo', image: '/dog-color/Tuxedo.png' },
-        { id: 'not-sure-dog-pattern', label: 'Not Sure', shortLabel: 'Not Sure', image: '' }
-      ];
-    }
-    return [];
-  };
-
-  // Primary colors exactly matching PhysicalDetails.tsx
-  const primaryColors = [
-    { id: 'black', label: 'Black', colorClass: 'bg-gray-900' },
-    { id: 'white', label: 'White', colorClass: 'bg-white border-gray-300' },
-    { id: 'brown', label: 'Brown / Chocolate', colorClass: 'bg-amber-800' },
-    { id: 'tan', label: 'Tan / Fawn', colorClass: 'bg-yellow-600' },
-    { id: 'grey', label: 'Grey / Blue', colorClass: 'bg-gray-500' },
-    { id: 'red', label: 'Red / Orange / Ginger', colorClass: 'bg-orange-600' },
-    { id: 'cream', label: 'Cream / Yellow', colorClass: 'bg-yellow-200' },
-    { id: 'other', label: 'Other / Unsure', colorClass: 'bg-gray-300' }
-  ];
+  // Get color patterns from centralized constants
+  const colorPatterns = getColorPatternsForAnimal(animalType as 'cat' | 'dog');
 
   if (!animalType) {
     return (
@@ -64,7 +23,7 @@ export default function ColorSelection({ animalType, selectedPattern, selectedCo
           Color Pattern {animalType && `(${animalType === 'cat' ? 'Cat' : 'Dog'})`}
         </label>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-          {getColorPatterns().map((pattern) => (
+          {colorPatterns.map((pattern) => (
             <button
               key={pattern.id}
               type="button"
