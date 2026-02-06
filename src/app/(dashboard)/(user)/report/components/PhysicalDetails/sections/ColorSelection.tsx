@@ -42,7 +42,7 @@ export default function ColorSelection({ animalType, selectedPattern, selectedCo
                     : 'bg-[rgb(var(--color-background))]'
                 }`}>
                   {/* Color pattern image */}
-                  {pattern.id === 'not-sure-cat-pattern' || pattern.id === 'not-sure-dog-pattern' ? (
+                  {!pattern.image || pattern.id === 'not-sure-cat-pattern' || pattern.id === 'not-sure-dog-pattern' ? (
                     // Not Sure placeholder
                     <div className="w-20 h-20 bg-[rgb(var(--color-border))] rounded-lg flex items-center justify-center border-2 border-dashed border-[rgb(var(--color-text-tertiary))]">
                       <span className="text-2xl">❓</span>
@@ -78,7 +78,7 @@ export default function ColorSelection({ animalType, selectedPattern, selectedCo
       <div>
         <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">Primary Color</label>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {primaryColors.map((color) => (
+          {PRIMARY_COLORS.map((color) => (
             <button
               key={color.id}
               type="button"
