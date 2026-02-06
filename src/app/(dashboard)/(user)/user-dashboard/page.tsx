@@ -1,10 +1,14 @@
 "use client";
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
 import LoadingOverlay from '@/components/ui/LoadingOverlay';
 import ErrorModal from '@/components/ui/ErrorModal';
 import { parseServerError, logError, ParsedError } from '@/lib/utils/errorHandler';
+import ReportsList, { Report } from './components/ReportsList';
+import { fetchUserReports, deleteReport } from './actions';
+import { useToast } from '@/hooks/useToast';
 
 interface UserStats {
   totalReports: number;
@@ -14,12 +18,16 @@ interface UserStats {
 }
 
 export default function UserDashboardPage() {
+  const router = useRouter();
+  const { success, error } = useToast();
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<UserStats | null>(null);
+  const [reports, setReports] = useState<Report[]>([]);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [errorDetails, setErrorDetails] = useState<ParsedError>({ title: '', message: '', retryable: false });
+  const [isDeleting, setIsDeleting] = useState(false);
 
-  const fetchUserStats = async () => {
+  const fetchData = async () => {
     setIsLoading(true);
     
     try {
@@ -32,21 +40,20 @@ export default function UserDashboardPage() {
         throw new Error('Not authenticated');
       }
 
-      // Fetch user's reports with status counts
-      const { data: reports, error: reportsError } = await supabase
-        .from('stray_animal_reports')
-        .select('status')
-        .eq('user_id', user.id);
+      // Fetch user's reports
+      const { data: reportsData, error: reportsError } = await fetchUserReports();
 
-      if (reportsError) {
-        throw reportsError;
+      if (reportsError || !reportsData) {
+        throw new Error(reportsError || 'Failed to fetch reports');
       }
 
-      // Calculate stats
-      const totalReports = reports?.length || 0;
-      const pendingReports = reports?.filter(r => r.status === 'pending').length || 0;
-      const verifiedReports = reports?.filter(r => r.status === 'verified').length || 0;
-      const rejectedReports = reports?.filter(r => r.status === 'rejected').length || 0;
+      setReports(reportsData as Report[]);
+
+      // Calculate stats from reports
+      const totalReports = reportsData.length;
+      const pendingReports = reportsData.filter(r => r.status === 'pending').length;
+      const verifiedReports = reportsData.filter(r => r.status === 'verified').length;
+      const rejectedReports = reportsData.filter(r => r.status === 'rejected').length;
 
       setStats({
         totalReports,
@@ -58,7 +65,7 @@ export default function UserDashboardPage() {
       setIsLoading(false);
     } catch (err) {
       const parsedError = parseServerError(err);
-      logError('User Dashboard - Fetch Stats', err);
+      logError('User Dashboard - Fetch Data', err);
       setErrorDetails(parsedError);
       setShowErrorModal(true);
       setIsLoading(false);
@@ -66,28 +73,61 @@ export default function UserDashboardPage() {
   };
 
   useEffect(() => {
-    fetchUserStats();
+    fetchData();
   }, []);
 
   const handleRetry = () => {
     setShowErrorModal(false);
-    fetchUserStats();
+    fetchData();
+  };
+
+  const handleEdit = (reportId: string) => {
+    // TODO: Navigate to edit page with report ID
+    router.push(`/report/edit/${reportId}`);
+  };
+
+  const handleView = (reportId: string) => {
+    // TODO: Open modal or navigate to view page
+    router.push(`/report/view/${reportId}`);
+  };
+
+  const handleDelete = async (reportId: string) => {
+    setIsDeleting(true);
+
+    try {
+      const result = await deleteReport(reportId);
+
+      if (result.error) {
+        error(result.error);
+        logError('User Dashboard - Delete Report', result.error);
+      } else {
+        success('Report deleted successfully');
+        // Refresh the data
+        await fetchData();
+      }
+    } catch (err) {
+      const parsedError = parseServerError(err);
+      error(parsedError.message);
+      logError('User Dashboard - Delete Report', err);
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
     <>
-      <div className="flex items-center justify-center h-full min-h-[60vh] p-4">
-        {stats ? (
-          <div className="w-full max-w-4xl">
-            <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-[rgb(var(--color-text))] mb-2">
-                Your Report Dashboard
-              </h1>
-              <p className="text-sm text-[rgb(var(--color-text-muted))]">
-                Track your contributions to helping stray animals
-              </p>
-            </div>
+      <div className="flex flex-col h-full min-h-[60vh] p-4 max-w-7xl mx-auto">
+        <div className="text-center mb-8">
+          <h1 className="text-3xl font-bold text-[rgb(var(--color-text))] mb-2">
+            Your Report Dashboard
+          </h1>
+          <p className="text-sm text-[rgb(var(--color-text-muted))]">
+            Track your contributions to helping stray animals
+          </p>
+        </div>
 
+        {stats && (
+          <>
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               {/* Total Reports */}
@@ -135,35 +175,28 @@ export default function UserDashboardPage() {
               </div>
             </div>
 
-            {/* Coming Soon Section */}
-            <div className="text-center bg-gray-50 dark:bg-gray-800/50 rounded-lg p-8 border border-gray-200 dark:border-gray-700">
-              <div className="text-6xl mb-4">📈</div>
-              <h2 className="text-2xl font-semibold text-[rgb(var(--color-text))] mb-2">
-                More Features Coming Soon
+            {/* Reports List */}
+            <div className="mb-8">
+              <h2 className="text-2xl font-bold text-[rgb(var(--color-text))] mb-4">
+                Your Reports
               </h2>
-              <p className="text-sm text-[rgb(var(--color-text-muted))]">
-                We're working on charts, report history, and more insights — check back later.
-              </p>
+              <ReportsList
+                reports={reports}
+                onEdit={handleEdit}
+                onDelete={handleDelete}
+                onView={handleView}
+                isLoading={isLoading}
+              />
             </div>
-          </div>
-        ) : (
-          <div className="text-center">
-            <div className="text-6xl mb-4">📊</div>
-            <h1 className="text-2xl font-semibold text-[rgb(var(--color-text))] mb-2">
-              Loading Dashboard
-            </h1>
-            <p className="text-sm text-[rgb(var(--color-text-muted))]">
-              Please wait...
-            </p>
-          </div>
+          </>
         )}
       </div>
 
       {/* Loading Overlay */}
       <LoadingOverlay
-        isLoading={isLoading}
-        message="Loading your dashboard"
-        submessage="Fetching your report statistics"
+        isLoading={isLoading || isDeleting}
+        message={isDeleting ? 'Deleting report' : 'Loading your dashboard'}
+        submessage={isDeleting ? 'Please wait...' : 'Fetching your report statistics'}
       />
 
       {/* Error Modal */}
