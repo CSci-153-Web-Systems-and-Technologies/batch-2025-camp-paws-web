@@ -2,8 +2,22 @@
 import { ColorSelectionProps } from '../types/PhysicalDetailsTypes';
 import Image from 'next/image';
 import { PRIMARY_COLORS, getColorPatternsForAnimal } from '@/lib/constants/animalAttributes';
+import InlineError from '@/components/ui/InlineError';
 
-export default function ColorSelection({ animalType, selectedPattern, selectedColor, onPatternSelect, onColorSelect }: ColorSelectionProps) {
+export default function ColorSelection({ 
+  animalType, 
+  selectedPattern, 
+  selectedColor, 
+  onPatternSelect, 
+  onColorSelect,
+  patternError,
+  colorError,
+  patternTouched,
+  colorTouched 
+}: ColorSelectionProps) {
+  const showPatternError = patternTouched && !selectedPattern;
+  const showColorError = colorTouched && !selectedColor;
+  
   // Get color patterns from centralized constants
   const colorPatterns = getColorPatternsForAnimal(animalType as 'cat' | 'dog');
 
@@ -20,7 +34,7 @@ export default function ColorSelection({ animalType, selectedPattern, selectedCo
       {/* Color Pattern Selection */}
       <div>
         <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">
-          Color Pattern {animalType && `(${animalType === 'cat' ? 'Cat' : 'Dog'})`}
+          Color Pattern {animalType && `(${animalType === 'cat' ? 'Cat' : 'Dog'})`} <span className="text-red-500">*</span>
         </label>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {colorPatterns.map((pattern) => (
@@ -72,11 +86,14 @@ export default function ColorSelection({ animalType, selectedPattern, selectedCo
             </button>
           ))}
         </div>
+        <InlineError error={patternError} show={showPatternError} />
       </div>
 
       {/* Primary Color Selection - Matching original PhysicalDetails.tsx exactly */}
       <div>
-        <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">Primary Color</label>
+        <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">
+          Primary Color <span className="text-red-500">*</span>
+        </label>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
           {PRIMARY_COLORS.map((color) => (
             <button
@@ -105,6 +122,7 @@ export default function ColorSelection({ animalType, selectedPattern, selectedCo
             </button>
           ))}
         </div>
+        <InlineError error={colorError} show={showColorError} />
       </div>
     </div>
   );

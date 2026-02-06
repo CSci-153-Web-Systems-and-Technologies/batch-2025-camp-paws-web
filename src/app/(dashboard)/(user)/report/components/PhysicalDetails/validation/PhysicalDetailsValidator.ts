@@ -1,18 +1,46 @@
 // Dependency Inversion Principle: Abstract validation logic
 import { PhysicalDetailsFormData, FormValidationResult } from '../types/PhysicalDetailsTypes';
 
+export interface ValidationErrors {
+  animalType?: string | null;
+  sex?: string | null;
+  collar?: string | null;
+  bodyConditionScore?: string | null;
+  colorPattern?: string | null;
+  primaryColor?: string | null;
+}
+
 export interface FormValidator {
-  validate(data: PhysicalDetailsFormData): FormValidationResult;
+  validate(data: PhysicalDetailsFormData): FormValidationResult & { errors: ValidationErrors };
   getMissingFields(data: PhysicalDetailsFormData): string[];
 }
 
 export class PhysicalDetailsValidator implements FormValidator {
-  validate(data: PhysicalDetailsFormData): FormValidationResult {
+  validate(data: PhysicalDetailsFormData): FormValidationResult & { errors: ValidationErrors } {
     const missingFields = this.getMissingFields(data);
+    const errors = this.getFieldErrors(data);
+    
     return {
       isValid: missingFields.length === 0,
-      missingFields
+      missingFields,
+      errors
     };
+  }
+
+  getFieldErrors(data: PhysicalDetailsFormData): ValidationErrors {
+    const errors: ValidationErrors = {};
+    
+    // Basic identification validation
+    if (!data.animalType) errors.animalType = 'Please select animal type (Dog or Cat)';
+    if (!data.sex) errors.sex = 'Please select the animal\'s sex';
+    if (!data.collar) errors.collar = 'Please indicate collar status';
+    
+    // Physical attributes validation
+    if (data.bodyConditionScore === null) errors.bodyConditionScore = 'Please select a body condition score';
+    if (!data.colorPattern) errors.colorPattern = 'Please select the color pattern';
+    if (!data.primaryColor) errors.primaryColor = 'Please select the primary color';
+    
+    return errors;
   }
 
   getMissingFields(data: PhysicalDetailsFormData): string[] {

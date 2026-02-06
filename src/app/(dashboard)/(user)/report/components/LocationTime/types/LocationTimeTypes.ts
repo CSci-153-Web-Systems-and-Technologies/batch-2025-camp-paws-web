@@ -40,15 +40,23 @@ export interface DateTimeSelectionProps {
   selectedTime: string;
   onDateChange: (date: Date) => void;
   onTimeChange: (time: string) => void;
+  dateError?: string | null;
+  timeError?: string | null;
+  dateTouched?: boolean;
+  timeTouched?: boolean;
 }
 
 export interface LocationDescriptionProps {
   description: string;
   onDescriptionChange: (description: string) => void;
+  error?: string | null;
+  touched?: boolean;
 }
 
 export interface MapSelectionProps {
   selectedLocation: { lat: number; lng: number } | null;
   isLocationValid: boolean;
   onLocationSelect: (lat: number, lng: number, isValid: boolean) => void;
+  error?: string | null;
+  touched?: boolean;
 }

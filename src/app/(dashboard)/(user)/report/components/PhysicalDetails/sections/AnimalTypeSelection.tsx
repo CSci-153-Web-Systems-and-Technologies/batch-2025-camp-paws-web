@@ -2,11 +2,16 @@
 import { AnimalTypeSelectionProps } from '../types/PhysicalDetailsTypes';
 import Image from 'next/image';
 import SelectionButton from '@/components/ui/SelectionButton';
+import InlineError from '@/components/ui/InlineError';
 
-export default function AnimalTypeSelection({ selectedType, onSelect }: AnimalTypeSelectionProps) {
+export default function AnimalTypeSelection({ selectedType, onSelect, error, touched }: AnimalTypeSelectionProps) {
+  const showError = touched && !selectedType;
+  
   return (
     <div>
-      <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">Animal Type</label>
+      <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">
+        Animal Type <span className="text-red-500">*</span>
+      </label>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <SelectionButton
           isSelected={selectedType === 'cat'}
@@ -38,6 +43,7 @@ export default function AnimalTypeSelection({ selectedType, onSelect }: AnimalTy
           Dog
         </SelectionButton>
       </div>
+      <InlineError error={error} show={showError} />
     </div>
   );
 }

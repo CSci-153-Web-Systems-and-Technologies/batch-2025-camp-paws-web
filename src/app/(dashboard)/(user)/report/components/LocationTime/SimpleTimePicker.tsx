@@ -6,9 +6,10 @@ interface SimpleTimePickerProps {
   value: string; // HH:MM format
   onChange: (time: string) => void;
   label?: string;
+  required?: boolean;
 }
 
-export default function SimpleTimePicker({ value, onChange, label }: SimpleTimePickerProps) {
+export default function SimpleTimePicker({ value, onChange, label, required = false }: SimpleTimePickerProps) {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -72,6 +73,7 @@ export default function SimpleTimePicker({ value, onChange, label }: SimpleTimeP
       {label && (
         <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-2">
           {label}
+          {required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
       
