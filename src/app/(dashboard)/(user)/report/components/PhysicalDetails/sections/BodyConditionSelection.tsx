@@ -2,8 +2,11 @@
 import { BodyConditionProps } from '../types/PhysicalDetailsTypes';
 import Image from 'next/image';
 import { CAT_BODY_CONDITION_SCORES, DOG_BODY_CONDITION_SCORES } from '@/lib/constants/animalAttributes';
+import InlineError from '@/components/ui/InlineError';
 
-export default function BodyConditionSelection({ selectedScore, onSelect, animalType }: BodyConditionProps) {
+export default function BodyConditionSelection({ selectedScore, onSelect, animalType, error, touched }: BodyConditionProps) {
+  const showError = touched && selectedScore === null;
+  
   // Get the appropriate scores from centralized constants
   const bodyConditionScores = animalType === 'cat' ? CAT_BODY_CONDITION_SCORES : 
                              animalType === 'dog' ? DOG_BODY_CONDITION_SCORES : [];
@@ -13,7 +16,7 @@ export default function BodyConditionSelection({ selectedScore, onSelect, animal
     return (
       <div>
         <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">
-          Body Condition Score
+          Body Condition Score <span className="text-red-500">*</span>
         </label>
         <div className="bg-[rgb(var(--color-background))] border border-[rgb(var(--color-border))] rounded-lg p-4 text-center">
           <p className="text-[rgb(var(--color-text-tertiary))] text-sm">Please select an animal type first to see body condition scores</p>
@@ -25,7 +28,7 @@ export default function BodyConditionSelection({ selectedScore, onSelect, animal
   return (
     <div>
       <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">
-        Body Condition Score
+        Body Condition Score <span className="text-red-500">*</span>
       </label>
       <p className="text-xs text-[rgb(var(--color-text-secondary))] mb-4">
         Rate the animal&apos;s body condition from 1 (emaciated) to 9 (obese)
@@ -86,6 +89,7 @@ export default function BodyConditionSelection({ selectedScore, onSelect, animal
           );
         })}
       </div>
+      <InlineError error={error} show={showError} />
     </div>
   );
 }

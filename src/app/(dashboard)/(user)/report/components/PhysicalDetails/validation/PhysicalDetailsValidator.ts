@@ -1,5 +1,5 @@
 // Dependency Inversion Principle: Abstract validation logic
-import { PhysicalDetailsFormData, FormValidationResult } from '../types/PhysicalDetailsTypes';
+import { PhysicalDetailsFormData, FormValidationResult, ValidationErrors } from '../types/PhysicalDetailsTypes';
 
 export interface FormValidator {
   validate(data: PhysicalDetailsFormData): FormValidationResult;
@@ -9,10 +9,29 @@ export interface FormValidator {
 export class PhysicalDetailsValidator implements FormValidator {
   validate(data: PhysicalDetailsFormData): FormValidationResult {
     const missingFields = this.getMissingFields(data);
+    const errors = this.getFieldErrors(data);
+    
     return {
       isValid: missingFields.length === 0,
-      missingFields
+      missingFields,
+      errors
     };
+  }
+
+  getFieldErrors(data: PhysicalDetailsFormData): ValidationErrors {
+    const errors: ValidationErrors = {};
+    
+    // Basic identification validation
+    if (!data.animalType) errors.animalType = 'Please select animal type (Dog or Cat)';
+    if (!data.sex) errors.sex = 'Please select the animal\'s sex';
+    if (!data.collar) errors.collar = 'Please indicate collar status';
+    
+    // Physical attributes validation
+    if (data.bodyConditionScore === null) errors.bodyConditionScore = 'Please select a body condition score';
+    if (!data.colorPattern) errors.colorPattern = 'Please select the color pattern';
+    if (!data.primaryColor) errors.primaryColor = 'Please select the primary color';
+    
+    return errors;
   }
 
   getMissingFields(data: PhysicalDetailsFormData): string[] {

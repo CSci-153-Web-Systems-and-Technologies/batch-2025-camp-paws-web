@@ -21,10 +21,19 @@ export interface BackendLocationTimeData {
   location_description: string;
 }
 
+// Validation errors
+export interface ValidationErrors {
+  date?: string;
+  time?: string;
+  locationDescription?: string;
+  location?: string;
+}
+
 // Validation result
 export interface LocationTimeValidationResult {
   isValid: boolean;
   missingFields: string[];
+  errors: ValidationErrors;
 }
 
 // Component props following Interface Segregation
@@ -40,15 +49,23 @@ export interface DateTimeSelectionProps {
   selectedTime: string;
   onDateChange: (date: Date) => void;
   onTimeChange: (time: string) => void;
+  dateError?: string | null;
+  timeError?: string | null;
+  dateTouched?: boolean;
+  timeTouched?: boolean;
 }
 
 export interface LocationDescriptionProps {
   description: string;
   onDescriptionChange: (description: string) => void;
+  error?: string | null;
+  touched?: boolean;
 }
 
 export interface MapSelectionProps {
   selectedLocation: { lat: number; lng: number } | null;
   isLocationValid: boolean;
   onLocationSelect: (lat: number, lng: number, isValid: boolean) => void;
+  error?: string | null;
+  touched?: boolean;
 }

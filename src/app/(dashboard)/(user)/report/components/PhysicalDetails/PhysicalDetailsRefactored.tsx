@@ -40,6 +40,16 @@ export default function PhysicalDetailsRefactored({ data, onNext, onBack }: Phys
     notes: data.notes || '',
   });
 
+  // Track which fields have been touched for validation
+  const [touchedFields, setTouchedFields] = useState({
+    animalType: false,
+    sex: false,
+    collar: false,
+    bodyConditionScore: false,
+    colorPattern: false,
+    primaryColor: false,
+  });
+
   // Dependency Inversion: Depend on abstractions, not concretions
   const validator = new PhysicalDetailsValidator();
   const transformer = new PhysicalDetailsTransformer();
@@ -47,12 +57,21 @@ export default function PhysicalDetailsRefactored({ data, onNext, onBack }: Phys
   // Single Responsibility: Form validation
   const validation: FormValidationResult = validator.validate(formState);
 
+  // Mark field as touched
+  const markAsTouched = (field: keyof typeof touchedFields) => {
+    setTouchedFields(prev => ({ ...prev, [field]: true }));
+  };
+
   // Single Responsibility: Handle field updates
   const updateFormField = <K extends keyof PhysicalDetailsFormData>(
     field: K, 
     value: PhysicalDetailsFormData[K]
   ) => {
     setFormState(prev => ({ ...prev, [field]: value }));
+    // Mark as touched when user interacts
+    if (field in touchedFields) {
+      markAsTouched(field as keyof typeof touchedFields);
+    }
   };
 
   // Single Responsibility: Form submission
@@ -84,16 +103,22 @@ export default function PhysicalDetailsRefactored({ data, onNext, onBack }: Phys
             <AnimalTypeSelection 
               selectedType={formState.animalType}
               onSelect={(type) => updateFormField('animalType', type)}
+              error={validation.errors.animalType}
+              touched={touchedFields.animalType}
             />
             
             <SexSelection 
               selectedSex={formState.sex}
               onSelect={(sex) => updateFormField('sex', sex)}
+              error={validation.errors.sex}
+              touched={touchedFields.sex}
             />
             
             <CollarSelection 
               selectedCollar={formState.collar}
               onSelect={(collar) => updateFormField('collar', collar)}
+              error={validation.errors.collar}
+              touched={touchedFields.collar}
             />
             
           </div>
@@ -108,6 +133,8 @@ export default function PhysicalDetailsRefactored({ data, onNext, onBack }: Phys
               selectedScore={formState.bodyConditionScore}
               onSelect={(score) => updateFormField('bodyConditionScore', score)}
               animalType={formState.animalType}
+              error={validation.errors.bodyConditionScore}
+              touched={touchedFields.bodyConditionScore}
             />
             
             <ColorSelection 
@@ -116,6 +143,10 @@ export default function PhysicalDetailsRefactored({ data, onNext, onBack }: Phys
               selectedColor={formState.primaryColor}
               onPatternSelect={(pattern) => updateFormField('colorPattern', pattern)}
               onColorSelect={(color) => updateFormField('primaryColor', color)}
+              patternError={validation.errors.colorPattern}
+              colorError={validation.errors.primaryColor}
+              patternTouched={touchedFields.colorPattern}
+              colorTouched={touchedFields.primaryColor}
             />
             
           </div>

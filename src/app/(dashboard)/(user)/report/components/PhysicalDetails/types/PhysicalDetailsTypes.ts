@@ -44,22 +44,30 @@ export interface BackendPhysicalData {
 export interface AnimalTypeSelectionProps {
   selectedType: string;
   onSelect: (type: string) => void;
+  error?: string;
+  touched?: boolean;
 }
 
 export interface SexSelectionProps {
   selectedSex: string;
   onSelect: (sex: string) => void;
+  error?: string;
+  touched?: boolean;
 }
 
 export interface CollarSelectionProps {
   selectedCollar: string;
   onSelect: (collar: string) => void;
+  error?: string;
+  touched?: boolean;
 }
 
 export interface BodyConditionProps {
   selectedScore: number | null;
   onSelect: (score: number) => void;
   animalType: string;
+  error?: string;
+  touched?: boolean;
 }
 
 export interface ColorSelectionProps {
@@ -68,6 +76,10 @@ export interface ColorSelectionProps {
   selectedColor: string;
   onPatternSelect: (pattern: string) => void;
   onColorSelect: (color: string) => void;
+  patternError?: string;
+  colorError?: string;
+  patternTouched?: boolean;
+  colorTouched?: boolean;
 }
 
 export interface HealthAssessmentProps {
@@ -75,7 +87,18 @@ export interface HealthAssessmentProps {
   onProblemsChange: (problems: string[]) => void;
 }
 
+// Validation errors
+export interface ValidationErrors {
+  animalType?: string;
+  sex?: string;
+  collar?: string;
+  bodyConditionScore?: string;
+  colorPattern?: string;
+  primaryColor?: string;
+}
+
 export interface FormValidationResult {
   isValid: boolean;
   missingFields: string[];
+  errors: ValidationErrors;
 }

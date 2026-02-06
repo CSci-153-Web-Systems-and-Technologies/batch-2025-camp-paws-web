@@ -3,6 +3,7 @@
 
 import { MapSelectionProps } from '../types/LocationTimeTypes';
 import dynamic from 'next/dynamic';
+import InlineError from '@/components/ui/InlineError';
 
 // Dynamic import to avoid SSR issues with Leaflet
 const UniversityMap = dynamic(() => import('../UniversityMap'), { ssr: false });
@@ -11,11 +12,15 @@ export default function MapSelection({
   selectedLocation,
   isLocationValid,
   onLocationSelect,
+  error,
+  touched,
 }: MapSelectionProps) {
+  const showError = touched && !selectedLocation;
+
   return (
     <div>
       <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-2">
-        Location on Campus *
+        Location on Campus <span className="text-red-500">*</span>
       </label>
       <div className="space-y-2">
         <UniversityMap 
@@ -35,6 +40,7 @@ export default function MapSelection({
             </div>
           )}
         </div>
+        <InlineError error={error} show={showError} />
       </div>
     </div>
   );

@@ -11,13 +11,20 @@ import { uploadPhotoFromClient } from './utils/uploadPhoto';
 import { useToast } from '@/hooks/useToast';
 import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
+import LoadingOverlay from '@/components/ui/LoadingOverlay';
+import ErrorModal from '@/components/ui/ErrorModal';
+import { parseServerError, logError, checkNetworkStatus, ParsedError } from '@/lib/utils/errorHandler';
 
 export default function UserReportPage() {
   const router = useRouter();
   const { success, error } = useToast();
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [loadingMessage, setLoadingMessage] = useState('');
+  const [loadingProgress, setLoadingProgress] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [showErrorModal, setShowErrorModal] = useState(false);
+  const [errorDetails, setErrorDetails] = useState<ParsedError>({ title: '', message: '', retryable: false });
   const [formData, setFormData] = useState<FormData>({
     photo: null,
     animalType: '',
@@ -48,47 +55,64 @@ export default function UserReportPage() {
 
   // Handle form submission (Step 3)
   const handleSubmit = async (finalData: FormData) => {
+    // Check network status first
+    if (!checkNetworkStatus()) {
+      const networkError = parseServerError('Network error: No internet connection');
+      setErrorDetails(networkError);
+      setShowErrorModal(true);
+      return;
+    }
+
     // Validate all required fields
     if (!finalData.photo || !finalData.location) {
-      error('Missing required data');
+      error('Missing required data: Photo and location are required');
       return;
     }
 
     // Validate physical details are complete
     if (!finalData.animalType || !finalData.sex || !finalData.collar) {
       error('Please complete all required fields (Animal Type, Sex, Collar Status)');
-      setIsSubmitting(false);
       return;
     }
 
     if (!finalData.colorPattern || !finalData.primaryColor) {
       error('Please select both color pattern and primary color');
-      setIsSubmitting(false);
       return;
     }
 
     if (!finalData.bodyConditionScore) {
       error('Please select a body condition score');
-      setIsSubmitting(false);
       return;
     }
 
     setIsSubmitting(true);
+    setLoadingProgress(0);
 
     try {
       // Step 1: Upload photo from client side (avoids 1MB server action limit)
+      setLoadingMessage('Uploading photo');
+      setLoadingProgress(20);
+      
       const photoUploadResult = await uploadPhotoFromClient(finalData.photo);
       
       if (!photoUploadResult.success || !photoUploadResult.url) {
-        error(photoUploadResult.error || 'Failed to upload photo');
+        const uploadError = parseServerError(photoUploadResult.error || 'Failed to upload photo');
+        logError('Photo Upload', photoUploadResult.error);
+        setErrorDetails(uploadError);
+        setShowErrorModal(true);
         setIsSubmitting(false);
         return;
       }
 
+      setLoadingProgress(50);
+
       // Step 2: Parse physical problems into categories
+      setLoadingMessage('Processing report data');
       const skinProblems = finalData.physicalProblems.filter(p => p.startsWith('skin-'));
       const eyeProblems = finalData.physicalProblems.filter(p => p.startsWith('eye-'));
       const gaitProblems = finalData.physicalProblems.filter(p => p.startsWith('gait-'));
+
+      setLoadingProgress(60);
 
       // Step 3: Prepare submission data
       const submissionData: ReportSubmissionData = {
@@ -110,20 +134,30 @@ export default function UserReportPage() {
         spottedTime: finalData.time,
       };
 
+      setLoadingProgress(70);
+
       // Step 4: Submit report
+      setLoadingMessage('Submitting report');
       const result = await submitReport(submissionData);
+
+      setLoadingProgress(100);
 
       if (result.success) {
         setIsSubmitting(false);
         setShowSuccessModal(true);
         success('Report submitted successfully!');
       } else {
-        error(result.error || 'Failed to submit report');
+        const submitError = parseServerError(result.error || 'Failed to submit report');
+        logError('Report Submission', result.error);
+        setErrorDetails(submitError);
+        setShowErrorModal(true);
         setIsSubmitting(false);
       }
     } catch (err) {
-      console.error('Submission error:', err);
-      error('An unexpected error occurred');
+      const unexpectedError = parseServerError(err);
+      logError('Report Submission - Unexpected', err);
+      setErrorDetails(unexpectedError);
+      setShowErrorModal(true);
       setIsSubmitting(false);
     }
   };
@@ -138,6 +172,13 @@ export default function UserReportPage() {
     console.log('Redirecting to user dashboard...');
     setShowSuccessModal(false);
     router.push('/user-dashboard');
+  };
+
+  // Handle error retry
+  const handleErrorRetry = () => {
+    setShowErrorModal(false);
+    // Re-trigger submission with current form data
+    handleSubmit(formData);
   };
 
   return (
@@ -169,6 +210,25 @@ export default function UserReportPage() {
           />
         )}
       </div>
+
+      {/* Loading Overlay */}
+      <LoadingOverlay
+        isLoading={isSubmitting}
+        message={loadingMessage}
+        progress={loadingProgress}
+        submessage="Please don't close this window"
+      />
+
+      {/* Error Modal */}
+      <ErrorModal
+        isOpen={showErrorModal}
+        onClose={() => setShowErrorModal(false)}
+        title={errorDetails.title}
+        message={errorDetails.message}
+        details={errorDetails.details}
+        retryable={errorDetails.retryable}
+        onRetry={errorDetails.retryable ? handleErrorRetry : undefined}
+      />
 
       {/* Success Modal */}
       <Modal
