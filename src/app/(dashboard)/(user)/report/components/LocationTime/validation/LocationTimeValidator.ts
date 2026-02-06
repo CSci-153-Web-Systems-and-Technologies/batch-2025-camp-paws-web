@@ -1,22 +1,15 @@
 // Dependency Inversion Principle: Abstract validation logic
-import { LocationTimeFormData, LocationTimeValidationResult } from '../types/LocationTimeTypes';
-
-export interface ValidationErrors {
-  date?: string | null;
-  time?: string | null;
-  locationDescription?: string | null;
-  location?: string | null;
-}
+import { LocationTimeFormData, LocationTimeValidationResult, ValidationErrors } from '../types/LocationTimeTypes';
 
 export interface FormValidator {
-  validate(data: LocationTimeFormData): LocationTimeValidationResult & { errors: ValidationErrors };
+  validate(data: LocationTimeFormData): LocationTimeValidationResult;
   getMissingFields(data: LocationTimeFormData): string[];
 }
 
 export class LocationTimeValidator implements FormValidator {
   private readonly MIN_DESCRIPTION_LENGTH = 5;
 
-  validate(data: LocationTimeFormData): LocationTimeValidationResult & { errors: ValidationErrors } {
+  validate(data: LocationTimeFormData): LocationTimeValidationResult {
     const errors = this.getFieldErrors(data);
     const missingFields = this.getMissingFields(data);
     

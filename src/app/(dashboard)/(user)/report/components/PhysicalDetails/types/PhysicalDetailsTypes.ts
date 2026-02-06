@@ -89,12 +89,12 @@ export interface HealthAssessmentProps {
 
 // Validation errors
 export interface ValidationErrors {
-  animalType?: string | null;
-  sex?: string | null;
-  collar?: string | null;
-  bodyConditionScore?: string | null;
-  colorPattern?: string | null;
-  primaryColor?: string | null;
+  animalType?: string;
+  sex?: string;
+  collar?: string;
+  bodyConditionScore?: string;
+  colorPattern?: string;
+  primaryColor?: string;
 }
 
 export interface FormValidationResult {

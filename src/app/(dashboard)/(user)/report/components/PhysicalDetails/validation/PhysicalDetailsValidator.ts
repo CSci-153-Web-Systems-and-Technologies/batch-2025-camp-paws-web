@@ -1,22 +1,13 @@
 // Dependency Inversion Principle: Abstract validation logic
-import { PhysicalDetailsFormData, FormValidationResult } from '../types/PhysicalDetailsTypes';
-
-export interface ValidationErrors {
-  animalType?: string | null;
-  sex?: string | null;
-  collar?: string | null;
-  bodyConditionScore?: string | null;
-  colorPattern?: string | null;
-  primaryColor?: string | null;
-}
+import { PhysicalDetailsFormData, FormValidationResult, ValidationErrors } from '../types/PhysicalDetailsTypes';
 
 export interface FormValidator {
-  validate(data: PhysicalDetailsFormData): FormValidationResult & { errors: ValidationErrors };
+  validate(data: PhysicalDetailsFormData): FormValidationResult;
   getMissingFields(data: PhysicalDetailsFormData): string[];
 }
 
 export class PhysicalDetailsValidator implements FormValidator {
-  validate(data: PhysicalDetailsFormData): FormValidationResult & { errors: ValidationErrors } {
+  validate(data: PhysicalDetailsFormData): FormValidationResult {
     const missingFields = this.getMissingFields(data);
     const errors = this.getFieldErrors(data);
     

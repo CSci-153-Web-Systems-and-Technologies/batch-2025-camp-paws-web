@@ -23,10 +23,10 @@ export interface BackendLocationTimeData {
 
 // Validation errors
 export interface ValidationErrors {
-  date?: string | null;
-  time?: string | null;
-  locationDescription?: string | null;
-  location?: string | null;
+  date?: string;
+  time?: string;
+  locationDescription?: string;
+  location?: string;
 }
 
 // Validation result
