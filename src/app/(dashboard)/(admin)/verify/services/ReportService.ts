@@ -225,7 +225,10 @@ export function getReportService(): ReportService {
   return USE_SUPABASE ? new SupabaseReportService() : new MockReportService();
 }
 
-// Transform DB row to frontend Report type
+/**
+ * Transform DB row to frontend Report type.
+ * Simplified with denormalized schema - direct column access!
+ */
 function transformToReport(row: unknown): Report {
   const r = row as Record<string, unknown>;
   const users = (r.users as Record<string, unknown> | undefined) ?? undefined;
@@ -234,26 +237,34 @@ function transformToReport(row: unknown): Report {
 
   return {
     id: r.id,
-    photoUrl: r.photo_url || r.photoUrl || r.photo || '/placeholder.jpg',
+    photoUrl: r.photo_url || r.photoUrl || '/placeholder.jpg',
+    
+    // Direct values from denormalized columns
     animalType: r.animal_type || r.animalType || 'dog',
     sex: r.sex || 'unknown',
-    collar: r.collar || 'unknown',
+    collar: r.collar_status || r.collar || 'unknown',
     colorPattern: r.color_pattern || r.colorPattern || 'solid',
     primaryColor: r.primary_color || r.primaryColor || '',
     bodyConditionScore: r.body_condition_score || r.bodyConditionScore || 5,
-    physicalProblems: r.physical_problems || r.physicalProblems || [],
-    notes: r.notes || '',
+    
+    // Health conditions - now arrays instead of physicalProblems
+    physicalProblems: [
+      ...(r.skin_problems as string[] || []),
+      ...(r.eye_problems as string[] || []),
+      ...(r.gait_problems as string[] || [])
+    ],
+    
+    notes: r.additional_notes || r.notes || '',
     latitude: Number(r.latitude) || 0,
     longitude: Number(r.longitude) || 0,
     locationDescription: r.location_description || r.locationDescription || '',
     spottedDate: r.spotted_date || r.spottedDate || '',
     spottedTime: r.spotted_time || r.spottedTime || '',
-  // Prefer embedded users' name/email, then legacy reported_by/report fields,
-  // then the server-provided `user_name`/`user_email` fields so reporter info
-  // returned by the API is respected.
-  reportedBy: usersName || (r.reported_by as string) || (r.reportedBy as string) || (r.user_name as string) || (r.user_email as string) || '',
-  reporterEmail: usersEmail || (r.reporter_email as string) || (r.reporterEmail as string) || (r.user_email as string) || '',
-    reporterId: (r.reported_by as string) || (r.reportedBy as string) || (r.reporter_id as string) || (r.user_id as string) || undefined,
+    
+    // User info
+    reportedBy: usersName || (r.user_name as string) || (r.user_email as string) || '',
+    reporterEmail: usersEmail || (r.user_email as string) || '',
+    reporterId: (r.user_id as string) || undefined,
     reportsSubmitted: r.reports_submitted || r.reportsSubmitted || 0,
     warnings: r.warnings || 0,
     status: r.status || 'pending',
@@ -267,12 +278,11 @@ function transformToDatabase(data: Partial<Report>): Record<string, unknown> {
   if (data.photoUrl !== undefined) db.photo_url = data.photoUrl;
   if (data.animalType !== undefined) db.animal_type = data.animalType;
   if (data.sex !== undefined) db.sex = data.sex;
-  if (data.collar !== undefined) db.collar = data.collar;
+  if (data.collar !== undefined) db.collar_status = data.collar;
   if (data.colorPattern !== undefined) db.color_pattern = data.colorPattern;
   if (data.primaryColor !== undefined) db.primary_color = data.primaryColor;
   if (data.bodyConditionScore !== undefined) db.body_condition_score = data.bodyConditionScore;
-  if (data.physicalProblems !== undefined) db.physical_problems = data.physicalProblems;
-  if (data.notes !== undefined) db.notes = data.notes;
+  if (data.notes !== undefined) db.additional_notes = data.notes;
   if (data.latitude !== undefined) db.latitude = data.latitude;
   if (data.longitude !== undefined) db.longitude = data.longitude;
   if (data.locationDescription !== undefined) db.location_description = data.locationDescription;
