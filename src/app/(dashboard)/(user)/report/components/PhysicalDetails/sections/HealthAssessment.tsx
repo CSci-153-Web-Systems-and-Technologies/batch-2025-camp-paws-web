@@ -1,35 +1,12 @@
 // Single Responsibility Principle: Component focused only on health assessment
-// Retains exact styling and content from original PhysicalDetails.tsx
 import { HealthAssessmentProps } from '../types/PhysicalDetailsTypes';
+import { SKIN_CONDITIONS, EYE_CONDITIONS, GAIT_CONDITIONS } from '@/lib/constants/healthConditions';
 
 export default function HealthAssessment({ selectedProblems, onProblemsChange }: HealthAssessmentProps) {
-  // Exact problem definitions from original PhysicalDetails.tsx
-  const skinProblems = [
-    { id: 'skin-none', label: 'None/Normal', description: 'No visible skin issues, coat looks healthy.' },
-    { id: 'skin-hair-loss', label: 'Missing Hair/Bald Patches', description: 'Noticeable areas where fur is missing.' },
-    { id: 'skin-redness', label: 'Redness/Irritation', description: 'Skin looks inflamed, bright red, or heavily scratched.' },
-    { id: 'skin-wounds', label: 'Wounds/Cuts/Blood', description: 'An open, bloody cut, tear, or severe scrape is visible.' },
-    { id: 'skin-lumps', label: 'Lumps/Bumps/Swelling', description: 'Any significant raised area, lump, or general swelling under the skin.' },
-    { id: 'skin-parasites', label: 'Heavy Parasites', description: 'Visible fleas, ticks, or excessive black "flea dirt" in the coat.' }
-  ];
-
-  const eyeProblems = [
-    { id: 'eye-none', label: 'None/Normal', description: 'Eyes appear clear, open, and free of excessive discharge.' },
-    { id: 'eye-squinting', label: 'Squinting/Shut', description: 'The pet is constantly blinking, squinting, or holding one eye tightly shut (indicates pain).' },
-    { id: 'eye-discharge', label: 'Thick/Colored Discharge', description: 'A noticeable amount of green, yellow, or thick pus coming from one or both eyes.' },
-    { id: 'eye-tearing', label: 'Excessive Tearing/Watery', description: 'The eye is constantly running with clear, watery fluid.' },
-    { id: 'eye-cloudy', label: 'Cloudy/Hazy Eye', description: 'The front part of the eye (cornea/pupil area) looks hazy, gray, or blue/white.' },
-    { id: 'eye-red', label: 'Red/Inflamed Eyelids', description: 'The eyelids or the white part of the eye are noticeably very red or swollen.' }
-  ];
-
-  const gaitProblems = [
-    { id: 'gait-none', label: 'None/Normal', description: 'Walks and runs without limping or difficulty.' },
-    { id: 'gait-mild-limp', label: 'Mild Limping/Favoring a Limb', description: 'Has a slight limp or puts noticeably less weight on one or more legs.' },
-    { id: 'gait-severe-limp', label: 'Severe Limping/3-Legged Walk', description: 'Is holding a leg up completely and walking on only three legs.' },
-    { id: 'gait-wobbly', label: 'Stumbling/Wobbly/Uncoordinated', description: 'Walks with a wide stance, stumbles, sways side-to-side, or loses balance easily.' },
-    { id: 'gait-dragging', label: 'Dragging/Knuckling', description: 'Is dragging a foot or walking on the top of the paw/knuckles instead of the pad.' },
-    { id: 'gait-reluctant', label: 'Reluctance to Move/Stiffness', description: 'Struggles to stand up, moves very slowly, or refuses to jump or run.' }
-  ];
+  // Use centralized health condition constants
+  const skinProblems = SKIN_CONDITIONS;
+  const eyeProblems = EYE_CONDITIONS;
+  const gaitProblems = GAIT_CONDITIONS;
 
   // Handle problem selection with exact logic from original PhysicalDetails.tsx
   const handleProblemToggle = (problemId: string) => {
