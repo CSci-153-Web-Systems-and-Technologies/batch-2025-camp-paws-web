@@ -1,9 +1,10 @@
 // Client-side Supabase client
 import { createBrowserClient } from '@supabase/ssr';
+import { getSupabaseUrl, getSupabaseAnonKey } from '@/lib/config/env';
 
 export function createClient() {
   return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    getSupabaseUrl(),
+    getSupabaseAnonKey()
   );
 }
