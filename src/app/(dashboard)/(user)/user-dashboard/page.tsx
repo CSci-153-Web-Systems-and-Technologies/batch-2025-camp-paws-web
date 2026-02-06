@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import LoadingOverlay from '@/components/ui/LoadingOverlay';
 import ErrorModal from '@/components/ui/ErrorModal';
-import { parseServerError, logError } from '@/lib/utils/errorHandler';
+import { parseServerError, logError, ParsedError } from '@/lib/utils/errorHandler';
 
 interface UserStats {
   totalReports: number;
@@ -17,7 +17,7 @@ export default function UserDashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [stats, setStats] = useState<UserStats | null>(null);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorDetails, setErrorDetails] = useState({ title: '', message: '', details: '', retryable: false });
+  const [errorDetails, setErrorDetails] = useState<ParsedError>({ title: '', message: '', retryable: false });
 
   const fetchUserStats = async () => {
     setIsLoading(true);

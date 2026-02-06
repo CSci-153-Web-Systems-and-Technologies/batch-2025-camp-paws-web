@@ -13,7 +13,7 @@ import Modal from '@/components/ui/Modal';
 import Button from '@/components/ui/Button';
 import LoadingOverlay from '@/components/ui/LoadingOverlay';
 import ErrorModal from '@/components/ui/ErrorModal';
-import { parseServerError, logError, checkNetworkStatus } from '@/lib/utils/errorHandler';
+import { parseServerError, logError, checkNetworkStatus, ParsedError } from '@/lib/utils/errorHandler';
 
 export default function UserReportPage() {
   const router = useRouter();
@@ -24,7 +24,7 @@ export default function UserReportPage() {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
-  const [errorDetails, setErrorDetails] = useState({ title: '', message: '', details: '', retryable: false });
+  const [errorDetails, setErrorDetails] = useState<ParsedError>({ title: '', message: '', retryable: false });
   const [formData, setFormData] = useState<FormData>({
     photo: null,
     animalType: '',
