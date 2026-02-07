@@ -100,6 +100,7 @@ export interface StrayAnimalReportRow {
   gait_problems: HealthConditionId[];
   
   // Notes
+  physical_additional_notes: string | null;
   additional_notes: string | null;
   
   // Location & Time
@@ -144,6 +145,7 @@ export interface StrayAnimalReportInsert {
   skin_problems?: HealthConditionId[];
   eye_problems?: HealthConditionId[];
   gait_problems?: HealthConditionId[];
+  physical_additional_notes?: string | null;
   additional_notes?: string | null;
   status?: ReportStatus; // Default: 'pending'
   is_grouped?: boolean; // Default: false

@@ -27,6 +27,7 @@ export interface ReportSubmissionData {
   gaitProblems: HealthConditionId[];
   
   // Notes
+  physicalAdditionalNotes?: string;
   additionalNotes?: string;
   
   // Location and time
@@ -44,15 +45,17 @@ export interface ReportSubmissionResult {
 }
 
 /**
- * Submit a stray animal report to the database
- * 
- * Simplified version using denormalized schema - no ID mappings or junction tables needed!
+ * Submit a stray animal report to the database (create or update)
+ * @param data - Report submission data
+ * @param reportId - Optional report ID for updates (only pending reports can be updated)
  */
 export async function submitReport(
-  data: ReportSubmissionData
+  data: ReportSubmissionData,
+  reportId?: string
 ): Promise<ReportSubmissionResult> {
   try {
-    console.log('🚀 Starting report submission...');
+    const isUpdate = Boolean(reportId);
+    console.log(isUpdate ? `🔄 Starting report update for ID: ${reportId}` : '🚀 Starting report submission...');
     
     // Server-side validation
     if (!data.animalType || !data.sex || !data.collar) {
@@ -91,6 +94,41 @@ export async function submitReport(
     
     console.log('✅ User authenticated:', user.email);
 
+    // If updating, verify report exists, user owns it, and it's still pending
+    if (isUpdate) {
+      const { data: existingReport, error: fetchError } = await supabase
+        .from('stray_animal_reports')
+        .select('user_id, status')
+        .eq('id', reportId)
+        .single();
+
+      if (fetchError || !existingReport) {
+        console.error('❌ Report not found:', fetchError);
+        return {
+          success: false,
+          error: 'Report not found',
+        };
+      }
+
+      if (existingReport.user_id !== user.id) {
+        console.error('❌ Unauthorized: User does not own this report');
+        return {
+          success: false,
+          error: 'You do not have permission to edit this report',
+        };
+      }
+
+      if (existingReport.status !== 'pending') {
+        console.error('❌ Cannot edit non-pending report');
+        return {
+          success: false,
+          error: `Cannot edit reports with status: ${existingReport.status}`,
+        };
+      }
+
+      console.log('✅ Report verified for update');
+    }
+
     // Filter out 'none' conditions from arrays
     const skinProblems = data.skinProblems.filter(id => id !== 'skin-none');
     const eyeProblems = data.eyeProblems.filter(id => id !== 'eye-none');
@@ -109,6 +147,7 @@ export async function submitReport(
       skin_problems: skinProblems,
       eye_problems: eyeProblems,
       gait_problems: gaitProblems,
+      physical_additional_notes: data.physicalAdditionalNotes || null,
       additional_notes: data.additionalNotes || null,
       spotted_date: data.spottedDate,
       spotted_time: data.spottedTime,
@@ -117,33 +156,56 @@ export async function submitReport(
       location_description: data.locationDescription,
     };
 
-    console.log('💾 Inserting report...');
-    const { data: report, error: reportError } = await supabase
-      .from('stray_animal_reports')
-      .insert(reportData)
-      .select('id')
-      .single();
+    let report;
+    let reportError;
+
+    if (isUpdate) {
+      // Update existing report
+      console.log('💾 Updating report...');
+      const result = await supabase
+        .from('stray_animal_reports')
+        .update(reportData)
+        .eq('id', reportId)
+        .select('id')
+        .single();
+      
+      report = result.data;
+      reportError = result.error;
+    } else {
+      // Insert new report
+      console.log('💾 Inserting report...');
+      const result = await supabase
+        .from('stray_animal_reports')
+        .insert(reportData)
+        .select('id')
+        .single();
+      
+      report = result.data;
+      reportError = result.error;
+    }
 
     if (reportError || !report) {
-      console.error('❌ Report submission error:', reportError);
+      console.error(`❌ Report ${isUpdate ? 'update' : 'submission'} error:`, reportError);
       return {
         success: false,
-        error: reportError?.message || 'Failed to submit report',
+        error: reportError?.message || `Failed to ${isUpdate ? 'update' : 'submit'} report`,
       };
     }
 
-    console.log('✅ Report created with ID:', report.id);
+    console.log(`✅ Report ${isUpdate ? 'updated' : 'created'} with ID:`, report.id);
 
-    // Update user's report count using the new RPC function
-    const { error: updateError } = await supabase.rpc('increment_user_reports', {
-      p_user_id: user.id,
-    });
+    // Only update user's report count for new reports
+    if (!isUpdate) {
+      const { error: updateError } = await supabase.rpc('increment_user_reports', {
+        p_user_id: user.id,
+      });
 
-    if (updateError) {
-      // Non-critical error, log but don't fail the submission
-      console.warn('⚠️ Failed to update user report count:', updateError);
-    } else {
-      console.log('✅ User report count updated');
+      if (updateError) {
+        // Non-critical error, log but don't fail the submission
+        console.warn('⚠️ Failed to update user report count:', updateError);
+      } else {
+        console.log('✅ User report count updated');
+      }
     }
 
     // Revalidate relevant pages
@@ -151,7 +213,7 @@ export async function submitReport(
     revalidatePath('/admin-dashboard');
     revalidatePath('/verify');
     
-    console.log('🎉 Report submission completed successfully!');
+    console.log(`🎉 Report ${isUpdate ? 'update' : 'submission'} completed successfully!`);
 
     return {
       success: true,
