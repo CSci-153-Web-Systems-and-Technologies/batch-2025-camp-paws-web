@@ -239,6 +239,16 @@ export default function ViewReportModal({ isOpen, onClose, reportId, onDelete, c
                   </p>
                 </div>
               </div>
+
+              {/* Physical Additional Notes */}
+              {report.physical_additional_notes && (
+                <div className="mt-4 border border-gray-200 dark:border-gray-700 rounded-lg p-4">
+                  <p className="text-sm text-[rgb(var(--color-text-secondary))] mb-1">Additional Physical Observations</p>
+                  <p className="text-[rgb(var(--color-text-secondary))] leading-relaxed">
+                    {report.physical_additional_notes}
+                  </p>
+                </div>
+              )}
             </div>
 
             {/* Health Problems */}

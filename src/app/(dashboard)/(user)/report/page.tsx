@@ -35,6 +35,7 @@ export default function UserReportPage() {
     bodyConditionScore: null,
     physicalProblems: [],
     notes: '',
+    physicalNotes: '',
     location: null,
     date: '',
     time: '',

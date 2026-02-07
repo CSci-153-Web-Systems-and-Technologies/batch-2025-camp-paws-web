@@ -22,6 +22,7 @@ export interface UserReport {
   skin_problems?: string[];
   eye_problems?: string[];
   gait_problems?: string[];
+  physical_additional_notes?: string | null;
   additional_notes?: string | null;
   latitude?: number;
   longitude?: number;

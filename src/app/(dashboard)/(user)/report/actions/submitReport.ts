@@ -27,6 +27,7 @@ export interface ReportSubmissionData {
   gaitProblems: HealthConditionId[];
   
   // Notes
+  physicalAdditionalNotes?: string;
   additionalNotes?: string;
   
   // Location and time
@@ -146,6 +147,7 @@ export async function submitReport(
       skin_problems: skinProblems,
       eye_problems: eyeProblems,
       gait_problems: gaitProblems,
+      physical_additional_notes: data.physicalAdditionalNotes || null,
       additional_notes: data.additionalNotes || null,
       spotted_date: data.spottedDate,
       spotted_time: data.spottedTime,

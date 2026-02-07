@@ -39,6 +39,7 @@ export default function EditReportPage() {
     bodyConditionScore: null,
     physicalProblems: [],
     notes: '',
+    physicalNotes: '',
     location: null,
     date: '',
     time: '',
@@ -83,6 +84,7 @@ export default function EditReportPage() {
             ...(report.gait_problems || [])
           ],
           notes: report.additional_notes || '',
+          physicalNotes: report.physical_additional_notes || '',
           location: report.latitude && report.longitude ? {
             lat: report.latitude,
             lng: report.longitude
@@ -180,6 +182,7 @@ export default function EditReportPage() {
         skinProblems: skinProblems.length > 0 ? skinProblems : ['skin-none'],
         eyeProblems: eyeProblems.length > 0 ? eyeProblems : ['eye-none'],
         gaitProblems: gaitProblems.length > 0 ? gaitProblems : ['gait-none'],
+        physicalAdditionalNotes: finalData.physicalNotes || undefined,
         additionalNotes: finalData.notes || undefined,
         latitude: finalData.location.lat,
         longitude: finalData.location.lng,
