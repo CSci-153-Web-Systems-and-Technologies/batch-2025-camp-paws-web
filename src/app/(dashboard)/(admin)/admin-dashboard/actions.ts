@@ -24,6 +24,17 @@ export interface RecentReport {
   created_at: string;
 }
 
+export interface ReportsByStatus {
+  pending: number;
+  verified: number;
+  rejected: number;
+}
+
+export interface ReportsByAnimalType {
+  cat: number;
+  dog: number;
+}
+
 interface ReportWithUser {
   id: string;
   animal_type: string;
@@ -158,6 +169,72 @@ export async function fetchRecentReports(limit = 10): Promise<{ data: RecentRepo
     return {
       data: null,
       error: error instanceof Error ? error.message : 'Failed to fetch recent reports',
+    };
+  }
+}
+
+/**
+ * Fetch reports breakdown by status
+ */
+export async function fetchReportsByStatus(): Promise<{ data: ReportsByStatus | null; error: string | null }> {
+  try {
+    const supabase = await createClient();
+
+    const [pending, verified, rejected] = await Promise.all([
+      supabase.from('stray_animal_reports').select('*', { count: 'exact', head: true }).eq('status', 'pending'),
+      supabase.from('stray_animal_reports').select('*', { count: 'exact', head: true }).eq('status', 'verified'),
+      supabase.from('stray_animal_reports').select('*', { count: 'exact', head: true }).eq('status', 'rejected'),
+    ]);
+
+    if (pending.error || verified.error || rejected.error) {
+      throw new Error('Failed to fetch status breakdown');
+    }
+
+    return {
+      data: {
+        pending: pending.count || 0,
+        verified: verified.count || 0,
+        rejected: rejected.count || 0,
+      },
+      error: null,
+    };
+  } catch (error) {
+    console.error('Error fetching reports by status:', error);
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to fetch status breakdown',
+    };
+  }
+}
+
+/**
+ * Fetch reports breakdown by animal type
+ */
+export async function fetchReportsByAnimalType(): Promise<{ data: ReportsByAnimalType | null; error: string | null }> {
+  try {
+    const supabase = await createClient();
+
+    const [cat, dog] = await Promise.all([
+      supabase.from('stray_animal_reports').select('*', { count: 'exact', head: true }).eq('animal_type', 'cat'),
+      supabase.from('stray_animal_reports').select('*', { count: 'exact', head: true }).eq('animal_type', 'dog'),
+    ]);
+
+    if (cat.error || dog.error) {
+      throw new Error('Failed to fetch animal type breakdown');
+    }
+
+    return {
+      data: {
+        cat: cat.count || 0,
+        dog: dog.count || 0,
+      },
+      error: null,
+    };
+  } catch (error) {
+    console.error('Error fetching reports by animal type:', error);
+    return {
+      data: null,
+      error: error instanceof Error ? error.message : 'Failed to fetch animal type breakdown',
     };
   }
 }

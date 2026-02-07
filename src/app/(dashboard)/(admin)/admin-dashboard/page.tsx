@@ -1,7 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchAdminStats, fetchRecentReports, type AdminStats, type RecentReport } from "./actions";
+import { 
+  fetchAdminStats, 
+  fetchRecentReports, 
+  fetchReportsByStatus,
+  fetchReportsByAnimalType,
+  type AdminStats, 
+  type RecentReport,
+  type ReportsByStatus,
+  type ReportsByAnimalType
+} from "./actions";
 import { 
   BarChart3, 
   Clock, 
@@ -24,6 +33,8 @@ import Link from "next/link";
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);
   const [recentReports, setRecentReports] = useState<RecentReport[]>([]);
+  const [statusBreakdown, setStatusBreakdown] = useState<ReportsByStatus | null>(null);
+  const [animalTypeBreakdown, setAnimalTypeBreakdown] = useState<ReportsByAnimalType | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -32,9 +43,11 @@ export default function AdminDashboardPage() {
       setLoading(true);
       setError(null);
       
-      const [statsResult, reportsResult] = await Promise.all([
+      const [statsResult, reportsResult, statusResult, animalTypeResult] = await Promise.all([
         fetchAdminStats(),
-        fetchRecentReports()
+        fetchRecentReports(),
+        fetchReportsByStatus(),
+        fetchReportsByAnimalType()
       ]);
       
       if (statsResult.error) {
@@ -45,6 +58,14 @@ export default function AdminDashboardPage() {
       
       if (reportsResult.data) {
         setRecentReports(reportsResult.data);
+      }
+
+      if (statusResult.data) {
+        setStatusBreakdown(statusResult.data);
+      }
+
+      if (animalTypeResult.data) {
+        setAnimalTypeBreakdown(animalTypeResult.data);
       }
       
       setLoading(false);
@@ -281,6 +302,109 @@ export default function AdminDashboardPage() {
             </div>
           </Link>
         </div>
+      </div>
+
+      {/* Analytics Section */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+        {/* Reports by Status */}
+        {statusBreakdown && (
+          <div className="bg-[rgb(var(--color-card-bg))] border border-[rgb(var(--color-border))] rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-[rgb(var(--color-text))] mb-4">Reports by Status</h2>
+            <div className="space-y-4">
+              {/* Pending */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-[rgb(var(--color-text))]">Pending</span>
+                  <span className="text-sm font-semibold text-[rgb(var(--color-text))]">{statusBreakdown.pending}</span>
+                </div>
+                <div className="h-2 bg-[rgb(var(--color-border))] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-yellow-500 transition-all"
+                    style={{ width: `${stats ? (statusBreakdown.pending / stats.totalReports) * 100 : 0}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Verified */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-[rgb(var(--color-text))]">Verified</span>
+                  <span className="text-sm font-semibold text-[rgb(var(--color-text))]">{statusBreakdown.verified}</span>
+                </div>
+                <div className="h-2 bg-[rgb(var(--color-border))] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-green-500 transition-all"
+                    style={{ width: `${stats ? (statusBreakdown.verified / stats.totalReports) * 100 : 0}%` }}
+                  />
+                </div>
+              </div>
+
+              {/* Rejected */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-sm font-medium text-[rgb(var(--color-text))]">Rejected</span>
+                  <span className="text-sm font-semibold text-[rgb(var(--color-text))]">{statusBreakdown.rejected}</span>
+                </div>
+                <div className="h-2 bg-[rgb(var(--color-border))] rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-red-500 transition-all"
+                    style={{ width: `${stats ? (statusBreakdown.rejected / stats.totalReports) * 100 : 0}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Reports by Animal Type */}
+        {animalTypeBreakdown && (
+          <div className="bg-[rgb(var(--color-card-bg))] border border-[rgb(var(--color-border))] rounded-lg p-6">
+            <h2 className="text-xl font-semibold text-[rgb(var(--color-text))] mb-4">Reports by Animal Type</h2>
+            <div className="space-y-6">
+              {/* Cat */}
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-lg bg-purple-500/10">
+                  <Cat className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-[rgb(var(--color-text))]">Cats</span>
+                    <span className="text-sm font-semibold text-[rgb(var(--color-text))]">
+                      {animalTypeBreakdown.cat} ({stats ? Math.round((animalTypeBreakdown.cat / stats.totalReports) * 100) : 0}%)
+                    </span>
+                  </div>
+                  <div className="h-2 bg-[rgb(var(--color-border))] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-purple-500 transition-all"
+                      style={{ width: `${stats ? (animalTypeBreakdown.cat / stats.totalReports) * 100 : 0}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Dog */}
+              <div className="flex items-center gap-4">
+                <div className="p-3 rounded-lg bg-blue-500/10">
+                  <Dog className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-[rgb(var(--color-text))]">Dogs</span>
+                    <span className="text-sm font-semibold text-[rgb(var(--color-text))]">
+                      {animalTypeBreakdown.dog} ({stats ? Math.round((animalTypeBreakdown.dog / stats.totalReports) * 100) : 0}%)
+                    </span>
+                  </div>
+                  <div className="h-2 bg-[rgb(var(--color-border))] rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-blue-500 transition-all"
+                      style={{ width: `${stats ? (animalTypeBreakdown.dog / stats.totalReports) * 100 : 0}%` }}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
