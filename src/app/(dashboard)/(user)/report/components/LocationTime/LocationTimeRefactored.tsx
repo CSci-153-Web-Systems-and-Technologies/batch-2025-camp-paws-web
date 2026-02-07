@@ -24,6 +24,14 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack, isSubmi
     isLocationValid: true,
   });
 
+  // Track which fields have been touched for validation
+  const [touchedFields, setTouchedFields] = useState({
+    date: false,
+    time: false,
+    locationDescription: false,
+    location: false,
+  });
+
   // Dependency Inversion: Depend on abstractions, not concretions
   const validator = new LocationTimeValidator();
   const transformer = new LocationTimeTransformer();
@@ -31,12 +39,21 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack, isSubmi
   // Single Responsibility: Form validation
   const validation: LocationTimeValidationResult = validator.validate(formState);
 
+  // Mark field as touched
+  const markAsTouched = (field: keyof typeof touchedFields) => {
+    setTouchedFields(prev => ({ ...prev, [field]: true }));
+  };
+
   // Single Responsibility: Handle field updates
   const updateFormField = <K extends keyof LocationTimeFormData>(
     field: K,
     value: LocationTimeFormData[K]
   ) => {
     setFormState((prev) => ({ ...prev, [field]: value }));
+    // Mark appropriate field as touched
+    if (field === 'selectedDate') markAsTouched('date');
+    if (field === 'selectedTime') markAsTouched('time');
+    if (field === 'locationDescription') markAsTouched('locationDescription');
   };
 
   // Single Responsibility: Handle location selection with validation
@@ -46,6 +63,7 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack, isSubmi
       selectedLocation: { lat, lng },
       isLocationValid: isValid,
     }));
+    markAsTouched('location');
   };
 
   // Single Responsibility: Form submission
@@ -72,17 +90,25 @@ export default function LocationTimeRefactored({ data, onSubmit, onBack, isSubmi
             selectedTime={formState.selectedTime}
             onDateChange={(date) => updateFormField('selectedDate', date)}
             onTimeChange={(time) => updateFormField('selectedTime', time)}
+            dateError={validation.errors.date}
+            timeError={validation.errors.time}
+            dateTouched={touchedFields.date}
+            timeTouched={touchedFields.time}
           />
 
           <LocationDescription
             description={formState.locationDescription}
             onDescriptionChange={(description) => updateFormField('locationDescription', description)}
+            error={validation.errors.locationDescription}
+            touched={touchedFields.locationDescription}
           />
 
           <MapSelection
             selectedLocation={formState.selectedLocation}
             isLocationValid={formState.isLocationValid}
             onLocationSelect={handleLocationSelect}
+            error={validation.errors.location}
+            touched={touchedFields.location}
           />
 
           {/* Validation Feedback */}

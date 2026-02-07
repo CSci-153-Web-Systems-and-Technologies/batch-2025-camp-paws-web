@@ -11,6 +11,7 @@ export interface FormData {
   bodyConditionScore: number | null;
   physicalProblems: string[];
   notes: string;
+  physicalNotes: string;
   location: { lat: number; lng: number } | null;
   date: string;
   time: string;

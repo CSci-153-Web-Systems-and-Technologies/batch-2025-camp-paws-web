@@ -1,7 +1,10 @@
 // Single Responsibility Principle: Component focused only on collar status
 import { CollarSelectionProps } from '../types/PhysicalDetailsTypes';
+import InlineError from '@/components/ui/InlineError';
 
-export default function CollarSelection({ selectedCollar, onSelect }: CollarSelectionProps) {
+export default function CollarSelection({ selectedCollar, onSelect, error, touched }: CollarSelectionProps) {
+  const showError = touched && !selectedCollar;
+  
   const collarOptions = [
     { 
       value: 'with', 
@@ -17,7 +20,9 @@ export default function CollarSelection({ selectedCollar, onSelect }: CollarSele
 
   return (
     <div>
-      <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">Collar Status</label>
+      <label className="block text-sm font-medium text-[rgb(var(--color-text-primary))] mb-3">
+        Collar Status <span className="text-red-500">*</span>
+      </label>
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         {collarOptions.map((option) => (
           <button
@@ -47,6 +52,7 @@ export default function CollarSelection({ selectedCollar, onSelect }: CollarSele
           </button>
         ))}
       </div>
+      <InlineError error={error} show={showError} />
     </div>
   );
 }

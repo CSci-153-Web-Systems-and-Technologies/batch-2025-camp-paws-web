@@ -3,27 +3,31 @@
 
 import { createClient } from '@/lib/supabase/server';
 import { revalidatePath } from 'next/cache';
+import type { StrayAnimalReportInsert } from '@/types/database';
+import type { AnimalType, Sex, CollarStatus } from '@/lib/constants/animalAttributes';
+import type { HealthConditionId } from '@/lib/constants/healthConditions';
 
 export interface ReportSubmissionData {
   // Photo
   photoUrl: string; // This should be uploaded to Supabase Storage first
   
   // Basic identification
-  animalType: 'cat' | 'dog';
-  sex: 'male' | 'female';
-  collar: 'with' | 'without';
+  animalType: AnimalType;
+  sex: Sex;
+  collar: CollarStatus;
   
   // Physical attributes
   colorPattern: string;
   primaryColor: string;
   bodyConditionScore: number;
   
-  // Health conditions
-  skinProblems: string[];
-  eyeProblems: string[];
-  gaitProblems: string[];
+  // Health conditions (arrays of IDs)
+  skinProblems: HealthConditionId[];
+  eyeProblems: HealthConditionId[];
+  gaitProblems: HealthConditionId[];
   
   // Notes
+  physicalAdditionalNotes?: string;
   additionalNotes?: string;
   
   // Location and time
@@ -41,14 +45,17 @@ export interface ReportSubmissionResult {
 }
 
 /**
- * Submit a stray animal report to the database
+ * Submit a stray animal report to the database (create or update)
+ * @param data - Report submission data
+ * @param reportId - Optional report ID for updates (only pending reports can be updated)
  */
 export async function submitReport(
-  data: ReportSubmissionData
+  data: ReportSubmissionData,
+  reportId?: string
 ): Promise<ReportSubmissionResult> {
   try {
-    console.log('🚀 Starting report submission...');
-    console.log('📋 Data received:', data);
+    const isUpdate = Boolean(reportId);
+    console.log(isUpdate ? `🔄 Starting report update for ID: ${reportId}` : '🚀 Starting report submission...');
     
     // Server-side validation
     if (!data.animalType || !data.sex || !data.collar) {
@@ -87,132 +94,118 @@ export async function submitReport(
     
     console.log('✅ User authenticated:', user.email);
 
-    // Map frontend values to database IDs
-    const animalTypeId = data.animalType === 'cat' ? 'cat' : 'dog';
-    const sexId = data.sex === 'male' ? 'male' : 'female';
-    const collarStatusId = data.collar === 'with' ? 'collar-with' : 'collar-without';
+    // If updating, verify report exists, user owns it, and it's still pending
+    if (isUpdate) {
+      const { data: existingReport, error: fetchError } = await supabase
+        .from('stray_animal_reports')
+        .select('user_id, status')
+        .eq('id', reportId)
+        .single();
 
-    console.log('📝 Mapped IDs:', { animalTypeId, sexId, collarStatusId });
+      if (fetchError || !existingReport) {
+        console.error('❌ Report not found:', fetchError);
+        return {
+          success: false,
+          error: 'Report not found',
+        };
+      }
 
-    // Insert main report
-    console.log('💾 Inserting main report...');
-    const { data: report, error: reportError } = await supabase
-      .from('stray_animal_reports')
-      .insert({
-        user_id: user.id,
-        photo_url: data.photoUrl,
-        animal_type_id: animalTypeId,
-        sex_id: sexId,
-        collar_status_id: collarStatusId,
-        color_pattern_id: data.colorPattern,
-        primary_color_id: data.primaryColor,
-        body_condition_score: data.bodyConditionScore,
-        additional_notes: data.additionalNotes || null,
-        spotted_date: data.spottedDate,
-        spotted_time: data.spottedTime,
-        latitude: data.latitude,
-        longitude: data.longitude,
-        location_description: data.locationDescription,
-        status: 'pending', // Default status
-      })
-      .select('id')
-      .single();
+      if (existingReport.user_id !== user.id) {
+        console.error('❌ Unauthorized: User does not own this report');
+        return {
+          success: false,
+          error: 'You do not have permission to edit this report',
+        };
+      }
+
+      if (existingReport.status !== 'pending') {
+        console.error('❌ Cannot edit non-pending report');
+        return {
+          success: false,
+          error: `Cannot edit reports with status: ${existingReport.status}`,
+        };
+      }
+
+      console.log('✅ Report verified for update');
+    }
+
+    // Filter out 'none' conditions from arrays
+    const skinProblems = data.skinProblems.filter(id => id !== 'skin-none');
+    const eyeProblems = data.eyeProblems.filter(id => id !== 'eye-none');
+    const gaitProblems = data.gaitProblems.filter(id => id !== 'gait-none');
+
+    // Prepare report data - direct insert with arrays, no ID mappings!
+    const reportData: StrayAnimalReportInsert = {
+      user_id: user.id,
+      photo_url: data.photoUrl,
+      animal_type: data.animalType,
+      sex: data.sex,
+      collar_status: data.collar,
+      color_pattern: data.colorPattern,
+      primary_color: data.primaryColor,
+      body_condition_score: data.bodyConditionScore,
+      skin_problems: skinProblems,
+      eye_problems: eyeProblems,
+      gait_problems: gaitProblems,
+      physical_additional_notes: data.physicalAdditionalNotes || null,
+      additional_notes: data.additionalNotes || null,
+      spotted_date: data.spottedDate,
+      spotted_time: data.spottedTime,
+      latitude: data.latitude,
+      longitude: data.longitude,
+      location_description: data.locationDescription,
+    };
+
+    let report;
+    let reportError;
+
+    if (isUpdate) {
+      // Update existing report
+      console.log('💾 Updating report...');
+      const result = await supabase
+        .from('stray_animal_reports')
+        .update(reportData)
+        .eq('id', reportId)
+        .select('id')
+        .single();
+      
+      report = result.data;
+      reportError = result.error;
+    } else {
+      // Insert new report
+      console.log('💾 Inserting report...');
+      const result = await supabase
+        .from('stray_animal_reports')
+        .insert(reportData)
+        .select('id')
+        .single();
+      
+      report = result.data;
+      reportError = result.error;
+    }
 
     if (reportError || !report) {
-      console.error('❌ Report submission error:', reportError);
+      console.error(`❌ Report ${isUpdate ? 'update' : 'submission'} error:`, reportError);
       return {
         success: false,
-        error: reportError?.message || 'Failed to submit report',
+        error: reportError?.message || `Failed to ${isUpdate ? 'update' : 'submit'} report`,
       };
     }
 
-    const reportId = report.id;
-    console.log('✅ Main report created with ID:', reportId);
+    console.log(`✅ Report ${isUpdate ? 'updated' : 'created'} with ID:`, report.id);
 
-    // Insert skin conditions
-    if (data.skinProblems.length > 0) {
-      console.log('🩹 Processing skin conditions:', data.skinProblems);
-      const skinConditions = data.skinProblems
-        .filter(problem => problem !== 'skin-none')
-        .map(conditionId => ({
-          report_id: reportId,
-          condition_id: conditionId,
-        }));
+    // Only update user's report count for new reports
+    if (!isUpdate) {
+      const { error: updateError } = await supabase.rpc('increment_user_reports', {
+        p_user_id: user.id,
+      });
 
-      if (skinConditions.length > 0) {
-        console.log('💾 Inserting skin conditions:', skinConditions);
-        const { error: skinError } = await supabase
-          .from('report_skin_conditions')
-          .insert(skinConditions);
-
-        if (skinError) {
-          console.error('⚠️ Skin conditions insert error:', skinError);
-        } else {
-          console.log('✅ Skin conditions inserted');
-        }
+      if (updateError) {
+        // Non-critical error, log but don't fail the submission
+        console.warn('⚠️ Failed to update user report count:', updateError);
+      } else {
+        console.log('✅ User report count updated');
       }
-    }
-
-    // Insert eye conditions
-    if (data.eyeProblems.length > 0) {
-      console.log('👁️ Processing eye conditions:', data.eyeProblems);
-      const eyeConditions = data.eyeProblems
-        .filter(problem => problem !== 'eye-none')
-        .map(conditionId => ({
-          report_id: reportId,
-          condition_id: conditionId,
-        }));
-
-      if (eyeConditions.length > 0) {
-        console.log('💾 Inserting eye conditions:', eyeConditions);
-        const { error: eyeError } = await supabase
-          .from('report_eye_conditions')
-          .insert(eyeConditions);
-
-        if (eyeError) {
-          console.error('⚠️ Eye conditions insert error:', eyeError);
-        } else {
-          console.log('✅ Eye conditions inserted');
-        }
-      }
-    }
-
-    // Insert gait conditions
-    if (data.gaitProblems.length > 0) {
-      console.log('🚶 Processing gait conditions:', data.gaitProblems);
-      const gaitConditions = data.gaitProblems
-        .filter(problem => problem !== 'gait-none')
-        .map(conditionId => ({
-          report_id: reportId,
-          condition_id: conditionId,
-        }));
-
-      if (gaitConditions.length > 0) {
-        console.log('💾 Inserting gait conditions:', gaitConditions);
-        const { error: gaitError } = await supabase
-          .from('report_gait_conditions')
-          .insert(gaitConditions);
-
-        if (gaitError) {
-          console.error('⚠️ Gait conditions insert error:', gaitError);
-        } else {
-          console.log('✅ Gait conditions inserted');
-        }
-      }
-    }
-
-    // Update user's report count
-    const { error: updateError } = await supabase.rpc('increment', {
-      table_name: 'users',
-      row_id: user.id,
-      column_name: 'reports_submitted',
-    });
-
-    if (updateError) {
-      // Non-critical error, log but don't fail the submission
-      console.warn('⚠️ Failed to update user report count:', updateError);
-    } else {
-      console.log('✅ User report count updated');
     }
 
     // Revalidate relevant pages
@@ -220,12 +213,11 @@ export async function submitReport(
     revalidatePath('/admin-dashboard');
     revalidatePath('/verify');
     
-    console.log('🎉 Report submission completed successfully!');
-    console.log('📊 Final Report ID:', reportId);
+    console.log(`🎉 Report ${isUpdate ? 'update' : 'submission'} completed successfully!`);
 
     return {
       success: true,
-      reportId,
+      reportId: report.id,
     };
   } catch (error) {
     console.error('💥 Unexpected error submitting report:', error);
