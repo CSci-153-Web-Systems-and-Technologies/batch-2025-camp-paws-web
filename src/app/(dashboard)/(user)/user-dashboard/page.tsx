@@ -9,6 +9,8 @@ import { parseServerError, logError, ParsedError } from '@/lib/utils/errorHandle
 import ReportsList, { Report } from './components/ReportsList';
 import { fetchUserReports, deleteReport } from './actions';
 import { useToast } from '@/hooks/useToast';
+import Button from '@/components/ui/Button';
+import { BarChart3, Clock, CheckCircle2, XCircle, Plus } from 'lucide-react';
 
 interface UserStats {
   totalReports: number;
@@ -117,22 +119,15 @@ export default function UserDashboardPage() {
   return (
     <>
       <div className="flex flex-col h-full min-h-[60vh] p-4 max-w-7xl mx-auto">
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold text-[rgb(var(--color-text))] mb-2">
-            Your Report Dashboard
-          </h1>
-          <p className="text-sm text-[rgb(var(--color-text-muted))]">
-            Track your contributions to helping stray animals
-          </p>
-        </div>
-
         {stats && (
           <>
             {/* Stats Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
               {/* Total Reports */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
-                <div className="text-4xl mb-2">📊</div>
+              <div className="bg-blue-50 dark:bg-blue-950 rounded-lg shadow-sm p-6 border border-blue-100 dark:border-blue-900">
+                <div className="flex items-center justify-center w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg mb-3">
+                  <BarChart3 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+                </div>
                 <div className="text-3xl font-bold text-[rgb(var(--color-text))] mb-1">
                   {stats.totalReports}
                 </div>
@@ -142,9 +137,11 @@ export default function UserDashboardPage() {
               </div>
 
               {/* Pending Reports */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
-                <div className="text-4xl mb-2">⏳</div>
-                <div className="text-3xl font-bold text-yellow-600 dark:text-yellow-400 mb-1">
+              <div className="bg-orange-50 dark:bg-orange-950 rounded-lg shadow-sm p-6 border border-orange-100 dark:border-orange-900">
+                <div className="flex items-center justify-center w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg mb-3">
+                  <Clock className="w-6 h-6 text-orange-600 dark:text-orange-400" />
+                </div>
+                <div className="text-3xl font-bold text-[rgb(var(--color-text))] mb-1">
                   {stats.pendingReports}
                 </div>
                 <div className="text-sm text-[rgb(var(--color-text-muted))]">
@@ -153,9 +150,11 @@ export default function UserDashboardPage() {
               </div>
 
               {/* Verified Reports */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
-                <div className="text-4xl mb-2">✅</div>
-                <div className="text-3xl font-bold text-green-600 dark:text-green-400 mb-1">
+              <div className="bg-green-50 dark:bg-green-950 rounded-lg shadow-sm p-6 border border-green-100 dark:border-green-900">
+                <div className="flex items-center justify-center w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg mb-3">
+                  <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
+                </div>
+                <div className="text-3xl font-bold text-[rgb(var(--color-text))] mb-1">
                   {stats.verifiedReports}
                 </div>
                 <div className="text-sm text-[rgb(var(--color-text-muted))]">
@@ -164,9 +163,11 @@ export default function UserDashboardPage() {
               </div>
 
               {/* Rejected Reports */}
-              <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
-                <div className="text-4xl mb-2">❌</div>
-                <div className="text-3xl font-bold text-red-600 dark:text-red-400 mb-1">
+              <div className="bg-red-50 dark:bg-red-950 rounded-lg shadow-sm p-6 border border-red-100 dark:border-red-900">
+                <div className="flex items-center justify-center w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg mb-3">
+                  <XCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
+                </div>
+                <div className="text-3xl font-bold text-[rgb(var(--color-text))] mb-1">
                   {stats.rejectedReports}
                 </div>
                 <div className="text-sm text-[rgb(var(--color-text-muted))]">
@@ -177,9 +178,20 @@ export default function UserDashboardPage() {
 
             {/* Reports List */}
             <div className="mb-8">
-              <h2 className="text-2xl font-bold text-[rgb(var(--color-text))] mb-4">
-                Your Reports
-              </h2>
+              <div className="flex justify-between items-center mb-4">
+                <h2 className="text-2xl font-bold text-[rgb(var(--color-text))]">
+                  Your Reports
+                </h2>
+                <Button
+                  variant="primary"
+                  onClick={() => router.push('/report')}
+                >
+                  <span className="flex items-center gap-2">
+                    <Plus className="w-4 h-4" />
+                    New Report
+                  </span>
+                </Button>
+              </div>
               <ReportsList
                 reports={reports}
                 onEdit={handleEdit}

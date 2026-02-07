@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Button from '@/components/ui/Button';
 import Badge from '@/components/ui/Badge';
 import Modal from '@/components/ui/Modal';
-import { Edit, Trash2, Eye } from 'lucide-react';
+import ViewReportModal from './ViewReportModal';
+import { Trash2, Eye, MapPin, Calendar, Clock, MoreVertical, PawPrint } from 'lucide-react';
 
 export interface Report {
   id: string;
@@ -28,17 +29,25 @@ interface ReportsListProps {
   isLoading?: boolean;
 }
 
-export default function ReportsList({ reports, onEdit, onDelete, onView, isLoading }: ReportsListProps) {
+export default function ReportsList({ reports, onDelete, isLoading }: ReportsListProps) {
   const [deleteConfirmModal, setDeleteConfirmModal] = useState<string | null>(null);
+  const [viewReportId, setViewReportId] = useState<string | null>(null);
 
   const getStatusBadge = (status: Report['status']) => {
     switch (status) {
       case 'pending':
-        return <Badge variant="warning">⏳ Pending</Badge>;
+        return (
+          <Badge variant="warning">
+            <span className="flex items-center gap-1.5">
+              <Clock className="w-3 h-3" />
+              Pending
+            </span>
+          </Badge>
+        );
       case 'verified':
-        return <Badge variant="success">✅ Verified</Badge>;
+        return <Badge variant="success">Verified</Badge>;
       case 'rejected':
-        return <Badge variant="error">❌ Rejected</Badge>;
+        return <Badge variant="error">Rejected</Badge>;
     }
   };
 
@@ -119,21 +128,34 @@ export default function ReportsList({ reports, onEdit, onDelete, onView, isLoadi
               {/* Details */}
               <div className="flex-1 min-w-0">
                 <div className="flex items-start justify-between mb-2">
-                  <div>
-                    <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] capitalize">
+                  <div className="flex-1">
+                    <h3 className="text-lg font-semibold text-[rgb(var(--color-text-primary))] capitalize flex items-center">
+                      <PawPrint className="w-4 h-4 mr-2 text-[rgb(var(--color-text-secondary))]" />
                       {report.animal_type} • {report.sex}
                     </h3>
-                    <p className="text-sm text-[rgb(var(--color-text-secondary))] mt-1">
-                      📍 {report.location_description}
+                    <p className="text-sm text-[rgb(var(--color-text-secondary))] mt-1 flex items-center">
+                      <MapPin className="w-3.5 h-3.5 mr-1" />
+                      {report.location_description}
                     </p>
                   </div>
-                  {getStatusBadge(report.status)}
+                  <div className="flex items-center gap-2">
+                    {getStatusBadge(report.status)}
+                    <button className="p-1 hover:bg-gray-100 dark:hover:bg-gray-800 rounded">
+                      <MoreVertical className="w-5 h-5 text-[rgb(var(--color-text-secondary))]" />
+                    </button>
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap gap-4 text-sm text-[rgb(var(--color-text-secondary))] mb-3">
-                  <span>📅 {formatDate(report.spotted_date)}</span>
-                  <span>🕐 {formatTime(report.spotted_time)}</span>
-                  <span>📤 Submitted {formatDate(report.created_at)}</span>
+                  <span className="flex items-center">
+                    <Calendar className="w-3.5 h-3.5 mr-1" />
+                    {formatDate(report.spotted_date)}
+                  </span>
+                  <span className="flex items-center">
+                    <Clock className="w-3.5 h-3.5 mr-1" />
+                    {formatTime(report.spotted_time)}
+                  </span>
+                  <span>Submitted {formatDate(report.created_at)}</span>
                 </div>
 
                 {/* Rejection Reason */}
@@ -149,34 +171,43 @@ export default function ReportsList({ reports, onEdit, onDelete, onView, isLoadi
                 )}
 
                 {/* Action Buttons */}
-                <div className="flex gap-2 flex-wrap">
+                <div className="flex gap-3 flex-wrap">
                   {report.status === 'pending' ? (
                     <>
                       <Button
                         size="sm"
-                        variant="primary"
-                        onClick={() => onEdit(report.id)}
+                        variant="secondary"
+                        onClick={() => setViewReportId(report.id)}
+                        className="px-3"
                       >
-                        <Edit className="w-4 h-4 mr-1" />
-                        Edit
+                        <span className="flex items-center gap-2">
+                          <Eye className="w-4 h-4" />
+                          View Details
+                        </span>
                       </Button>
                       <Button
                         size="sm"
                         variant="danger"
                         onClick={() => handleDeleteClick(report.id)}
+                        className="px-6"
                       >
-                        <Trash2 className="w-4 h-4 mr-1" />
-                        Delete
+                        <span className="flex items-center gap-2">
+                          <Trash2 className="w-4 h-4" />
+                          Delete
+                        </span>
                       </Button>
                     </>
                   ) : (
                     <Button
                       size="sm"
                       variant="secondary"
-                      onClick={() => onView(report.id)}
+                      onClick={() => setViewReportId(report.id)}
+                      className="px-6"
                     >
-                      <Eye className="w-4 h-4 mr-1" />
-                      View Details
+                      <span className="flex items-center gap-2">
+                        <Eye className="w-4 h-4" />
+                        View Details
+                      </span>
                     </Button>
                   )}
                 </div>
@@ -212,6 +243,17 @@ export default function ReportsList({ reports, onEdit, onDelete, onView, isLoadi
           </div>
         </div>
       </Modal>
+
+      {/* View Report Modal */}
+      {viewReportId && (
+        <ViewReportModal
+          isOpen={viewReportId !== null}
+          onClose={() => setViewReportId(null)}
+          reportId={viewReportId}
+          onDelete={onDelete}
+          canEdit={reports.find(r => r.id === viewReportId)?.status === 'pending'}
+        />
+      )}
     </>
   );
 }
