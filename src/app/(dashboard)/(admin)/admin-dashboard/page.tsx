@@ -12,9 +12,14 @@ import {
   TrendingUp, 
   Calendar,
   Dog,
-  Cat
+  Cat,
+  MapPin,
+  FileText,
+  ClipboardCheck,
+  ArrowRight
 } from "lucide-react";
 import Badge from "@/components/ui/Badge";
+import Link from "next/link";
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);
@@ -176,7 +181,7 @@ export default function AdminDashboardPage() {
       </div>
 
       {/* Recent Activity */}
-      <div className="bg-[rgb(var(--color-card-bg))] border border-[rgb(var(--color-border))] rounded-lg p-6">
+      <div className="bg-[rgb(var(--color-card-bg))] border border-[rgb(var(--color-border))] rounded-lg p-6 mb-8">
         <h2 className="text-xl font-semibold text-[rgb(var(--color-text))] mb-4">Recent Activity</h2>
         {recentReports.length === 0 ? (
           <p className="text-[rgb(var(--color-text-muted))] text-center py-8">No recent reports</p>
@@ -213,6 +218,69 @@ export default function AdminDashboardPage() {
             ))}
           </div>
         )}
+      </div>
+
+      {/* Quick Actions */}
+      <div>
+        <h2 className="text-xl font-semibold text-[rgb(var(--color-text))] mb-4">Quick Actions</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Link
+            href="/verify"
+            className="block bg-[rgb(var(--color-card-bg))] border border-[rgb(var(--color-border))] rounded-lg p-6 hover:shadow-md transition-all hover:border-yellow-500/50 group"
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="p-3 rounded-lg bg-yellow-500/10">
+                <ClipboardCheck className="w-6 h-6 text-yellow-600 dark:text-yellow-400" />
+              </div>
+              {stats.pendingReports > 0 && (
+                <Badge variant="warning">{stats.pendingReports}</Badge>
+              )}
+            </div>
+            <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-2">Verify Reports</h3>
+            <p className="text-sm text-[rgb(var(--color-text-muted))] mb-3">
+              Review and verify pending animal reports
+            </p>
+            <div className="flex items-center text-sm font-medium text-yellow-600 dark:text-yellow-400 group-hover:gap-2 transition-all">
+              Go to Verification <ArrowRight className="w-4 h-4 ml-1" />
+            </div>
+          </Link>
+
+          <Link
+            href="/map"
+            className="block bg-[rgb(var(--color-card-bg))] border border-[rgb(var(--color-border))] rounded-lg p-6 hover:shadow-md transition-all hover:border-blue-500/50 group"
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="p-3 rounded-lg bg-blue-500/10">
+                <MapPin className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+              </div>
+            </div>
+            <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-2">View Map</h3>
+            <p className="text-sm text-[rgb(var(--color-text-muted))] mb-3">
+              See all reports on an interactive map
+            </p>
+            <div className="flex items-center text-sm font-medium text-blue-600 dark:text-blue-400 group-hover:gap-2 transition-all">
+              Open Map View <ArrowRight className="w-4 h-4 ml-1" />
+            </div>
+          </Link>
+
+          <Link
+            href="/records"
+            className="block bg-[rgb(var(--color-card-bg))] border border-[rgb(var(--color-border))] rounded-lg p-6 hover:shadow-md transition-all hover:border-purple-500/50 group"
+          >
+            <div className="flex items-start justify-between mb-3">
+              <div className="p-3 rounded-lg bg-purple-500/10">
+                <FileText className="w-6 h-6 text-purple-600 dark:text-purple-400" />
+              </div>
+            </div>
+            <h3 className="text-lg font-semibold text-[rgb(var(--color-text))] mb-2">Animal Records</h3>
+            <p className="text-sm text-[rgb(var(--color-text-muted))] mb-3">
+              Manage animal groups and records
+            </p>
+            <div className="flex items-center text-sm font-medium text-purple-600 dark:text-purple-400 group-hover:gap-2 transition-all">
+              View Records <ArrowRight className="w-4 h-4 ml-1" />
+            </div>
+          </Link>
+        </div>
       </div>
     </div>
   );
