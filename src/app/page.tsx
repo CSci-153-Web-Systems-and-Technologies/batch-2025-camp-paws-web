@@ -3,7 +3,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState, useEffect } from "react";
-import { ThemeToggle } from "@/components/ThemeSwitcher";
 
 export default function Home() {
   const [showFullContent, setShowFullContent] = useState(false);
@@ -42,7 +41,6 @@ export default function Home() {
         </div>
 
         <div className="flex items-center space-x-2 sm:space-x-4">
-          <ThemeToggle />
           <Link 
             href="/signup"
             className="text-sm sm:text-base text-gray-600 dark:text-gray-300 hover:text-green-600 dark:hover:text-green-400 font-medium transition-colors"

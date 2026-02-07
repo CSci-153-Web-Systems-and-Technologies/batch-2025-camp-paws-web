@@ -128,10 +128,10 @@ export default function UserDashboardPage() {
                 <div className="flex items-center justify-center w-12 h-12 bg-blue-100 dark:bg-blue-900 rounded-lg mb-3">
                   <BarChart3 className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                 </div>
-                <div className="text-3xl font-bold text-[rgb(var(--color-text))] mb-1">
+                <div className="text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-1">
                   {stats.totalReports}
                 </div>
-                <div className="text-sm text-[rgb(var(--color-text-muted))]">
+                <div className="text-sm text-[rgb(var(--color-text-secondary))]">
                   Total Reports
                 </div>
               </div>
@@ -141,10 +141,10 @@ export default function UserDashboardPage() {
                 <div className="flex items-center justify-center w-12 h-12 bg-orange-100 dark:bg-orange-900 rounded-lg mb-3">
                   <Clock className="w-6 h-6 text-orange-600 dark:text-orange-400" />
                 </div>
-                <div className="text-3xl font-bold text-[rgb(var(--color-text))] mb-1">
+                <div className="text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-1">
                   {stats.pendingReports}
                 </div>
-                <div className="text-sm text-[rgb(var(--color-text-muted))]">
+                <div className="text-sm text-[rgb(var(--color-text-secondary))]">
                   Pending Review
                 </div>
               </div>
@@ -154,10 +154,10 @@ export default function UserDashboardPage() {
                 <div className="flex items-center justify-center w-12 h-12 bg-green-100 dark:bg-green-900 rounded-lg mb-3">
                   <CheckCircle2 className="w-6 h-6 text-green-600 dark:text-green-400" />
                 </div>
-                <div className="text-3xl font-bold text-[rgb(var(--color-text))] mb-1">
+                <div className="text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-1">
                   {stats.verifiedReports}
                 </div>
-                <div className="text-sm text-[rgb(var(--color-text-muted))]">
+                <div className="text-sm text-[rgb(var(--color-text-secondary))]">
                   Verified
                 </div>
               </div>
@@ -167,10 +167,10 @@ export default function UserDashboardPage() {
                 <div className="flex items-center justify-center w-12 h-12 bg-red-100 dark:bg-red-900 rounded-lg mb-3">
                   <XCircle className="w-6 h-6 text-red-600 dark:text-red-400" />
                 </div>
-                <div className="text-3xl font-bold text-[rgb(var(--color-text))] mb-1">
+                <div className="text-3xl font-bold text-[rgb(var(--color-text-primary))] mb-1">
                   {stats.rejectedReports}
                 </div>
-                <div className="text-sm text-[rgb(var(--color-text-muted))]">
+                <div className="text-sm text-[rgb(var(--color-text-secondary))]">
                   Rejected
                 </div>
               </div>
@@ -179,7 +179,7 @@ export default function UserDashboardPage() {
             {/* Reports List */}
             <div className="mb-8">
               <div className="flex justify-between items-center mb-4">
-                <h2 className="text-2xl font-bold text-[rgb(var(--color-text))]">
+                <h2 className="text-2xl font-bold text-[rgb(var(--color-text-primary))]">
                   Your Reports
                 </h2>
                 <Button

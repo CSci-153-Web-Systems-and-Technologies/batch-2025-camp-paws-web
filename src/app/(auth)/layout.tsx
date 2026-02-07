@@ -1,6 +1,5 @@
 'use client';
 import Link from "next/link";
-import { ThemeToggle } from "@/components/ThemeSwitcher";
 
 export default function AuthLayout({
   children,
@@ -18,7 +17,6 @@ export default function AuthLayout({
         </div>
         
         <div className="flex items-center space-x-4">
-          <ThemeToggle />
           <Link 
             href="/"
             className="text-gray-600 dark:text-gray-400 hover:text-green-600 dark:hover:text-green-400 font-medium"

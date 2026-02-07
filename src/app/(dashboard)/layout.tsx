@@ -3,7 +3,6 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useState, useEffect } from 'react';
 import Sidebar from './components/Sidebar';
 import HamburgerMenu from './components/HamburgerMenu';
-import { ThemeToggle } from '@/components/ThemeSwitcher';
 import { createClient } from '@/lib/supabase/client';
 import { useSessionTimeout } from '@/hooks/useSessionTimeout';
 
@@ -146,11 +145,6 @@ export default function DashboardLayout({
                 <p className="text-[rgb(var(--color-text-secondary))] mt-1 text-sm sm:text-base hidden sm:block">{headerInfo.description}</p>
               )}
             </div>
-          </div>
-
-          {/* Header Actions */}
-          <div className="flex items-center gap-2">
-            <ThemeToggle />
           </div>
         </header>
         
