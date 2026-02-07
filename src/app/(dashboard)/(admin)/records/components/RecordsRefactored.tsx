@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { getCSRFHeaders } from '@/hooks/useCSRF';
 import { Loader2 } from 'lucide-react';
 // Views
 import { ViewSelector, GroupedView, UngroupedView, AllView } from './views';
@@ -155,7 +156,7 @@ export default function RecordsRefactored() {
 
       const res = await fetch('/api/groups', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'application/json', ...getCSRFHeaders() },
         body: JSON.stringify(payload),
       });
       const json = await res.json();

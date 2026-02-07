@@ -15,32 +15,33 @@ export async function middleware(request: NextRequest) {
     return supabaseResponse;
   }
 
-  // CSRF Protection for authenticated users on state-changing operations
-  // TODO: Re-enable after implementing CSRF token handling in all forms
-  // if (user && !['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
-  //   const csrfCookie = request.cookies.get(CSRF_COOKIE_NAME)?.value;
-  //   const isValid = validateCSRFToken(request, csrfCookie);
-  //   
-  //   if (!isValid) {
-  //     logSecurityEvent('CSRF token validation failed', request, {
-  //       userId: user.id,
-  //       userEmail: user.email,
-  //     });
-  //     return new NextResponse('Invalid CSRF token', { status: 403 });
-  //   }
-  // }
+  // CSRF Protection for API routes only (server actions are already protected by Next.js)
+  // Only check /api/* routes, not server actions
+  const isApiRoute = pathname.startsWith('/api/');
+  
+  if (user && isApiRoute && !['GET', 'HEAD', 'OPTIONS'].includes(request.method)) {
+    const csrfCookie = request.cookies.get(CSRF_COOKIE_NAME)?.value;
+    const isValid = validateCSRFToken(request, csrfCookie);
+    
+    if (!isValid) {
+      logSecurityEvent('CSRF token validation failed', request, {
+        userId: user.id,
+        userEmail: user.email,
+      });
+      return new NextResponse('Invalid CSRF token', { status: 403 });
+    }
+  }
 
   // Generate CSRF token for authenticated users if not present
-  // TODO: Re-enable with CSRF protection
-  // if (user && !request.cookies.get(CSRF_COOKIE_NAME)) {
-  //   const csrfToken = generateCSRFToken();
-  //   supabaseResponse.cookies.set(CSRF_COOKIE_NAME, csrfToken, {
-  //     httpOnly: true,
-  //     secure: process.env.NODE_ENV === 'production',
-  //     sameSite: 'strict',
-  //     path: '/',
-  //   });
-  // }
+  if (user && !request.cookies.get(CSRF_COOKIE_NAME)) {
+    const csrfToken = generateCSRFToken();
+    supabaseResponse.cookies.set(CSRF_COOKIE_NAME, csrfToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'strict',
+      path: '/',
+    });
+  }
 
   // Rate limiting for auth routes (login/signup)
   if (pathname.startsWith('/login') || pathname.startsWith('/signup')) {

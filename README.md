@@ -127,6 +127,7 @@ Key files to explore:
 - Responsive design with mobile-first approach
 - Cookie-based authentication with session management
 - Interactive maps with react-leaflet
+- **CSRF protection** for API routes to prevent cross-site request forgery attacks
 
 ## Database & security notes
 
@@ -135,6 +136,14 @@ Key files to explore:
 - Authentication is handled via Supabase Auth with cookie-based sessions
 - Server-side operations use the cookie-backed Supabase client for secure data access
 - Service role keys are never exposed to the client and only used in trusted server contexts
+
+**Security Features:**
+- **CSRF Protection** — All API routes (`/api/*`) require CSRF tokens to prevent cross-site request forgery attacks
+  - Tokens are automatically generated for authenticated users and stored in HTTP-only cookies
+  - Client-side code uses the `getCSRFHeaders()` utility to include tokens in fetch requests
+  - Server actions are exempted as they have built-in Next.js protection
+- **Rate Limiting** — Login/signup limited to 10 requests per minute, report submissions limited to 20 per hour
+- **Security Headers** — X-Frame-Options, CSP, X-Content-Type-Options, etc. applied via middleware
 
 **Database Schema (v1.1.0):**
 - `stray_animal_reports` — Main reports table with comprehensive animal and location data
@@ -179,6 +188,11 @@ Please avoid committing secrets (service role keys, DB passwords). Use `.env.loc
 - After updating env vars in Vercel, trigger a new deployment
 - Never commit `.env.local` or expose service role keys
 
+**CSRF Token Issues:**
+- If you get "Invalid CSRF token" errors, ensure the middleware is generating tokens for authenticated users
+- Check that `getCSRFHeaders()` is included in all API route fetch calls
+- Server actions don't need CSRF tokens (they're automatically protected by Next.js)
+
 For more troubleshooting guides, see the `docs/` directory.
 
 ---
@@ -190,7 +204,8 @@ For more troubleshooting guides, see the `docs/` directory.
 - ✨ Comprehensive report details modal with interactive Leaflet map
 - ✨ User profile modal with account overview and statistics
 - ✨ Separate physical assessment and location notes fields
-- 🗄️ Database schema update: added `physical_additional_notes` column
+- � Implemented CSRF protection for all API routes
+- �🗄️ Database schema update: added `physical_additional_notes` column
 - 🔧 Fixed CSS variable references for proper theme rendering
 - 🔧 SSR-safe Leaflet implementation with dynamic imports
 - 📚 Updated database schema documentation

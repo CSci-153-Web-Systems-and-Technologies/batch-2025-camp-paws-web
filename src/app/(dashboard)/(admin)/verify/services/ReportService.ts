@@ -1,5 +1,6 @@
 // Dependency Inversion: Abstract interface for report operations
 import { Report } from '../types/VerifyTypes';
+import { getCSRFHeaders } from '@/hooks/useCSRF';
 
 export interface ReportService {
   fetchPendingReports(): Promise<Report[]>;
@@ -112,7 +113,7 @@ export class SupabaseReportService implements ReportService {
   async acceptReport(reportId: string): Promise<void> {
     const res = await fetch('/api/admin/reports/verify', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getCSRFHeaders() },
       body: JSON.stringify({ reportId }),
     });
 
@@ -156,7 +157,7 @@ export class SupabaseReportService implements ReportService {
   async warnUser(userId: string, reason: string): Promise<void> {
     const res = await fetch('/api/admin/user-actions/warn', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getCSRFHeaders() },
       body: JSON.stringify({ target: userId, reason }),
     });
 
@@ -174,7 +175,7 @@ export class SupabaseReportService implements ReportService {
   async suspendUser(userId: string, reason: string): Promise<void> {
     const res = await fetch('/api/admin/user-actions/suspend', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', ...getCSRFHeaders() },
       body: JSON.stringify({ target: userId, reason }),
     });
 
