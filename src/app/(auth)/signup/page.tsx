@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signUpWithEmail, signInWithGoogle } from "@/lib/auth/actions";
+import { getCSRFHeaders } from '@/hooks/useCSRF';
 import Input from "@/components/ui/Input";
 import Button from "@/components/ui/Button";
 
@@ -196,7 +197,7 @@ export default function SignupPage() {
             try {
               const resp = await fetch('/api/check-email', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 'Content-Type': 'application/json', ...getCSRFHeaders() },
                 body: JSON.stringify({ email: val }),
               });
 
