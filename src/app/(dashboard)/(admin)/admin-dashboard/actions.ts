@@ -31,6 +31,7 @@ interface ReportWithUser {
   spotted_date: string;
   spotted_time: string;
   created_at: string;
+  user_id: string;
   users: {
     name: string | null;
     email: string | null;
@@ -137,41 +138,19 @@ export async function fetchAdminStats(): Promise<{ data: AdminStats | null; erro
  */
 export async function fetchRecentReports(limit = 10): Promise<{ data: RecentReport[] | null; error: string | null }> {
   try {
-    const supabase = await createClient();
+    // Use API route to bypass RLS issues
+    const res = await fetch(`/api/admin/dashboard/recent-reports?limit=${limit}`, {
+      cache: 'no-store'
+    });
 
-    const { data: reports, error } = await supabase
-      .from('stray_animal_reports')
-      .select(`
-        id,
-        animal_type,
-        status,
-        spotted_date,
-        spotted_time,
-        created_at,
-        users!stray_animal_reports_user_id_fkey (
-          name,
-          email
-        )
-      `)
-      .order('created_at', { ascending: false })
-      .limit(limit);
+    if (!res.ok) {
+      const errorData = await res.json().catch(() => ({}));
+      throw new Error(errorData.error || `Failed to fetch reports: ${res.status}`);
+    }
 
-    if (error) throw error;
-
-    // Transform the data to flatten the user information
-    const transformedReports = (reports as ReportWithUser[]).map((report) => ({
-      id: report.id,
-      animal_type: report.animal_type,
-      status: report.status,
-      spotted_date: report.spotted_date,
-      spotted_time: report.spotted_time,
-      created_at: report.created_at,
-      user_name: report.users?.[0]?.name || null,
-      user_email: report.users?.[0]?.email || null,
-    }));
-
+    const json = await res.json();
     return {
-      data: transformedReports,
+      data: json.data || [],
       error: null,
     };
   } catch (error) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchAdminStats, type AdminStats } from "./actions";
+import { fetchAdminStats, fetchRecentReports, type AdminStats, type RecentReport } from "./actions";
 import { 
   BarChart3, 
   Clock, 
@@ -10,40 +10,62 @@ import {
   Users, 
   FolderOpen, 
   TrendingUp, 
-  Calendar 
+  Calendar,
+  Dog,
+  Cat
 } from "lucide-react";
+import Badge from "@/components/ui/Badge";
 
 export default function AdminDashboardPage() {
   const [stats, setStats] = useState<AdminStats | null>(null);
+  const [recentReports, setRecentReports] = useState<RecentReport[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    async function loadStats() {
+    async function loadData() {
       setLoading(true);
       setError(null);
-      const { data, error: err } = await fetchAdminStats();
-      if (err) {
-        setError(err);
+      
+      const [statsResult, reportsResult] = await Promise.all([
+        fetchAdminStats(),
+        fetchRecentReports()
+      ]);
+      
+      if (statsResult.error) {
+        setError(statsResult.error);
       } else {
-        setStats(data);
+        setStats(statsResult.data);
       }
+      
+      if (reportsResult.data) {
+        setRecentReports(reportsResult.data);
+      }
+      
       setLoading(false);
     }
-    loadStats();
+    loadData();
   }, []);
 
   if (loading) {
     return (
       <div className="p-6">
         <h1 className="text-2xl font-bold text-[rgb(var(--color-text))] mb-6">Admin Dashboard</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {Array.from({ length: 8 }).map((_, i) => (
             <div key={i} className="bg-[rgb(var(--color-card-bg))] rounded-lg p-6 animate-pulse">
               <div className="h-4 bg-[rgb(var(--color-border))] rounded w-1/2 mb-4"></div>
               <div className="h-8 bg-[rgb(var(--color-border))] rounded w-1/3"></div>
             </div>
           ))}
+        </div>
+        <div className="bg-[rgb(var(--color-card-bg))] rounded-lg p-6 animate-pulse">
+          <div className="h-6 bg-[rgb(var(--color-border))] rounded w-1/4 mb-4"></div>
+          <div className="space-y-3">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-16 bg-[rgb(var(--color-border))] rounded"></div>
+            ))}
+          </div>
         </div>
       </div>
     );
@@ -61,6 +83,21 @@ export default function AdminDashboardPage() {
   }
 
   if (!stats) return null;
+
+  const getStatusVariant = (status: string) => {
+    switch (status) {
+      case 'pending': return 'warning';
+      case 'verified': return 'success';
+      case 'rejected': return 'error';
+      default: return 'default';
+    }
+  };
+
+  const formatDateTime = (date: string, time: string) => {
+    const dateObj = new Date(date);
+    const formattedDate = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+    return `${formattedDate} at ${time}`;
+  };
 
   const statCards = [
     {
@@ -118,7 +155,7 @@ export default function AdminDashboardPage() {
       <h1 className="text-2xl font-bold text-[rgb(var(--color-text))] mb-6">Admin Dashboard</h1>
       
       {/* Stats Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
         {statCards.map((card) => {
           const Icon = card.icon;
           return (
@@ -136,6 +173,46 @@ export default function AdminDashboardPage() {
             </div>
           );
         })}
+      </div>
+
+      {/* Recent Activity */}
+      <div className="bg-[rgb(var(--color-card-bg))] border border-[rgb(var(--color-border))] rounded-lg p-6">
+        <h2 className="text-xl font-semibold text-[rgb(var(--color-text))] mb-4">Recent Activity</h2>
+        {recentReports.length === 0 ? (
+          <p className="text-[rgb(var(--color-text-muted))] text-center py-8">No recent reports</p>
+        ) : (
+          <div className="space-y-3">
+            {recentReports.map((report) => (
+              <div
+                key={report.id}
+                className="flex items-center justify-between p-4 bg-[rgb(var(--color-bg))] border border-[rgb(var(--color-border))] rounded-lg hover:bg-[rgb(var(--color-hover))] transition-colors"
+              >
+                <div className="flex items-center gap-4 flex-1">
+                  <div className="p-2 bg-[rgb(var(--color-card-bg))] rounded-lg">
+                    {report.animal_type === 'cat' ? (
+                      <Cat className="w-5 h-5 text-[rgb(var(--color-text))]" />
+                    ) : (
+                      <Dog className="w-5 h-5 text-[rgb(var(--color-text))]" />
+                    )}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-medium text-[rgb(var(--color-text))] capitalize">
+                        {report.animal_type} Report
+                      </p>
+                      <Badge variant={getStatusVariant(report.status)}>
+                        {report.status}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-[rgb(var(--color-text-muted))]">
+                      {formatDateTime(report.spotted_date, report.spotted_time)} • {report.user_name || report.user_email}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );
