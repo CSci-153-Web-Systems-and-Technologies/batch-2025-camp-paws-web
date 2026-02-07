@@ -26,6 +26,15 @@ export interface UserReport {
   additional_notes?: string | null;
   latitude?: number;
   longitude?: number;
+  user_name?: string | null;
+  user_email?: string | null;
+}
+
+interface ReportWithUser {
+  users: {
+    name: string | null;
+    email: string;
+  } | null;
 }
 
 /**
@@ -86,10 +95,16 @@ export async function fetchReportById(reportId: string): Promise<{ data: UserRep
       return { data: null, error: 'Not authenticated' };
     }
 
-    // Fetch the specific report
+    // Fetch the specific report with user information
     const { data: report, error: reportError } = await supabase
       .from('stray_animal_reports')
-      .select('*')
+      .select(`
+        *,
+        users!stray_animal_reports_user_id_fkey(
+          name,
+          email
+        )
+      `)
       .eq('id', reportId)
       .eq('user_id', user.id) // Ensure user owns this report
       .single();
@@ -103,7 +118,15 @@ export async function fetchReportById(reportId: string): Promise<{ data: UserRep
       return { data: null, error: 'Report not found' };
     }
 
-    return { data: report as UserReport, error: null };
+    // Transform the joined user data
+    const transformedReport = {
+      ...report,
+      user_name: (report as unknown as ReportWithUser).users?.name || null,
+      user_email: (report as unknown as ReportWithUser).users?.email || null,
+    };
+    delete (transformedReport as Record<string, unknown>).users;
+
+    return { data: transformedReport as UserReport, error: null };
   } catch (error) {
     console.error('Unexpected error fetching report:', error);
     return { data: null, error: 'Failed to fetch report' };

@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signOut } from '@/lib/auth/actions';
+import { createClient } from '@/lib/supabase/client';
 
 interface SidebarProps {
   isOpen: boolean;
@@ -22,6 +23,36 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
   const router = useRouter();
   const [showLogoutMenu, setShowLogoutMenu] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [userName, setUserName] = useState('Loading...');
+  const [userEmail, setUserEmail] = useState('');
+
+  // Fetch current user information
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      
+      if (user) {
+        setUserEmail(user.email || '');
+        
+        // Try to get user name from users table
+        const { data: userData } = await supabase
+          .from('users')
+          .select('name')
+          .eq('id', user.id)
+          .single();
+        
+        if (userData?.name) {
+          setUserName(userData.name);
+        } else {
+          // Fallback to email username if no name is set
+          setUserName(user.email?.split('@')[0] || 'User');
+        }
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -185,8 +216,8 @@ export default function Sidebar({ isOpen, onClose, userRole = 'user' }: SidebarP
               </svg>
             </div>
             <div className="flex-1 min-w-0 text-left">
-              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))] truncate">Student User</p>
-              <p className="text-xs text-[rgb(var(--color-text-secondary))] truncate">student@vsu.edu.ph</p>
+              <p className="text-sm font-medium text-[rgb(var(--color-text-primary))] truncate">{userName}</p>
+              <p className="text-xs text-[rgb(var(--color-text-secondary))] truncate">{userEmail}</p>
             </div>
             <svg 
               className={`w-4 h-4 text-[rgb(var(--color-text-secondary))] transition-transform ${showLogoutMenu ? 'rotate-180' : ''}`}

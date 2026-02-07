@@ -58,11 +58,9 @@ export default function ViewReportModal({ isOpen, onClose, reportId, onDelete, c
 
       setReport(data);
 
-      // Get user info from localStorage or auth
-      const email = localStorage.getItem('userEmail') || 'student@example.jp';
-      const name = localStorage.getItem('userName') || 'Student User';
-      setUserEmail(email);
-      setUserName(name);
+      // Get user info from the report data
+      setUserEmail(data.user_email || 'Unknown');
+      setUserName(data.user_name || data.user_email?.split('@')[0] || 'User');
     } catch (err) {
       setError('An unexpected error occurred');
       console.error('Error loading report:', err);
