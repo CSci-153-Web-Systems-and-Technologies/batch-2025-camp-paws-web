@@ -12,7 +12,7 @@ interface ReportWithUser {
   users: {
     name: string | null;
     email: string | null;
-  }[] | null;
+  } | null;
 }
 
 /**
@@ -29,7 +29,7 @@ export async function GET(request: Request) {
     
     const { data: reports, error } = await supabase
       .from('stray_animal_reports')
-      .select('id, animal_type, status, spotted_date, spotted_time, created_at, user_id, users!stray_animal_reports_user_id_fkey(name, email)')
+      .select('id, animal_type, status, spotted_date, spotted_time, created_at, user_id, users!user_id(name, email)')
       .order('created_at', { ascending: false })
       .limit(limit);
 
@@ -39,15 +39,15 @@ export async function GET(request: Request) {
     }
 
     // Transform to expected format
-    const result = (reports as ReportWithUser[] ?? []).map((r) => ({
+    const result = ((reports ?? []) as unknown as ReportWithUser[]).map((r) => ({
       id: r.id,
       animal_type: r.animal_type,
       status: r.status,
       spotted_date: r.spotted_date,
       spotted_time: r.spotted_time,
       created_at: r.created_at,
-      user_name: r.users?.[0]?.name ?? null,
-      user_email: r.users?.[0]?.email ?? null,
+      user_name: r.users?.name ?? null,
+      user_email: r.users?.email ?? null,
     }));
 
     return NextResponse.json({ data: result });
