@@ -33,8 +33,9 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  var theme = localStorage.getItem('camp-paws-theme') || 'system';
-                  var resolved = theme === 'system' 
+                  // Default to dark when no explicit preference is set
+                  var theme = localStorage.getItem('camp-paws-theme') || 'dark';
+                  var resolved = theme === 'system'
                     ? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light')
                     : theme;
                   document.documentElement.classList.add(resolved);
@@ -47,7 +48,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider defaultTheme="system" storageKey="camp-paws-theme">
+        <ThemeProvider defaultTheme="dark" storageKey="camp-paws-theme">
           {children}
         </ThemeProvider>
       </body>
