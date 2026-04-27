@@ -1,6 +1,25 @@
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
+interface JoinedUser {
+  name?: string | null;
+  email?: string | null;
+}
+
+interface AdminMapReportRow {
+  id: string;
+  latitude: number | null;
+  longitude: number | null;
+  animal_type: string | null;
+  spotted_date: string | null;
+  spotted_time: string | null;
+  status: string;
+  location_description: string | null;
+  photo_url: string | null;
+  user_id: string;
+  users?: JoinedUser | null;
+}
+
 /**
  * GET /api/admin/map/reports
  * 
@@ -10,6 +29,33 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     const supabase = await createServerClient();
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const { data: actorRowRaw, error: actorErr } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle();
+    if (actorErr) {
+      throw actorErr;
+    }
+
+    const actorRow = actorRowRaw as Record<string, unknown> | null;
+    const actorRole =
+      actorRow && typeof actorRow['role'] === 'string'
+        ? (actorRow['role'] as string)
+        : null;
+
+    if (!actorRow || actorRole !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const { data: reports, error: reportsError } = await supabase
       .from('stray_animal_reports')
@@ -23,7 +69,7 @@ export async function GET() {
     }
 
     // Transform to expected format
-    const result = (reports ?? []).map((r: any) => ({
+    const result = ((reports ?? []) as AdminMapReportRow[]).map((r) => ({
       id: r.id,
       latitude: r.latitude,
       longitude: r.longitude,

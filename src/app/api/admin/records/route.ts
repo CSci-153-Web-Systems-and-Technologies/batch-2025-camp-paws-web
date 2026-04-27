@@ -1,6 +1,40 @@
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
 
+interface JoinedUser {
+  email?: string | null;
+  name?: string | null;
+}
+
+interface AdminRecordRow {
+  id: string;
+  user_id: string;
+  is_grouped: string | null;
+  users?: JoinedUser | null;
+  photo_url: string | null;
+  spotted_date: string | null;
+  spotted_time: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  animal_type: string | null;
+  sex: string | null;
+  collar_status: string | null;
+  color_pattern: string | null;
+  primary_color: string | null;
+  body_condition_score: string | null;
+  additional_notes: string | null;
+  status: string;
+  verified_by: string | null;
+  verified_user?: JoinedUser | null;
+  verified_at: string | null;
+  created_at: string;
+  updated_at: string;
+  location_description: string | null;
+  skin_problems: string[] | null;
+  eye_problems: string[] | null;
+  gait_problems: string[] | null;
+}
+
 /**
  * GET /api/admin/records
  * 
@@ -10,6 +44,33 @@ import { NextResponse } from 'next/server';
 export async function GET() {
   try {
     const supabase = await createServerClient();
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const { data: actorRowRaw, error: actorErr } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle();
+    if (actorErr) {
+      throw actorErr;
+    }
+
+    const actorRow = actorRowRaw as Record<string, unknown> | null;
+    const actorRole =
+      actorRow && typeof actorRow['role'] === 'string'
+        ? (actorRow['role'] as string)
+        : null;
+
+    if (!actorRow || actorRole !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
 
     const { data: reports, error: reportsError } = await supabase
       .from('stray_animal_reports')
@@ -26,7 +87,7 @@ export async function GET() {
     }
 
     // Transform to expected format
-    const result = (reports ?? []).map((r: any) => ({
+    const result = ((reports ?? []) as AdminRecordRow[]).map((r) => ({
       id: r.id,
       user_id: r.user_id,
       is_grouped: r.is_grouped,

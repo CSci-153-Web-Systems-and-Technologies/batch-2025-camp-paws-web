@@ -26,6 +26,33 @@ export async function GET(request: Request) {
     const limit = parseInt(searchParams.get('limit') || '10');
 
     const supabase = await createClient();
+
+    const {
+      data: { user },
+      error: authError,
+    } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
+    }
+
+    const { data: actorRowRaw, error: actorErr } = await supabase
+      .from('users')
+      .select('role')
+      .eq('id', user.id)
+      .maybeSingle();
+    if (actorErr) {
+      throw actorErr;
+    }
+
+    const actorRow = actorRowRaw as Record<string, unknown> | null;
+    const actorRole =
+      actorRow && typeof actorRow['role'] === 'string'
+        ? (actorRow['role'] as string)
+        : null;
+
+    if (!actorRow || actorRole !== 'admin') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+    }
     
     const { data: reports, error } = await supabase
       .from('stray_animal_reports')
