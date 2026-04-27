@@ -59,7 +59,8 @@ export async function GET() {
 
     const { data: reports, error: reportsError } = await supabase
       .from('stray_animal_reports')
-      .select('id, latitude, longitude, animal_type, spotted_date, spotted_time, status, location_description, photo_url, user_id, users(name, email)')
+      // Specify the exact relationship to avoid PostgREST "multiple relationships" error
+      .select('id, latitude, longitude, animal_type, spotted_date, spotted_time, status, location_description, photo_url, user_id, users!user_id(name, email)')
       .in('status', ['pending', 'verified'])
       .order('spotted_date', { ascending: false })
       .order('spotted_time', { ascending: false });
