@@ -7,6 +7,9 @@ export class ReportDateFilter {
     const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
     
     switch (filter) {
+      case 'all':
+        return reports;
+      
       case 'today':
         return reports.filter(report => {
           const reportDate = new Date(report.spottedDate);
@@ -44,6 +47,7 @@ export class ReportDateFilter {
 
   static getReportCounts(reports: AnimalReport[]): Record<TimeFilter, number> {
     return {
+      all: reports.length,
       today: this.filterByTimeRange(reports, 'today').length,
       yesterday: this.filterByTimeRange(reports, 'yesterday').length,
       week: this.filterByTimeRange(reports, 'week').length,

@@ -2,6 +2,7 @@
 import { TimeFilterSelectorProps, TimeFilter } from '../types/MapTypes';
 
 const FILTER_OPTIONS: { value: TimeFilter; label: string }[] = [
+  { value: 'all', label: 'All Time' },
   { value: 'today', label: 'Today' },
   { value: 'yesterday', label: 'Yesterday' },
   { value: 'week', label: 'This Week' },

@@ -1,6 +1,6 @@
 // Interface Segregation Principle: Separate interfaces for different concerns
 
-export type TimeFilter = 'today' | 'yesterday' | 'week' | 'month';
+export type TimeFilter = 'all' | 'today' | 'yesterday' | 'week' | 'month';
 
 // Animal report location data
 export interface AnimalReport {
